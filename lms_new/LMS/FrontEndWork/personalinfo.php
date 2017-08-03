@@ -1,8 +1,25 @@
+<?php
+session_start();
+require_once '../Library.php';
+require_once '../attendenceFunctions.php';
+error_reporting("E_ALL");
+$db=connectToDB();
+?>
 <html>
 	<head>
 		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		
 		<style>
+			.form-control
+			{
+			   border-style:none;
+			}
+			
+			.form-control:focus
+			{
+			   border-style:solid;
+			}
 			.footer1 {
 				background: #031432 url("../images/footer/footer-bg.png") repeat scroll left top;
 				padding-top: 40px;
@@ -165,6 +182,11 @@
 		
 	</head>
 	<body>
+	<?php
+	$name = $_SESSION['u_fullname'];
+	$firstname = strtok($name, ' ');
+	$lastname = strstr($name, ' ');
+	?>
 		<nav class="navbar navbar-inverse">
 			<div class="container">
 				<div class="navbar-header">
@@ -174,7 +196,7 @@
 					
 				</div>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" style="font-size:16px; color:white; padding-top:20px; padding-right:30px; font-family:cursive;"><b> Morning, Victoria !</b></a></li>
+					<li><a href="#" style="font-size:16px; color:white; padding-top:20px; padding-right:30px; font-family:cursive;"><b>  Welcome, <?php echo $firstname; ?></b></a></li>
 					<li><a href="help.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-question-circle" aria-hidden="true"></i><b> Need Help</b></a></li>
 					<li><a href="login.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-sign-out" aria-hidden="true"></i><b> Logout</b></a></li>
 				</ul>
@@ -211,19 +233,49 @@
 			<div class="col-sm-2">
 				<div class="rectangle">
 					<a href="#"><img src="img/4.jpg" class="img-circle img-responsive" alt="" width="150px;" height="80px;"></a>
-					<center><h6 style="color:blue;">Victoria Baker</h6>
-					<span class="text-size-small" style="color:white;">Santa Ana, CA</span>
+				<h6 class="text-center" style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;"><?php echo $_SESSION['u_fullname']?></h6>
+				
+					 <center><span class="text-size-small" style="color:white;">
+					 <?php 
+						$fullname = $_SESSION['u_fullname'];
+						$empid=$_SESSION['u_empid'];
+						$empinfo=$db->query("select * from emp where empname='".$fullname."'");
+						$emprow=$db->fetchAssoc($empinfo);
+						$emplocation=$emprow['location'];
+						echo $emplocation.", India";
+						$managername=$emprow['managername'];
+						$department=$emprow['dept'];
+						$emailid=$emprow['emp_emailid'];
+						$birthdaydate=$emprow['birthdaydate'];
+						$empprofile=$db->query("select * from empprofile where empid='".$empid."'");
+						$row=$db->fetchAssoc($empprofile);
+						$phonenumber=$row['phonenumber'];
+						$bloodgroup=$row['bloodgroup'];
+						$address=$row['address'];
+					?>
+					</span>
 					</center>
-				</div>
+		</div>
 							
 			
 				<hr>
 				<ul class="list-group">
-					<li class="list-group-item active" style="color:white; font-size:18px;">My Account</li>
-					<li class="list-group-item"><a href="lms.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
-					<li class="list-group-item"><a href="personalinfo.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
+					<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
+					<li class="list-group-item"><a href="lms.php"><i class="fa fa-home" aria-hidden="true"></i>&nbsp; Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
+					<li class="list-group-item"><a href="personalinfo.php"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
 					<li class="list-group-item"><a href="officialinfo.php"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>
+					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+					<?php
+					$query = "select * from privileges where role='" . $_SESSION['user_desgn'] . "'";
+					$result = $db -> query($query);
+					$row = $db -> fetchAssoc($result);
+					$keys = array_keys($row);
+					if(strtoupper($_SESSION['user_dept'])=="HR") {?>
+					<li class="list-group-item"><a href="hr.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+					<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
+					<li class="list-group-item"><a href="manager.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
+					<?php }?>
+					<!--  <li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>-->
 				</ul>
 			</div><!--2 column end-->
 			<div class="col-sm-9" style="margin-left:40px;">
@@ -241,13 +293,13 @@
 									<label>Emp Name:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="" >
+									<input type="text" class="form-control" id="empname" value="<?php echo $fullname; ?>">
 								</div>
 								<div class="col-sm-2">
 									<label>Emp Id:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $empid; ?>">
 								</div>
 							</div><!--1st row close-->
 							</div>
@@ -257,13 +309,13 @@
 									<label>Manager Name:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $managername; ?>">
 								</div>
 								<div class="col-sm-2">
 									<label>Company Name:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="ECI">
 								</div>
 							</div><!--2nd row close-->
 							</div>
@@ -274,7 +326,7 @@
 									<label>Department:</label>
 								</div>
 								<div class="col-sm-4">
-									<select class="form-control">
+									<select class="form-control" value="<?php echo $department; ?>">
 										<option>--Department--</option>
 										<option></option>
 										<option></option>
@@ -285,11 +337,16 @@
 									<label>Blood Group:</label>
 								</div>
 								<div class="col-sm-4">
-									<select class="form-control">
+									<select class="form-control" value="<?php echo $bloodgroup; ?>">
 										<option>--Blood grp--</option>
-										<option></option>
-										<option></option>
-										<option></option>
+										<option>A+</option>
+										<option>O+</option>
+										<option>B+</option>
+										<option>AB+</option>
+										<option>A-</option>
+										<option>O-</option>
+										<option>B-</option>
+										<option>AB-</option>
 									</select>
 								</div>
 							</div><!--3rd row close-->
@@ -301,13 +358,13 @@
 									<label>Phone Number:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $phonenumber; ?>">
 								</div>
 								<div class="col-sm-2">
 									<label>Email Id:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $emailid; ?>">
 								</div>
 							</div><!--4th row close-->
 							</div>
@@ -329,13 +386,13 @@
 									<label>Date of Birth:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $birthdaydate; ?>">
 								</div>
 								<div class="col-sm-2">
 									<label>Address:</label>
 								</div>
 								<div class="col-sm-4">
-									<textarea class="form-control" value=""></textarea>
+									<textarea class="form-control"><?php echo $address;?></textarea>
 								</div>
 							</div><!--6th row close-->
 							</div>

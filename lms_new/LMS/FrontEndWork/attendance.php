@@ -16,16 +16,6 @@ $db=connectToDB();
 		<script type="text/javascript" src="public/js/jqueryui/js/jquery-ui.js"></script>
 		<script type="text/javascript" src="public/js/bootstrap/js/bootstrap.min.js"></script>
   		<script type="text/javascript" src="public/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
-		
-		
-		<?php
-		$getCalIds = array("fromdate", "todate", "TypeOfDayfromdate", "TypeOfDaytodate");
-		$calImg = getCalImg($getCalIds,-1,0);
-		echo $calImg;
-		?>
-		<!--[if IE]>
-		<script type="text/javascript" src="projectjs/flotr2.ie.min.js"></script>
-		<![endif]-->
 		<script type="text/javascript" src="projectjs/flotr2.min.js"></script>
 		<SCRIPT TYPE="text/javascript">
 			function showDialog(id, empid, first, month) {
@@ -53,10 +43,12 @@ $db=connectToDB();
 					}
 				}
 			}
-			$("#datetimepicker").datetimepicker({
-			    format: "dd MM yyyy - hh:ii"
+			$(".open-datetimepicker").datetimepicker({
+			    format: "dd/mm/yy"
 			});
-			
+			$(".open-datetimepicker1").datetimepicker({
+			    format: "dd/mm/yy"
+			});
 			$('#AttInd').submit(function() {
 				$('#accessData').html(" ");
 				if ( $("#hideDept").val()=="none" ) {
@@ -135,7 +127,7 @@ $db=connectToDB();
 		</SCRIPT>
 		<style>
 			.footer1 {
-				background: #031432 url("../images/footer/footer-bg.png") repeat scroll left top;
+				background: #031432 repeat scroll left top;
 				padding-top: 40px;
 				padding-right: 0;
 				padding-bottom: 20px;
@@ -367,7 +359,7 @@ $db=connectToDB();
 		<li class="active" ><a href="attendance.php">Attendance</a></li>
 		<li><a href="#Welcome">Track Leaves</a></li>
 		<li><a href="leavecalender.php">Leave Calender</a></li>
-		<li><a href="#PostList">Apply VOE</a></li>
+		<li><a href="ApplyVOE.php">Apply VOE</a></li>
 		</ul>
 		
 		</div>
@@ -602,7 +594,7 @@ $db=connectToDB();
 							<div class="col-sm-8">
 							<!--  <input class="form-control" type="text" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d'); ?>' id="fromdate" size="8" />-->
 					 				<div class="input-group">
-									    <input type="text" id="datetimepicker" class="form-control" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d'); ?>'>
+									    <input type="text" id="datetimepicker" class="form-control open-datetimepicker" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d') ?>'>
 									    <label class="input-group-addon btn" for="date">
 									       <span class="fa fa-calendar open-datetimepicker"></span>
 									    </label>
@@ -617,9 +609,9 @@ $db=connectToDB();
 							<div class="col-sm-8">
 							<!--  <input type="text" class="form-control" size="8" name="todate" id="todate" value = '<?php echo date('Y-m-d') ?>'  />-->
 								<div class="input-group">
-									    <input type="text" id="datetimepicker" class="form-control" name="todate" value='<?php echo date('Y-m-d') ?>'>
+									    <input type="text" id="datetimepicker1" class="form-control open-datetimepicker1" name="todate" value='<?php echo date('Y-m-d')  ?>'>
 									    <label class="input-group-addon btn" for="date">
-									       <span class="fa fa-calendar open-datetimepicker"></span>
+									       <span class="fa fa-calendar open-datetimepicker1"></span>
 									    </label>
 									</div>
 							</div>

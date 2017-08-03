@@ -1,5 +1,15 @@
 <?php
 require_once ("db.class.php");
+function getempListString($query) {
+	global $db;
+	$employeesList = $db -> query($query);
+	$employeeListString = "";
+	while ($employeesrow = $db -> fetchArray($employeesList)) {
+		$employeeListString = "$employeeListString" . $employeesrow['empid'] . ",";
+	}
+	$employeeListString = rtrim($employeeListString, ",");
+	return $employeeListString;
+}
 function getChildren($supervisorID)
 {
 	global $db;

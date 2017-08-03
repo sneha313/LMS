@@ -115,10 +115,6 @@
 				}
 				.nomargin { margin:0px; padding:0px;}
 
-
-
-
-
 			.footer-bottom {
 				background-color: #15224f;
 				min-height: 30px;

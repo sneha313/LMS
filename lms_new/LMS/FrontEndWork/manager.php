@@ -1,18 +1,10 @@
-<?php
-session_start();
-require_once 'Library.php';
-require_once 'attendenceFunctions.php';
-require_once 'generalFunctions.php';
-error_reporting("E_ALL");
-$db=connectToDB();
-?>
 <html>
 	<head>
 		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<style>
 			.footer1 {
-				background: #031432 repeat scroll left top;
+				background: #031432 url("../images/footer/footer-bg.png") repeat scroll left top;
 				padding-top: 40px;
 				padding-right: 0;
 				padding-bottom: 20px;
@@ -185,12 +177,6 @@ $db=connectToDB();
 		</style>
 	</head>
 	<body>
-		<?php
-	$name = $_SESSION['u_fullname'];
-	$firstname = strtok($name, ' ');
-	$lastname = strstr($name, ' ');
-	?>
-	
 		<nav class="navbar navbar-inverse">
 			<div class="container">
 				<div class="navbar-header">
@@ -200,7 +186,7 @@ $db=connectToDB();
 					
 				</div>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" style="font-size:16px; color:white; padding-top:20px; padding-right:30px; font-family:cursive;"><b>  Welcome, <?php echo $firstname; ?></b></a></li>
+					<li><a href="#" style="font-size:16px; color:white; padding-top:20px; padding-right:30px; font-family:cursive;"><b> Morning, Victoria !</b></a></li>
 					<li><a href="help.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-question-circle" aria-hidden="true"></i><b> Need Help</b></a></li>
 					<li><a href="login.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-sign-out" aria-hidden="true"></i><b> Logout</b></a></li>
 				</ul>
@@ -219,11 +205,11 @@ $db=connectToDB();
 		</div><!--navbar header-->
 		<div id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav navbar-right" style="padding-right:80px;">
-		<li id="home"><a href="Holidays.php">Holiday List</a></li>
+		<li class="active" id="home"><a href="#home">Holiday List</a></li>
 		<li><a href="attendance.php">Attendance</a></li>
-		<li><a href="trackLeaves.php">Track Leaves</a></li>
-		<li><a href="leavecalender.php">Leave Calender</a></li>
-		<li><a href="ApplyVOE.php">Apply VOE</a></li>
+		<li><a href="trackattendance.php">Track Leaves</a></li>
+		<li><a href="#Login">Leave Calender</a></li>
+		<li><a href="#PostList">Apply VOE</a></li>
 		</ul>
 		
 		</div>
@@ -237,19 +223,12 @@ $db=connectToDB();
 			<div class="col-sm-2">
 				<div class="rectangle">
 					<a href="#"><img src="img/4.jpg" class="img-circle img-responsive" alt="" width="150px;" height="80px;"></a>
-				<h6 class="text-center" style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;"><?php echo $_SESSION['u_fullname']; ?></h6>
-				
-					 <center><span class="text-size-small" style="color:white;">
-					 <?php 
-						$fullname = $_SESSION['u_fullname'];
-						$location=$db->query("select location from emp where empname='".$fullname."'");
-						$emprow=$db->fetchAssoc($location);
-						$emplocation=$emprow['location'];
-						echo $emplocation.", India";
-					?>
-					</span>
+					<center><h6 style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;">Victoria Baker</h6>
+					<span class="text-size-small" style="color:white;">Santa Ana, CA</span>
 					</center>
-		</div>
+				</div>
+							
+			
 				<hr>
 				<ul class="list-group">
 					<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
@@ -257,141 +236,34 @@ $db=connectToDB();
 					<li class="list-group-item"><a href="personalinfo.php"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
 					<li class="list-group-item"><a href="officialinfo.php"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
 					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<?php
-					$query = "select * from privileges where role='" . $_SESSION['user_desgn'] . "'";
-					$result = $db -> query($query);
-					$row = $db -> fetchAssoc($result);
-					$keys = array_keys($row);
-					if(strtoupper($_SESSION['user_dept'])=="HR") {?>
-					<li class="list-group-item"><a href="hr.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
-					<li class="list-group-item"><a href="manager.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
-					<?php }?>
-					<!--  <li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>-->
+					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
+					<li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>
 				</ul>
 			</div><!--2 column end-->
-			<div class="col-sm-10">
-				<div class="row">
-					<div class="col-sm-6">
-						<div id="teamMemberLeave">
-							<h5 style="font-size:16px; font-family:monospace;">Team Member's on Leave</h5>
-							
-								<table class='table'>
-											<thead>
-												<tr class='success'>
-													<th>Emp Name</th>
-													<th>Leave Type</th>
-												</tr>
-											</thead>
-											<?php 
-												$managerid = $_SESSION['u_managerid'];
-												$empquery = "select empid,empname from emp where managerid='".$managerid."' and state='Active'";
-												$empresult=$db->query($empquery);
-												$emprow=$db->fetchAssoc($empresult);
-												$employeeListString = getempListString($empquery);
-												//$date='2013-03-06';
-												$query = "SELECT a.empid, a.date, a.leavetype FROM perdaytransactions a,empleavetransactions b where a.date between 'b.startdate' and 'b.enddate' and a.empid in ($employeeListString) and b.approvalstatus='Approved'";
-												$sql = $db -> query($query);
-											?>
-									 		<tbody>
-										 			<?php 
-												 		if($db->countRows($sql) > 0){
-												 			$row=$db->fetchAssoc($sql);
-												 			
-												 			echo '<tr>
-												 			<td class="info">'.$emprow['empname'].'</td>
-												 			<td class="warning">'.$row['leavetype'].'</td>
-												 			</tr>';
-												 			 
-												 		}
-												 		else 
-												 		{
-												 			echo '<tr>
-												 			<td colspan="2"class="info text-center">All Team members are present</td>
-												 			</tr>';
-												 			
-												 		}
-												 	?>
-											</tbody>
-							</table>
-						</div>
-					</div>
-					<div class="col-sm-6">
-						<div id="upcomingHoliday">
-							<h5 style="font-size:16px; font-family:monospace;"><b>Upcoming Holiday</b></h5>
-								<table class="table">
-								<thead>
-								  <tr class="success">
-									<th>Date</th>
-									<th>Holiday Name</th>
-								  </tr>
-								</thead>
-								<tbody>
-								    <!--  <tr>
-										<td class="info">Danger</td>
-										<td class="warning">Moe</td>
-									</tr>
-									<tr>
-										<td class="info">Info</td>
-										<td class="warning">Dooley</td>
-									</tr>
-									<tr >
-										<td class="info">Warning</td>
-										<td class="warning">Refs</td>
-									</tr>-->
-									<?php
-									   $curdate = date('Y-m-d', time());
-									   $res = $db->query("SELECT date, holidayname FROM holidaylist WHERE date > DATE_SUB(NOW(), INTERVAL 1 MONTH) and date < DATE_SUB(NOW(), INTERVAL -1 MONTH )");
-									  
-  										for($i=0;$i<$db->countRows($res);$i++)
-											{
-												$row=$db->fetchArray($res);
-											  	$date=$row['date'];
-											  	$holidayname=$row['holidayname'];
-											  	echo '<tr>';
-												echo '<td class="info">'.$row['date'].'</td>';
-												echo '<td class="warning">'.$row['holidayname'].'</td>';
-											  	echo '</tr>';
-										  }
-									?>
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-sm-6">
-						<div id="teamMemberBirthday">
-							<h5 style="font-size:16px; font-family:monospace;">Birthday's List this week</h5>
-								<table class="table">
-								<thead>
-								  <tr class="success">
-									<th>Emp Name</th>
-									<th>Birthday Date</th>
-								  </tr>
-								</thead>
-								<tbody>
-									<?php
-										  $result = $db->query("SELECT empname, birthdaydate FROM emp WHERE DATE_ADD(birthdaydate, INTERVAL YEAR(CURDATE())-YEAR(birthdaydate) + IF(DAYOFYEAR(CURDATE()) >= DAYOFYEAR(birthdaydate),1,0) YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)");
-										 
-										  for($i=0;$i<$db->countRows($result);$i++)
-											{
-												$row=$db->fetchArray($result);
-											  	$empname=$row['empname'];
-											  	$birthdaydate=$row['birthdaydate'];
-										  	echo '<tr>';
-											echo '<td class="info">'.$row['empname'].'</td>';
-											echo '<td class="warning">'.$row['birthdaydate'].'</td>';
-										  	echo '</tr>';
-										  }
-										
-										?>
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
+			<div class="col-sm-2"></div>
+			<div class="col-sm-5">
+				<div class="panel panel-danger">
+  								<div class="panel-heading">Manager Section</div>
+  								<div class="panel-body table-responsive">
+									<table class="table table-bordered table-hover">
+										<tr>
+											<td><a href="#" target="_blank">Modify Empoloyee Approved Leaves</a></td>
+											<td></td>
+										</tr>
+										<tr>
+                                            <td><a href="#" target="_blank">Approve Employee Leaves</a></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td><a href="#" target="_blank">Team Leave Report</a></td>
+                                            <td></td>
+                                        </tr>
+									</table>
+  								</div>
+							</div>
 			</div>
+			<div class="col-sm-3"></div>
 		</div>
 		</div>
 		<footer class="footer1">

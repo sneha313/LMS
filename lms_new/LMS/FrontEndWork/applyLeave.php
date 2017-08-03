@@ -1,8 +1,7 @@
 <?php
 session_start();
-require_once 'Library.php';
-require_once 'attendenceFunctions.php';
-require_once 'generalFunctions.php';
+require_once '../Library.php';
+require_once '../attendenceFunctions.php';
 error_reporting("E_ALL");
 $db=connectToDB();
 ?>
@@ -185,12 +184,11 @@ $db=connectToDB();
 		</style>
 	</head>
 	<body>
-		<?php
+	<?php
 	$name = $_SESSION['u_fullname'];
 	$firstname = strtok($name, ' ');
 	$lastname = strstr($name, ' ');
 	?>
-	
 		<nav class="navbar navbar-inverse">
 			<div class="container">
 				<div class="navbar-header">
@@ -219,11 +217,11 @@ $db=connectToDB();
 		</div><!--navbar header-->
 		<div id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav navbar-right" style="padding-right:80px;">
-		<li id="home"><a href="Holidays.php">Holiday List</a></li>
+		<li class="active" id="home"><a href="#home">Holiday List</a></li>
 		<li><a href="attendance.php">Attendance</a></li>
-		<li><a href="trackLeaves.php">Track Leaves</a></li>
-		<li><a href="leavecalender.php">Leave Calender</a></li>
-		<li><a href="ApplyVOE.php">Apply VOE</a></li>
+		<li><a href="trackattendance.php">Track Leaves</a></li>
+		<li><a href="#Login">Leave Calender</a></li>
+		<li><a href="#PostList">Apply VOE</a></li>
 		</ul>
 		
 		</div>
@@ -237,7 +235,7 @@ $db=connectToDB();
 			<div class="col-sm-2">
 				<div class="rectangle">
 					<a href="#"><img src="img/4.jpg" class="img-circle img-responsive" alt="" width="150px;" height="80px;"></a>
-				<h6 class="text-center" style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;"><?php echo $_SESSION['u_fullname']; ?></h6>
+				<h6 class="text-center" style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;"><?php echo $_SESSION['u_fullname']?></h6>
 				
 					 <center><span class="text-size-small" style="color:white;">
 					 <?php 
@@ -245,11 +243,13 @@ $db=connectToDB();
 						$location=$db->query("select location from emp where empname='".$fullname."'");
 						$emprow=$db->fetchAssoc($location);
 						$emplocation=$emprow['location'];
-						echo $emplocation.", India";
+						echo $emplocation.", India"
 					?>
 					</span>
 					</center>
 		</div>
+							
+			
 				<hr>
 				<ul class="list-group">
 					<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
@@ -270,128 +270,43 @@ $db=connectToDB();
 					<!--  <li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>-->
 				</ul>
 			</div><!--2 column end-->
-			<div class="col-sm-10">
-				<div class="row">
-					<div class="col-sm-6">
-						<div id="teamMemberLeave">
-							<h5 style="font-size:16px; font-family:monospace;">Team Member's on Leave</h5>
-							
-								<table class='table'>
-											<thead>
-												<tr class='success'>
-													<th>Emp Name</th>
-													<th>Leave Type</th>
-												</tr>
-											</thead>
-											<?php 
-												$managerid = $_SESSION['u_managerid'];
-												$empquery = "select empid,empname from emp where managerid='".$managerid."' and state='Active'";
-												$empresult=$db->query($empquery);
-												$emprow=$db->fetchAssoc($empresult);
-												$employeeListString = getempListString($empquery);
-												//$date='2013-03-06';
-												$query = "SELECT a.empid, a.date, a.leavetype FROM perdaytransactions a,empleavetransactions b where a.date between 'b.startdate' and 'b.enddate' and a.empid in ($employeeListString) and b.approvalstatus='Approved'";
-												$sql = $db -> query($query);
-											?>
-									 		<tbody>
-										 			<?php 
-												 		if($db->countRows($sql) > 0){
-												 			$row=$db->fetchAssoc($sql);
-												 			
-												 			echo '<tr>
-												 			<td class="info">'.$emprow['empname'].'</td>
-												 			<td class="warning">'.$row['leavetype'].'</td>
-												 			</tr>';
-												 			 
-												 		}
-												 		else 
-												 		{
-												 			echo '<tr>
-												 			<td colspan="2"class="info text-center">All Team members are present</td>
-												 			</tr>';
-												 			
-												 		}
-												 	?>
-											</tbody>
-							</table>
-						</div>
-					</div>
-					<div class="col-sm-6">
-						<div id="upcomingHoliday">
-							<h5 style="font-size:16px; font-family:monospace;"><b>Upcoming Holiday</b></h5>
-								<table class="table">
-								<thead>
-								  <tr class="success">
-									<th>Date</th>
-									<th>Holiday Name</th>
-								  </tr>
-								</thead>
-								<tbody>
-								    <!--  <tr>
-										<td class="info">Danger</td>
-										<td class="warning">Moe</td>
-									</tr>
-									<tr>
-										<td class="info">Info</td>
-										<td class="warning">Dooley</td>
-									</tr>
-									<tr >
-										<td class="info">Warning</td>
-										<td class="warning">Refs</td>
-									</tr>-->
-									<?php
-									   $curdate = date('Y-m-d', time());
-									   $res = $db->query("SELECT date, holidayname FROM holidaylist WHERE date > DATE_SUB(NOW(), INTERVAL 1 MONTH) and date < DATE_SUB(NOW(), INTERVAL -1 MONTH )");
-									  
-  										for($i=0;$i<$db->countRows($res);$i++)
-											{
-												$row=$db->fetchArray($res);
-											  	$date=$row['date'];
-											  	$holidayname=$row['holidayname'];
-											  	echo '<tr>';
-												echo '<td class="info">'.$row['date'].'</td>';
-												echo '<td class="warning">'.$row['holidayname'].'</td>';
-											  	echo '</tr>';
-										  }
-									?>
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-sm-6">
-						<div id="teamMemberBirthday">
-							<h5 style="font-size:16px; font-family:monospace;">Birthday's List this week</h5>
-								<table class="table">
-								<thead>
-								  <tr class="success">
-									<th>Emp Name</th>
-									<th>Birthday Date</th>
-								  </tr>
-								</thead>
-								<tbody>
-									<?php
-										  $result = $db->query("SELECT empname, birthdaydate FROM emp WHERE DATE_ADD(birthdaydate, INTERVAL YEAR(CURDATE())-YEAR(birthdaydate) + IF(DAYOFYEAR(CURDATE()) >= DAYOFYEAR(birthdaydate),1,0) YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)");
-										 
-										  for($i=0;$i<$db->countRows($result);$i++)
-											{
-												$row=$db->fetchArray($result);
-											  	$empname=$row['empname'];
-											  	$birthdaydate=$row['birthdaydate'];
-										  	echo '<tr>';
-											echo '<td class="info">'.$row['empname'].'</td>';
-											echo '<td class="warning">'.$row['birthdaydate'].'</td>';
-										  	echo '</tr>';
-										  }
-										
-										?>
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
+			<div class="col-sm-2"></div>
+			<div class="col-sm-5">
+				  	<div class="panel panel-primary">
+  								<div class="panel-heading text-center">
+  									<strong style="font-size:20px;">My Leave Details</strong>
+  								</div>
+  								<div class="panel-body table-responsive">
+									<table class="table table-bordered table-hover">
+										<tr>
+											<td><a href="#" target="_blank">Full Day PTO</a></td>
+											<td>Full day leave</td>
+										</tr>
+										<tr>
+											<td><a href="#" target="_blank">Half Day PTO</a></td>
+											<td>First Half or Second Half leave</td>
+										</tr>
+										<tr>
+											<td><a href="#" target="_blank">Full Day WFH</a></td>
+											<td>Full Day Work from Home</td>
+										</tr>
+										<tr>
+											<td><a href="#" target="_blank">Half Day WFH</a></td>
+											<td>First Half or Second Half Work from Home</td>
+										</tr>
+										<tr>
+											<td><a href="#" target="_blank">Comp Off Leaves</a></td>
+											<td>Need to mention the worked holiday date </td>
+										</tr>
+										<tr>
+											<td><a href="#" target="_blank">Pending Leaves</a></td>
+											<td>User can Edit/Delete leave</td>
+										</tr>
+									</table>
+  								</div>
+							</div>
 			</div>
+			<div class="col-sm-3"></div>
 		</div>
 		</div>
 		<footer class="footer1">
