@@ -355,9 +355,9 @@ $db=connectToDB();
 		</div><!--navbar header-->
 		<div id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav navbar-right" style="padding-right:80px;">
-		<li id="home"><a href="#home">Holiday List</a></li>
+		<li id="home"><a href="Holidays.php">Holiday List</a></li>
 		<li class="active" ><a href="attendance.php">Attendance</a></li>
-		<li><a href="#Welcome">Track Leaves</a></li>
+		<li><a href="trackLeaves.php">Track Leaves</a></li>
 		<li><a href="leavecalender.php">Leave Calender</a></li>
 		<li><a href="ApplyVOE.php">Apply VOE</a></li>
 		</ul>
@@ -377,11 +377,7 @@ $db=connectToDB();
 				
 					 <center><span class="text-size-small" style="color:white;">
 					 <?php 
-						$fullname = $_SESSION['u_fullname'];
-						$location=$db->query("select location from emp where empname='".$fullname."'");
-						$emprow=$db->fetchAssoc($location);
-						$emplocation=$emprow['location'];
-						echo $emplocation.", India"
+						echo $_SESSION['u_emplocation'].", ".India;
 					?>
 					</span>
 					</center>
@@ -391,10 +387,18 @@ $db=connectToDB();
 				<hr>
 				<ul class="list-group">
 					<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
-					<li class="list-group-item"><a href="lms.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp; Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
-					<li class="list-group-item"><a href="personalinfo.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
+					<li class="list-group-item"><a href="lms.php"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
+					<li class="list-group-item"><a href="personalinfo.php"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
 					<li class="list-group-item"><a href="officialinfo.php"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>
+					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+					<?php
+					
+					if(strtoupper($_SESSION['user_dept'])=="HR") {?>
+					<li class="list-group-item"><a href="hr.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+					<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
+					<li class="list-group-item"><a href="manager.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
+					<?php }?>
+					<!--  <li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>-->
 				</ul>
 			</div><!--2 column end-->
 			<div class="col-sm-1"></div>
@@ -475,7 +479,7 @@ $db=connectToDB();
 			<form id="AttInd" name="AttInd" method="post" action="attendance.php?AttInd=1">
 			<div class="col-sm-6">
 				<div class="panel panel-primary">
-					<div class="panel-heading">
+					<div class="panel-heading text-center">
 						<strong style="font-size:20px;">Attendance History</strong>
 					</div>
 					<div class="panel-body">

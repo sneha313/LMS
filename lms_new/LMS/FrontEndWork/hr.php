@@ -1,10 +1,18 @@
+<?php
+session_start();
+require_once 'Library.php';
+require_once 'attendenceFunctions.php';
+require_once 'generalFunctions.php';
+error_reporting("E_ALL");
+$db=connectToDB();
+?>
 <html>
 	<head>
 		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<style>
 			.footer1 {
-				background: #031432 url("../images/footer/footer-bg.png") repeat scroll left top;
+				background: #031432 repeat scroll left top;
 				padding-top: 40px;
 				padding-right: 0;
 				padding-bottom: 20px;
@@ -177,6 +185,11 @@
 		</style>
 	</head>
 	<body>
+		<?php
+			$name = $_SESSION['u_fullname'];
+			$firstname = strtok($name, ' ');
+			$lastname = strstr($name, ' ');
+		?>
 		<nav class="navbar navbar-inverse">
 			<div class="container">
 				<div class="navbar-header">
@@ -186,7 +199,7 @@
 					
 				</div>
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" style="font-size:16px; color:white; padding-top:20px; padding-right:30px; font-family:cursive;"><b> Morning, Victoria !</b></a></li>
+					<li><a href="#" style="font-size:16px; color:white; padding-top:20px; padding-right:30px; font-family:cursive;"><b>  Welcome, <?php echo $firstname; ?></b></a></li>
 					<li><a href="help.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-question-circle" aria-hidden="true"></i><b> Need Help</b></a></li>
 					<li><a href="login.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-sign-out" aria-hidden="true"></i><b> Logout</b></a></li>
 				</ul>
@@ -205,7 +218,7 @@
 		</div><!--navbar header-->
 		<div id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav navbar-right" style="padding-right:80px;">
-		<li class="active" id="home"><a href="#home">Holiday List</a></li>
+		<li id="home"><a href="#home">Holiday List</a></li>
 		<li><a href="attendance.php">Attendance</a></li>
 		<li><a href="trackattendance.php">Track Leaves</a></li>
 		<li><a href="#Login">Leave Calender</a></li>
@@ -223,27 +236,38 @@
 			<div class="col-sm-2">
 				<div class="rectangle">
 					<a href="#"><img src="img/4.jpg" class="img-circle img-responsive" alt="" width="150px;" height="80px;"></a>
-					<center><h6 style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;">Victoria Baker</h6>
-					<span class="text-size-small" style="color:white;">Santa Ana, CA</span>
+				<h6 class="text-center" style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;"><?php echo $_SESSION['u_fullname']; ?></h6>
+				
+					 <center><span class="text-size-small" style="color:white;">
+					  <?php 
+						
+						echo $_SESSION['u_emplocation'].", ".India;
+					
+					?>
+					</span>
 					</center>
-				</div>
+		</div>
 							
 			
 				<hr>
 				<ul class="list-group">
 					<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
-					<li class="list-group-item"><a href="lms.php"><i class="fa fa-home" aria-hidden="true"></i>&nbsp; Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
+					<li class="list-group-item"><a href="lms.php"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
 					<li class="list-group-item"><a href="personalinfo.php"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
 					<li class="list-group-item"><a href="officialinfo.php"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
 					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
-					<li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>
+					<?php
+					if(strtoupper($_SESSION['user_dept'])=="HR") {?>
+					<li class="list-group-item"><a href="hr.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+					<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
+					<li class="list-group-item"><a href="manager.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
+					<?php }?>
+					<!--  <li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>-->
 				</ul>
 			</div><!--2 column end-->
 			<div class="col-sm-10">
 					<div class="panel panel-success">
-			<div class="panel-heading">
+			<div class="panel-heading text-center">
 			
 				<strong style="font-size:20px;">HR Section</strong>
 				
@@ -266,7 +290,7 @@
                                         </tr>
 										 <tr>
                                             <td><a href="#" target="_blank">Approve Employee Leaves</a></td>
-                                            <td>HR can approve Employee pending leaves.</td>
+                                            <td>HR can approve employee pending leaves.</td>
                                         </tr>
 										 <tr>
                                             <td><a href="#" target="_blank">Modify Employee Approved Leaves</a></td>

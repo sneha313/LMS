@@ -666,27 +666,25 @@ $db=connectToDB();
 						
 						<div class='form-group'>
 						<div class='row'>
-					   	<div class='col-sm-4'><label>Employee ID:</label></div>
-					   	<div class='col-sm-8'><input type='text' readonly class='form-control input' id='employee_number' name='employee_number' value='$employee_number'/></div>
+					   	<div class='col-sm-2'><label>Employee ID:</label></div>
+					   	<div class='col-sm-4'><input type='text' readonly class='form-control input' id='employee_number' name='employee_number' value='$employee_number'/></div>
+					   	";
+					   	echo "
+					   	<div class='col-sm-2'><label>Father's Name:</label></div>
+					   	<div class='col-sm-4'><input type='text' class='form-control' id='father_name' name='father_name' value='".$empfathername."'/>&nbsp;<span class='errmsg' id='errmsg17'></span></div>
 					   	</div></div>";
 					   	echo "<div class='form-group'>
 						<div class='row'>
-					   	<div class='col-sm-4'><label>Father's Name:</label></div>
-					   	div class='col-sm-8'<input type='text' id='father_name' name='father_name' value='".$empfathername."'/>&nbsp;<span class='errmsg' id='errmsg17'></span></div>
+					   	<div class='col-sm-2'><label>Residential Address:</label></div>
+					   	<div class='col-sm-4'><textarea id='residentialAddress' class='form-control' name='residentialAddress'>$empaddress</textarea>&nbsp;<span class='errmsg' id='errmsg16'></span></div>
+					   	";
+					   	echo "
+					   	<div class='col-sm-2'><label>Phone Number:</label></div>
+					   	<div class='col-sm-4'><input type='text' class='form-control input' id='phoneNo' name='phoneNo' value='".$empphonenumber."'/>&nbsp;<span class='errmsg' id='errmsg10'></span></div>
 					   	</div></div>";
 					   	echo "<div class='form-group'>
 						<div class='row'>
-					   	<div class='col-sm-4'><label>Residential Address:</label></div>
-					   	<div class='col-sm-8'><textarea id='residentialAddress' class='form-control' name='residentialAddress'>$empaddress</textarea>&nbsp;<span class='errmsg' id='errmsg16'></span></div>
-					   	</div></div>";
-					   	echo "<div class='form-group'>
-						<div class='row'>
-					   	<div class='col-sm-4'><label>Phone Number:</label></div>
-					   	<div class='col-sm-8'><input type='text' class='form-control input' id='phoneNo' name='phoneNo' value='".$empphonenumber."'/>&nbsp;<span class='errmsg' id='errmsg10'></span></div>
-					   	</div></div>";
-					   	echo "<div class='form-group'>
-						<div class='row'>
-					   	<div class='col-sm-12' class='submit'><input type='submit' class='btn btn-primary' name='submit' value='submit' /></div></div></div>
+					   	<div class='col-sm-12 text-center' class='submit'><input type='submit' class='btn btn-primary' name='submit' value='submit' /></div></div></div>
 						</div></form>";
 					 }
 					$db->closeConnection();

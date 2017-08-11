@@ -9,6 +9,7 @@ $db=connectToDB();
 	<head>
 		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		
 		<style>
 			.footer1 {
 				background: #031432 repeat scroll left top;
@@ -217,11 +218,11 @@ $db=connectToDB();
 		</div><!--navbar header-->
 		<div id="navbar" class="navbar-collapse collapse">
 		<ul class="nav navbar-nav navbar-right" style="padding-right:80px;">
-		<li class="active" id="home"><a href="#home">Holiday List</a></li>
+		<li id="home"><a href="Holidays.php">Holiday List</a></li>
 		<li><a href="attendance.php">Attendance</a></li>
-		<li><a href="trackattendance.php">Track Leaves</a></li>
-		<li><a href="#Login">Leave Calender</a></li>
-		<li><a href="#PostList">Apply VOE</a></li>
+		<li><a href="trackLeaves.php">Track Leaves</a></li>
+		<li><a href="leavecalender.php">Leave Calender</a></li>
+		<li><a href="ApplyVOE.php">Apply VOE</a></li>
 		</ul>
 		
 		</div>
@@ -238,12 +239,9 @@ $db=connectToDB();
 				<h6 class="text-center" style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;"><?php echo $_SESSION['u_fullname']?></h6>
 				
 					 <center><span class="text-size-small" style="color:white;">
-					 <?php 
-						$fullname = $_SESSION['u_fullname'];
-						$location=$db->query("select location from emp where empname='".$fullname."'");
-						$emprow=$db->fetchAssoc($location);
-						$emplocation=$emprow['location'];
-						echo $emplocation.", India"
+					 <?php
+						echo $_SESSION['u_emplocation'].", India";
+					
 					?>
 					</span>
 					</center>
@@ -253,15 +251,11 @@ $db=connectToDB();
 				<hr>
 				<ul class="list-group">
 					<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
-					<li class="list-group-item"><a href="lms.php"><i class="fa fa-home" aria-hidden="true"></i>&nbsp; Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
+					<li class="list-group-item"><a href="lms.php"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
 					<li class="list-group-item"><a href="personalinfo.php"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
 					<li class="list-group-item"><a href="officialinfo.php"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
 					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
 					<?php
-					$query = "select * from privileges where role='" . $_SESSION['user_desgn'] . "'";
-					$result = $db -> query($query);
-					$row = $db -> fetchAssoc($result);
-					$keys = array_keys($row);
 					if(strtoupper($_SESSION['user_dept'])=="HR") {?>
 					<li class="list-group-item"><a href="hr.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
 					<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
@@ -283,19 +277,19 @@ $db=connectToDB();
 											<td>Full day leave</td>
 										</tr>
 										<tr>
-											<td><a href="#" target="_blank">Half Day PTO</a></td>
+											<td><a href="#">Half Day PTO</a></td>
 											<td>First Half or Second Half leave</td>
 										</tr>
 										<tr>
-											<td><a href="#" target="_blank">Full Day WFH</a></td>
+											<td><a href="#">Full Day WFH</a></td>
 											<td>Full Day Work from Home</td>
 										</tr>
 										<tr>
-											<td><a href="#" target="_blank">Half Day WFH</a></td>
+											<td><a href="#">Half Day WFH</a></td>
 											<td>First Half or Second Half Work from Home</td>
 										</tr>
 										<tr>
-											<td><a href="#" target="_blank">Comp Off Leaves</a></td>
+											<td><a href="#">Comp Off Leaves</a></td>
 											<td>Need to mention the worked holiday date </td>
 										</tr>
 										<tr>
