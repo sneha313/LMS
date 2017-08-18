@@ -270,7 +270,7 @@ function getEmpForm($page,$empid,$role) {
 				<div class="col-sm-1"></div>
 				<div class="col-sm-9">
 				<div class="row">
-					<div class="col-sm-5"><label>Enter Employee Name:</label></div>
+					<div class="col-sm-5"><label style="font-size:16px;">Enter Employee Name:</label></div>
 			        <div class="col-sm-5"><input id="empuser" type="text" class="form-control" name="empuser"/></div>
 					<div class="col-sm-2"><input class="btn btn-primary submit" type="submit" name="submit" value="SUBMIT"/></div>
         		</div> 	
@@ -317,20 +317,23 @@ function getLeaveForm($page, $formName, $formId, $leaveTypeId, $hideSplLeaveId, 
 	<div class='form-group'>
 	<div class='row'>
 	<div class='col-sm-2'><label for='fromDate'>From Date:</label></div>
-	<div class='col-sm-4'><div class='input-group'>
-									    <input type='text' id='datetimepicker' class='form-control open-datetimepicker required' name='fromdate' readonly='true'>
-									    <label class='input-group-addon btn' for='date'>
-									       <span class='fa fa-calendar open-datetimepicker'></span>
-									    </label>
-									</div></div>
+	<div class='col-sm-4'>
+			<div class='input-group'>
+				<input type='text' id='datetimepicker' class='form-control open-datetimepicker required' name='fromdate' readonly='true'>
+				<label class='input-group-addon btn' for='date'>
+					<span class='fa fa-calendar open-datetimepicker'></span>
+				</label>
+			</div></div>
 	
 	<div class='col-sm-2'><label for='toDate'>To Date:	</label></div>
-	<div class='col-sm-4'><div class='input-group'>
-									    <input type='text' id='datetimepicker' class='form-control open-datetimepicker required' name='todate' readonly='true'>
-									    <label class='input-group-addon btn' for='date'>
-									       <span class='fa fa-calendar open-datetimepicker'></span>
-									    </label>
-									</div></div>
+	<div class='col-sm-4'>
+		<div class='input-group'>
+			<input type='text' id='datetimepicker' class='form-control open-datetimepicker required' name='todate' readonly='true'>
+			<label class='input-group-addon btn' for='date'>
+				<span class='fa fa-calendar open-datetimepicker'></span>
+			</label>
+		</div>
+	</div>
 	</div></div>";
 	echo "<div class='form-group'>
 				  <div class='row'>
@@ -388,9 +391,8 @@ function addExtrawfhForm($page, $formName, $formId, $leaveTypeId, $hideSplLeaveI
 			  <div class='row'>
 				<div class='col-sm-2 empName'><label for='empid'>Emp Name:</label></div>
 	         	<div class='col-sm-4 empName'><input type='text' class='form-control' id='empName' readonly name='empName' value= '".$_REQUEST['empuser']."' /></div>
-	        	 </div></div>";
-		echo "<div class='form-group'>
-			  <div class='row'>
+	        	";
+		echo "
 					<div class='col-sm-2 empid'><label for='empid'>Emp Id:</label></div>
 		         	<div class='col-sm-4 empid'><input type='text' class='form-control' id='employeeid' readonly name='employeeid' value= ".$empId." /></div>
 		        	 </div></div>";
@@ -403,15 +405,12 @@ function addExtrawfhForm($page, $formName, $formId, $leaveTypeId, $hideSplLeaveI
 	}
 	
 	echo "<div class='form-group'>
-			<div class='row'>
-	<div class='col-sm-2'><label for='fromDate'>Date:</label></div>
-	<div class='col-sm-4'><input type='text' class='form-control' name='$date' id='$date' size='20' class='required' readonly='true'/></div>
-	</div></div>
-	<div class='form-group'>
-	<div class='row'>
-	<div class='col-sm-2'><label for='fromDate'>Hours:</label></div>
-	<div class='col-sm-4'><input type='text' class='form-control' name='$wfhHrs' id='$wfhHrs' size='20' class='required' readonly='true'/></div>
-	</div></div>
+		  <div class='row'>
+			<div class='col-sm-2'><label for='fromDate'>Date:</label></div>
+			<div class='col-sm-4'><input type='text' class='form-control' name='$date' id='$date' size='20' class='required' readonly='true'/></div>
+			<div class='col-sm-2'><label for='fromDate'>Hours:</label></div>
+			<div class='col-sm-4'><input type='text' class='form-control' name='$wfhHrs' id='$wfhHrs' size='20' class='required' readonly='true'/></div>
+		</div></div>
 	<div class='form-group'>
 	<div class='row'>
 	<div class='col-sm-2'><label for='reason'>Reason:</label></div>
@@ -419,8 +418,10 @@ function addExtrawfhForm($page, $formName, $formId, $leaveTypeId, $hideSplLeaveI
 	</div></div>
 	<div class='form-group'>
 	<div class='row'>
-	<div class='col-sm-6'><input class='btn btn-primary reset' type='submit' name='reset' value='submit' /></div>
-	<div class='col-sm-6'><input class='btn btn-primary submit' type='submit' name='close' value='close' /></div>
+		<div class='col-sm-12 text-center'>
+			<input class='btn btn-primary reset' type='submit' name='reset' value='submit' />
+			<input class='btn btn-danger submit' type='submit' name='close' value='close' />
+		</div>
 	</div></div>
 	</div></div>
 	</form>";
@@ -499,14 +500,14 @@ function getShiftSection() {
 			}
 			if ($leaveTypeSelected == "HalfDay") {
 				$mailBody = $mailBody . "<div class='form-group'><div class='row'><div class='col-sm-2'>" . $Day[$i] . "</div><div class='col-sm-4'><input type='text' class='form-control' name='Day$i' size='50' value=\"" . $leaveTypeSelected . "\" readonly='true'></div></div>
-				 		<div class='col-sm-3'><input type='radio' name='Day" . $i . "halfDayChoice' value='firstHalf' checked>First Half</div>
-				 		<div class='col-sm-3'><input type='radio' name='Day" . $i . "halfDayChoice' value='secondHalf'>Second Half</div>
+				 		<div class='col-sm-6'><input type='radio' name='Day" . $i . "halfDayChoice' value='firstHalf' checked>First Half
+				 		<input type='radio' name='Day" . $i . "halfDayChoice' value='secondHalf'>Second Half</div>
 				 		</div></div>";
 			} elseif ($leaveTypeSelected == "WFH") {
 				$mailBody = $mailBody . "<div class='form-group'><div class='row'><div class='col-sm-2'>" . $Day[$i] . "</div><div class='col-sm-4'><input type='text' class='form-control' name='Day" . $i . "' size='50' value=\"" . $leaveTypeSelected . "\" readonly='true'></div>
-						<div class='col-sm-2'><input type='radio' name='Day" . $i . "WFHChoice' value='fullDay' checked>Full Day</div>
-				 		<div class='col-sm-2'><input type='radio' name='Day" . $i . "WFHChoice' value='firstHalf'>First Half</div>
-				 		<div class='col-sm-2'><input type='radio' name='Day" . $i . "WFHChoice' value='secondHalf'>Second Half</div>
+						<div class='col-sm-6'><input type='radio' name='Day" . $i . "WFHChoice' value='fullDay' checked>Full Day
+				 		<input type='radio' name='Day" . $i . "WFHChoice' value='firstHalf'>First Half
+				 		<input type='radio' name='Day" . $i . "WFHChoice' value='secondHalf'>Second Half
 				 		</div></div>";
 			} else {
 				$mailBody = $mailBody . "<div class='form-group'><div class='row'><div class='col-sm-2'>" . $Day[$i] . "</div><div class='col-sm-4'><input type='text' class='form-control' name='Day" . $i . "' size='50' value=\"" . $leaveTypeSelected . "\" readonly='true'></div></div></div>";

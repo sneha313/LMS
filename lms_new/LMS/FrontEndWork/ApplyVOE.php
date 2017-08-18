@@ -9,179 +9,18 @@ $db=connectToDB();
 	<head>
 		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		<style>
-			.footer1 {
-				background: #031432 url("../images/footer/footer-bg.png") repeat scroll left top;
-				padding-top: 40px;
-				padding-right: 0;
-				padding-bottom: 20px;
-				padding-left: 0;/*	border-top-width: 4px;
-				border-top-style: solid;
-				border-top-color: #003;*/
-				margin-top:-20px;
-				color:white;
-			}
-
-			.title-widget {
-				color: #898989;
-				font-size: 20px;
-				font-weight: 300;
-				line-height: 1;
-				position: relative;
-				text-transform: uppercase;
-				font-family: 'Fjalla One', sans-serif;
-				margin-top: 0;
-				margin-right: 0;
-				margin-bottom: 25px;
-				margin-left: 0;
-				padding-left: 28px;
-			}
-
-			.title-widget::before {
-				background-color: #ea5644;
-				content: "";
-				height: 22px;
-				left: 0px;
-				position: absolute;
-				top: -2px;
-				width: 5px;
-			}
-
-
-
-			.widget_nav_menu ul {
-				list-style: outside none none;
-				padding-left: 0;
-			}
-
-			.widget_archive ul li {
-				background-color: rgba(0, 0, 0, 0.3);
-				content: "";
-				height: 3px;
-				left: 0;
-				position: absolute;
-				top: 7px;
-				width: 3px;
-			}
-
-
-			.widget_nav_menu ul li {
-				font-size: 13px;
-				font-weight: 700;
-				line-height: 20px;
-				position: relative;
-				text-transform: uppercase;
-				border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-				margin-bottom: 7px;
-				padding-bottom: 7px;
-				width:95%;
-			}
-
-
-
-			.title-median {
-				color: #636363;
-				font-size: 20px;
-				line-height: 20px;
-				margin: 0 0 15px;
-				text-transform: uppercase;
-				font-family: 'Fjalla One', sans-serif;
-			}
-
-			.footerp p {font-family: 'Gudea', sans-serif; }
-
-
-			#social:hover {
-    			-webkit-transform:scale(1.1); 
-				-moz-transform:scale(1.1); 
-				-o-transform:scale(1.1); 
-			}
-			#social {
-				-webkit-transform:scale(0.8);
-                /* Browser Variations: */
-				-moz-transform:scale(0.8);
-				-o-transform:scale(0.8); 
-				-webkit-transition-duration: 0.5s; 
-				-moz-transition-duration: 0.5s;
-				-o-transition-duration: 0.5s;
-			}           
-			/* Only Needed in Multi-Coloured Variation  */
-			.social-fb:hover {
-				color: #3B5998;
-			}
-			.social-tw:hover {
-				color: #4099FF;
-			}
-			.social-gp:hover {
-				color: #d34836;
-			}
-			.social-em:hover {
-				color: #f39c12;
-			}
-			.nomargin { margin:0px; padding:0px;}
-
-			.footer-bottom {
-				background-color: #15224f;
-				min-height: 30px;
-				width: 100%;
-				margin-bottom:3px;
-			}
-			.copyright {
-				color: #fff;
-				line-height: 30px;
-				min-height: 30px;
-				padding: 7px 0;
-			}
-			.design {
-				color: #fff;
-				line-height: 30px;
-				min-height: 30px;
-				padding: 7px 0;
-				text-align: right;
-			}
-			.design a {
-				color: #fff;
-			}
-			#img{
-				float:left;
-			}
-			#text{
-				margin-left:7px;
-				float:left;
-				color:grey;
-			}
-			.navbar-inverse{
-				background-color:#031432;
-			}
-			.rectangle{
-				width:180px;
-				height:180px;
-				background:#4682B4;
-				border-radius:2px;
-				padding:10px;
-			}
-			#teamMemberLeave{
-				background:white;
-				padding:18px;
-				margin:5px;
-			}
-			#upcomingHoliday{
-				background:white;
-				padding:18px;
-				margin:5px;
-			}
-			#teamMemberBirthday{
-				background:white;
-				padding:18px;
-				margin:5px;
-			}
-			.navbar-default{
-				background:white;
-				margin-top:-20px;
-				margin-bottom:20px;
-				padding-left:25px;
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" media="screen" href="css/frontend.css" />
+		<script src="public/js/jquery/jquery-1.10.2.min.js"></script>
+		<script src="public/js/countdown/countdown.js"></script>
+		<script>
+		$(document).ready(function() {
+			$('body').bind('mousedown keydown', function(event) {
+				$('#counter').countdown('option', {
+					until : +1200
+				});
+			});
+		});
+		</script>
 	</head>
 	<body>
 		<?php
@@ -215,20 +54,40 @@ $db=connectToDB();
 				<span class="icon-bar"></span>
 			</button><!--button close-->
 			<a class="navbar-brand" href="#">Leave Management System</a>
+			<label style="margin-left:60px; margin-right:5px;margin-top:14px; font-size:16px;">Time Left:-</label>
 		</div><!--navbar header-->
+		<h4 id="counter" class="countdown"></h4>
+
+			<script>
+				$('#counter').countdown({
+					until : +1200,
+					compact : true,
+					description : '',
+					onExpiry : liftOff,
+					format : 'HMS'
+				});
+			
+				function liftOff() {
+					var r = confirm("Your session is expired. Do you want to extend the session?");
+					if (r == true) {
+						window.location = "lms.php";
+					} else {
+						alert("Your session is expired. Logging out");
+						window.location = "login.php";
+					}
+				}
+			</script>
 		<div id="navbar" class="navbar-collapse collapse">
-		<ul class="nav navbar-nav navbar-right" style="padding-right:80px;">
+		<ul class="nav navbar-nav navbar-right" style="padding-right:10px;">
 		<li id="home"><a href="Holidays.php">Holiday List</a></li>
 		<li><a href="attendance.php">Attendance</a></li>
 		<li><a href="trackLeaves.php">Track Leaves</a></li>
 		<li><a href="leavecalender.php">Leave Calender</a></li>
 		<li class="active"><a href="ApplyVOE.php">Apply VOE</a></li>
 		</ul>
-		
 		</div>
 		</div><!--container div close-->
 		</nav><!--nav close-->
-		
 		<div class="container-fluid well" style="margin-top:-20px;">
 		<!--row start-->
 		<div class="row">

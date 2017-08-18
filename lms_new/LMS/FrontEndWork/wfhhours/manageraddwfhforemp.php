@@ -1,0 +1,557 @@
+<?php
+session_start();
+require_once '../Library.php';
+require_once '../generalFunctions.php';
+$db=connectToDB();
+?>
+<html>
+	<head>
+		<!--<link rel="stylesheet" href="../public/js/bootstrap/css/bootstrap.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<script src="../public/js/jquery/jquery-1.10.2.min.js"></script>
+		<script src="../public/js1/jqueryui/js/jquery-ui.js"></script>
+		<script type="text/javascript" src="../projectjs/index.js"></script>
+		<script src="../js/jqgrid/grid.locale-en.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../js/jquery/jquery.validate.min.js"></script>
+		<script src="../js/jqgrid/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../js/jquery/jquery.searchFilter.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" media="screen" href="../js/jqgrid/jqgridcss/ui.jqgrid.css" />
+		<script src="../js/countdown/countdown.js" type="text/javascript"></script>
+		<script src="../projectjs/fullcalendar.js"></script>-->
+		<link rel="stylesheet" href="../public/js/bootstrap/css/bootstrap.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" media="screen" href="../css/frontend.css" />
+		<link href="../js/jqueryui/css/redmond/jquery-ui.css" rel="stylesheet">
+		<script src="../js/jquery/jquery.js" type="text/javascript"></script>
+		<script src="../js/jqueryui/js/jquery-ui.js"></script>
+		<script src="../js/jqgrid/grid.locale-en.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../js/jquery/jquery.validate.min.js"></script>
+		<script src="../js/jqgrid/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="../js/jquery/jquery.searchFilter.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" media="screen" href="../js/jqgrid/jqgridcss/ui.jqgrid.css" />
+		<script src="../js/countdown/countdown.js" type="text/javascript"></script>
+		<script src="../projectjs/fullcalendar.js"></script>		
+		<script type="text/javascript" src="../projectjs/index.js"></script>
+		<script type="text/javascript">
+			function hidealldiv(div) {
+				var myCars = new Array("loadempapplyleave", "loadempleavestatus", "loadempleavehistory", "loadempleavereport", "loadempeditprofile", "loadholidays", "loadempleavereport", "loadteamleavereport", "loadteamleaveapproval", "loadattendance", "loadcalender", "loadpendingstatus", "loadhrsection", "loadmanagersection", "loadapplyteammemberleave", "loadtrackattendance", "loadextrawfhhr");
+				var hidedivarr = removeByValue(myCars, div);
+				hidediv(hidedivarr);
+				showdiv(div);
+			}
+			function hidediv(arr) {
+				$("#footer").show();
+				for (var i = 0; i < arr.length; i++) {
+					$("#" + arr[i]).hide();
+					$("#" + arr[i]).html("");
+				}
+			}
+			function showdiv(div) {
+				$("#" + div).show();
+			}
+		</script>
+		<script>
+			<?php 
+				if(isset($_REQUEST['leaveform']))
+				{
+					$empId=getValueFromQuery("select empid from emp where empname='".$_REQUEST['empuser']."' and state='Active'","empid");
+					getApplyLeaveJs("teamApplyLeave","teamfromDate","teamtoDate","loadapplyteammemberleave","employeeid","applyteammemberleave.php",$empId);
+					getSetOptionsJs("hideteammemsplLeave","teamleaveForm","teamsetOptions");
+				}
+				if(isset($_REQUEST['getdates']))
+				{
+					getDisplayDatesJs("loadapplyteammemberleave");
+				}
+				if (isset($_REQUEST['getShift']))
+				{
+					getSubmitJs("getShift","loadapplyteammemberleave");
+				}
+			?>
+			
+		</script>
+		<?php
+			$getCalIds = array("teamfromDate", "teamtoDate");
+			$calImg=getCalImg($getCalIds);
+			echo $calImg;
+		?>
+	</head>
+	<body>
+		<?php
+	$name = $_SESSION['u_fullname'];
+	$firstname = strtok($name, ' ');
+	$lastname = strstr($name, ' ');
+	?>
+	
+		<nav class="navbar navbar-inverse">
+			<div class="container">
+				<div class="navbar-header">
+					<div id="img">
+						<img class="img-responsive" src="../img/3.jpg" style="height:50px;">
+					</div>
+					
+				</div>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#" style="font-size:16px; color:white; padding-top:20px; padding-right:30px; font-family:cursive;"><b>  Welcome, <?php echo $firstname; ?></b></a></li>
+					<li><a href="help.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-question-circle" aria-hidden="true"></i><b> Need Help</b></a></li>
+					<li><a href="login.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-sign-out" aria-hidden="true"></i><b> Logout</b></a></li>
+				</ul>
+			</div>
+		</nav>
+		<nav class="navbar navbar-default navbar-static-top">
+		<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button><!--button close-->
+			<a class="navbar-brand" href="#">Leave Management System</a>
+			<label style="margin-left:60px; margin-right:5px;margin-top:14px; font-size:16px;">Time Left:-</label>
+		</div><!--navbar header-->
+		<h4 id="counter" class="countdown"></h4>
+
+			<script>
+				$('#counter').countdown({
+					until : +1200,
+					compact : true,
+					description : '',
+					onExpiry : liftOff,
+					format : 'HMS'
+				});
+			
+				function liftOff() {
+					var r = confirm("Your session is expired. Do you want to extend the session?");
+					if (r == true) {
+						window.location = "../lms.php";
+					} else {
+						alert("Your session is expired. Logging out");
+						window.location = "../login.php";
+					}
+				}
+			</script>
+		<div id="navbar" class="navbar-collapse collapse">
+		<ul class="nav navbar-nav navbar-right" style="padding-right:10px;">
+		<li id="home"><a href="../Holidays.php">Holiday List</a></li>
+		<li><a href="../attendance.php">Attendance</a></li>
+		<li><a href="../trackLeaves.php">Track Leaves</a></li>
+		<li><a href="../leavecalender.php">Leave Calender</a></li>
+		<li><a href="../ApplyVOE.php">Apply VOE</a></li>
+		</ul>
+		</div>
+		</div><!--container div close-->
+		</nav><!--nav close-->
+		
+		
+		<div class="container-fluid well" style="margin-top:-20px;">
+		<!--row start-->
+		<div class="row">
+		<!--2 column start-->
+			<div class="col-sm-2">
+				<div class="rectangle">
+					<a href="#"><img src="../img/4.jpg" class="img-circle img-responsive" alt="" width="150px;" height="80px;"></a>
+				<h6 class="text-center" style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;"><?php echo $_SESSION['u_fullname']; ?></h6>
+				<center><span class="text-size-small" style="color:white;">
+					 <?php 
+						echo $_SESSION['u_emplocation'].", India";
+					?>
+					</span>
+				</center>
+		</div>
+				<hr>
+				<ul class="list-group">
+					<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
+					<li class="list-group-item"><a href="../lms.php"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
+					<li class="list-group-item"><a href="../personalinfo.php"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
+					<li class="list-group-item"><a href="../officialinfo.php"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+					<li class="list-group-item"><a href="../applyLeave.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+					<?php
+					if(strtoupper($_SESSION['user_dept'])=="HR") {?>
+					<li class="list-group-item"><a href="../hr.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+					<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
+					<li class="list-group-item"><a href="../manager.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
+					<?php }?>
+					<!--  <li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>-->
+				</ul>
+			</div><!--2 column end-->
+			<div class="col-sm-1"></div>
+			<div class="col-sm-8">
+				<div id="colTwo">
+					<div class="box">
+						<div id="loadmanagersection"></div>
+					</div>
+				</div>
+				<div id="wrapper">
+				<div id="form-div">
+				<?php
+					function insertRecord() {
+						echo "<center>
+						<h3>View/Update Extra WFH Hours for Employee</h3>
+						</center>";
+						global $db;
+						$name=$_SESSION['u_fullname'];
+						$empid=isset($_POST['empid']) ? $_POST['empid'] : '';
+						$noh = isset($_POST['noh']) ? $_POST['noh'] : '';
+						$reason = isset($_POST['reason']) ? $_POST['reason'] : '';
+						$date= isset($_REQUEST['dynamicworked_day'])? $_REQUEST['dynamicworked_day'] : '';
+						$transactionid = generate_transaction_id();
+						$query="select * from extrawfh where eid='".$empid."' and date='".$date."' order by date";
+						$sql=$db->query($query);
+						//$createdAt = date('Y-m-d H:i:s');
+						if($db->countRows($sql) > 0){
+							# IF ROW EXISTS, UPDATE QUERY
+							$reason=mysql_escape_string($reason);
+							$sqlQuery=$db->query("UPDATE `extrawfh` SET wfhHrs='$noh', reason='$reason',updatedBy='$name' WHERE date='$date' and eid='$empid'");
+						}
+						else {
+							# ELSE , INSERT
+							$insertQuery="INSERT INTO extrawfh (createdAt, createdBy, updatedAt, updatedBy, eid, tid, date, wfhHrs, reason, comments, status)
+							VALUES (CURTIME(), '$name','', '', '$empid', '$transactionid','$date', '$noh', '$reason', '', 'Approved')";
+							$sqlQuery = $db->query($insertQuery);
+						}
+						
+						if($sqlQuery){
+							echo "success";
+						} else {
+							echo "unsuccessfull";
+						}
+					}
+					function getWFHForm($empid,$date){
+						global $db;
+						global $divid;
+							#query to check row exists
+							$getquery= "select * from extrawfh where eid='$empid' and date='$date'";
+							$result=$db->query($getquery);
+							if($db->countRows($result) > 0){
+							# if exists, auto fill number of hrs and reason
+								$row= $db->fetchAssoc($result);
+								echo $row['wfhHrs']."-".$row['reason'];
+							}
+					}
+					function displayWFHForm($emp)
+					{
+						echo "<div class='panel panel-primary'>
+						<div class='panel-heading text-center'>
+							<strong style='font-size:20px;'>Add Extra WFH Hours for Employee</strong>
+						</div>
+						";
+						global $db;
+						global $divid;
+						
+						$empnametresult=$db->query("select empid,empname from emp where empname='".$emp."' and state='Active'");
+						$empnamerow=$db->fetchAssoc($empnametresult);
+						$sql=$db->query("select * from extrawfh where status='Approved' and eid='".$empnamerow['empid']."'");
+						$childern=getChildren($_SESSION['u_empid']);
+						if((in_array($empnamerow['empid'],$childern) && (strtoupper($_SESSION['user_desgn'])=="MANAGER")) || strtoupper($_SESSION['user_dept'])=="HR") {
+							
+							//$getCalIds = array("fromdate", "todate", "TypeOfDayfromdate", "TypeOfDaytodate");
+							//$calImg = getCalImg($getCalIds);
+							//echo $calImg;
+							echo '
+								<form method="post" action="wfhhours/manageraddwfhforemp.php?change=1&addEmpWFH=1" id="managerAddWFH">
+								<div class="panel-body">
+								<div class="form-group">
+								<div class="row">
+								<div class="col-sm-2"><label>Emp Name:</label></div>
+								<div class="col-sm-4"><input name="emp_name" type="text" class="form-control" id="emp_name" value="'.$empnamerow['empname'].'" readonly required></div>
+								</div></div>
+								/*<tr style="display:none">
+									<td><input name="emp_tid" type="text" id="emp_tid"></td>
+								</tr>*/
+								<div class="col-sm-2"><label>Employee Id</label></div>
+								<div class="col-sm-4"><input name="empid" type="text" class="form-control" id="empid" value="'.$empnamerow['empid'].'" required></div>
+								</div></div>
+								
+								<div class="form-group">
+								<div class="row">
+								<div class="col-sm-2"><label>Date</label></div>
+								<div class="col-sm-4">		
+								<div class="input-group">
+									<input type="text" id="datetimepicker" class="workeddaynoh form-control open-datetimepicker" name="dynamicworked_day" readonly />
+									<label class="input-group-addon btn" for="date">
+										<span class="fa fa-calendar open-datetimepicker"></span>
+									</label>
+								</div>
+								</div>
+								<div class="col-sm-2"><label>No. of Hrs</label></div>
+								<div class="col-sm-4"><input name="noh" type="text" class="form-control" id="noh" readonly required></div>
+								</div>
+								</div>
+								<div class="form-group">
+								<div class="row">
+								<div class="col-sm-2"><label>Reason</label></div>
+								<div class="col-sm-4"><textarea name="reason" class="form-control" id="reason" required></textarea></div>
+								</div>
+								</div>
+								<div class="form-group">
+								<div class="row">
+								<div class="col-sm-12">
+									<input name="submit" type="submit" class="btn btn-primary" id="submit" value="Submit">
+									<input name="close" type="submit" class="btn btn-danger" id="close" value="Close">
+								</div>
+								</div></div>
+						</div></form>';
+												
+						}
+					
+						else {
+							echo "<script>alert(\"You dont have permissions to change '".$empnamerow['empname']." ' transaction\");</script>";
+						}
+						echo "</div>";
+					}
+					
+					
+					if(isset($_REQUEST['change']))
+					{
+						if(isset($_REQUEST['addEmpWFH']))
+						{	
+								insertRecord();
+						}
+						if(isset($_REQUEST['displayWFHForm']))
+						{
+							echo '<link rel="stylesheet" type="text/css" media="screen" href="../css/applyleave.css" />
+					 			 <link rel="stylesheet" type="text/css" media="screen" href="../css/table.css" />';
+							displayWFHForm($_REQUEST['empuser']);
+							?>
+							
+							<?php 
+								if(isset($_REQUEST['role']))
+								{
+									$_SESSION['roleofemp']=$_REQUEST['role'];
+									if($_REQUEST['role']=="manager")
+									{$divid="loadmanagersection";
+									echo "<script>var divid=\"loadmanagersection\";</script>";
+									}
+									if($_REQUEST['role']=="hr")
+									{ $divid="loadhrsection";
+									echo "<script>var divid=\"loadhrsection\";</script>";
+									}
+								}
+									
+							?>
+			<?php require_once 'addwfhjs.js';?>
+			<script type="text/javascript">
+			$("document").ready(function() {
+				$("#noh").spinner(
+			            { min: 1 },
+			            { max: 18 },
+			            { step:0.25 }
+					);	
+			$(".workeddaydynamic").change(function() {
+					date=$(".workeddaydynamic").val();
+					empid= $("#empid").val();
+		   			$.ajax({
+			       	 	 data: { date: date, empid: empid },
+			       		 type: "GET",
+			       		 url: "wfhhours/manageraddwfhforemp.php?getwfhbymanager=1",
+			        	 success: function(response) {
+							arr=response.split("-");
+		        	      	$("#noh").val(arr[0]);
+							$("#reason").val(arr[1]);
+		        		 }
+					});
+				});
+			
+				$("body").on("click",".workeddaynoh",function() {
+					$(this).datepicker ({
+						changeMonth: true,
+				        changeYear: true,
+				        showButtonPanel: true,
+				        dateFormat: "yy-mm-dd",
+				        yearRange: "-1:+0",
+				        maxDate: "+0D",
+				        buttonImage: "js/datepicker/datepickerImages/calendar.gif",
+						showOn: "both",
+						buttonImageOnly: true,	 
+		    	});
+			});
+				$("#managerAddWFH").submit(function() {
+					$.ajax({
+			 		data: $(this).serialize(),
+				 	type: $(this).attr("method"),
+				 	url: $(this).attr("action"),
+			 		success: function(response) {
+				 	  if(response.match(/success/)) {
+							alert("WFH inserted successfully");
+							var eid=$("#empid").val();
+							var date = $(".workeddaydynamic").val();
+							$('#'+divid).load("wfhhours/managerviewwfhform.php?viewrecordbymanager=1&eid="+eid+"&date="+date);
+							 } else {
+							alert("not successs");
+					   }
+				    }
+				 });
+			return false; // cancel original event to prevent form submitting
+			});
+			});
+			</script>
+			<?php 
+		}
+			
+	}
+	
+	
+	else if(isset($_REQUEST['getwfhbymanager'])) {
+		# to get the details of employee if data is already available
+		getWFHForm($_REQUEST['eid'],$_REQUEST['date']);
+	}
+	else
+	{
+		echo '<form action="manageraddwfhforemp.php?change=1&displayWFHForm=1" method="POST" id="getemptrans">
+				 <div class="col-sm-1"></div>
+				 <div class="col-sm-9">
+				 <div class="row"> 
+                   <div class="col-sm-5"><label style="font-size:16px;">Enter Employee Name:</label></div>
+         		   <div class="col-sm-5"><input id="empuser" type="text" class="form-control ui-autocomplete-input" name="empuser" value="" autocomplete="off"/>
+					
+					</div>';
+		echo '<div class="col-sm-2"><input class="submit btn btn-primary" type="submit" name="submit" value="SUBMIT"/></div>
+                        </div>   
+                        </div>
+                </form>';
+		?>
+		
+		<?php 
+		if(isset($_REQUEST['role']))
+		{
+			$_SESSION['roleofemp']=$_REQUEST['role'];
+			if($_REQUEST['role']=="manager")
+			{$divid="loadmanagersection";
+			echo "<script>var divid=\"loadmanagersection\";</script>";
+			}
+			if($_REQUEST['role']=="hr")
+			{ $divid="loadhrsection";
+			echo "<script>var divid=\"loadhrsection\";</script>";
+			}
+		}
+		
+		?>
+		<?php require_once 'addwfhjs.js';?>
+		<script type="text/javascript">
+		
+		$("document").ready(function() {
+			
+			$('#getemptrans').submit(function() {
+				if($("#empuser").val()=="")
+				{
+					alert("Please Enter Employee Name");
+					return false;
+				}
+				$.ajax({ 
+					data: $(this).serialize(), 
+			        type: $(this).attr('method'), 
+			        url: $(this).attr('action'), 
+			        success: function(response) { 
+				        alert(response);
+			        	$('#'+divid).html(response); 
+			            }
+				});
+					return false; 
+			});
+			
+			jQuery(function() {
+		        jQuery('#empuser').autocomplete({
+		            minLength: 1,
+		            source: function(request, response) {
+		                jQuery.getJSON('../autocomplete/Users_JSON.php', {
+		                    term: request.term
+		                }, response)
+		            },
+		            focus: function() {
+		                // prevent value inserted on focus
+		                return false;
+		            },
+		            select: function(event, ui) {
+		                this.value = ui.item.value;
+		                return false;
+		            }
+		        });
+		    });
+		});
+		</script>
+		</div>
+		</div>
+		</div>
+		</div>
+		</div>
+		<footer class="footer1">
+		<div class="container">
+			<div class="row"><!-- row -->
+				<div class="col-lg-4 col-md-4"><!-- widgets column left -->
+					<ul class="list-unstyled clear-margins"><!-- widgets -->
+						<li class="widget-container widget_nav_menu"><!-- widgets list -->
+							<h1 class="title-widget">Email Us</h1>
+							<p><b>Anil Kumar Thatavarthi:</b> <a href="mailto:#"></a></p>
+							<p><b>Naidile Basvagde :</b> <a href="mailto:#"></a></p>
+							<p><b>Sneha Kumari:</b> <a href="mailto:#"></a></p>
+						</li>
+					</ul>
+				</div><!-- widgets column left end -->
+				
+				<div class="col-lg-4 col-md-4"><!-- widgets column left -->
+					<ul class="list-unstyled clear-margins"><!-- widgets -->
+						<li class="widget-container widget_nav_menu"><!-- widgets list -->
+							<h1 class="title-widget">Contact Us</h1>
+							<p><b>Helpline Numbers </b> 
+								<b style="color:#ffc106;">(8AM to 10PM): </b></p>
+							<p>  +91-9740464882, +91-9945732712  </p>
+							<p><b>Phone Numbers : </b>7042827160, </p>
+							<p> 011-2734562, 9745049768</p>
+						</li>
+					</ul>
+				</div><!-- widgets column left end -->
+						
+				<div class="col-lg-4 col-md-4"><!-- widgets column left -->
+					<ul class="list-unstyled clear-margins"><!-- widgets -->
+						<li class="widget-container widget_nav_menu"><!-- widgets list -->
+							<h1 class="title-widget">Office Address</h1>
+							<p><b>Corp Office / Postal Address</b></p>
+							<p>5th Floor ,Innovator Building, International Tech Park, Pattandur Agrahara Road, Whitefield, Bengaluru, Karnataka 560066</p>
+						</li>
+					</ul>
+				</div><!-- widgets column left end -->
+			</div>
+		</div>
+		</footer>
+		<!--header-->
+
+		<div class="footer-bottom">
+
+			<div class="container">
+
+				<div class="row">
+
+					<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+
+						<div class="copyright">
+
+							© 2017, All rights reserved
+
+						</div>
+
+					</div>
+
+					<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+
+						<div class="design">
+
+							 <a href="#"><b>ECI TELECOM</b> </a> |  <a href="#">LMS by ECI</a>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+			
+			
+			<!--footer end-->
+		</body>
+		</html>
+		<?php 
+		
+	}
+	?>

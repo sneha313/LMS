@@ -125,11 +125,25 @@ function getOptions($empid)
 
 function getEmpSelectionBox($supervisorID,$selectedEmployee)
 {
+	echo '<script>
+		$(".open-datetimepicker").datetimepicker({
+			    format: "dd/mm/yy"
+			});
+			$(".open-datetimepicker1").datetimepicker({
+			    format: "dd/mm/yy"
+			});
+	</script>';
 	global $db;
-	echo '<form method="POST" name="teamleavereportName" id="teamleavereportId" action="teamleavereport.php"><table id="table-2" align="center" style="border-style:none">
-		 <tr>
-		 <td><b>Leave Status Information for <i>Employee</i></b>:</td>
-		 <td><select name = "empid" id="empid">
+	echo '<form method="POST" name="teamleavereportName" id="teamleavereportId" action="teamleavereport.php">
+		 <div class="panel panel-primary">
+			<div class="panel-heading text-center">
+				<strong style="font-size:20px;">Team Leave Report</strong>
+			</div>
+			<div class="panel-body">
+			<div class="form-group">
+			<div class="row">
+				<div class="col-sm-6"><label>Leave Status Information for Employee:</label></div>
+		 		<div class="col-sm-6"><select class="form-control" name = "empid" id="empid">
 		 <option value="Choose">Choose</option>
 		 <option value="All">All</option>';
 	$query="select dept from emp where empid='".$supervisorID."' and state='Active'";
@@ -162,30 +176,47 @@ function getEmpSelectionBox($supervisorID,$selectedEmployee)
 			echo '<option value="'.$value.'">'.$key.'</option>';
 		}
 	}
-	echo'</select></td><tr>
-			<td><b>Select Leave Type</b></td><td><select name="leaveType" id="leaveTypeId">
+	echo'</select></div></div></div>
+			<div class="form-group">
+			<div class="row">
+			<div class="col-sm-6"><label>Select Leave Type:</label></div>
+			<div class="col-sm-6"><select class="form-control" name="leaveType" id="leaveTypeId">
 				<option value="ALL">ALL</option>
 		 		<option value="FullDay">FullDay</option>
 			 	<option value="HalfDay">HalfDay</option>
 				<option value="WFH">WFH</option>
 				<option value="First Half-HalfDay & second Half-WFH">First Half-HalfDay & second Half-WFH</option>
 				<option value="First Half-WFH & Second Half-HalfDay">First Half-WFH & Second Half-HalfDay</option>
-			</select></td></tr>';
+			</select></div></div></div>';
 			
-	echo "<tr>
-			<td><b>From:</b></td>
-			<td>
-				<input type='text' name='fromdate' value='".date('Y-m-d', strtotime("first day of january " . date('Y')))."' id='fromdate' size='8' />
-			</td>
-		</tr>
-		<tr>
-			<td><b>To:</b></td>
-			<td>
-				<input size='8' name='todate' id='todate' value=".date('Y-m-d')." type='text' />
-			</td>
-		</tr>";
-	echo '<tr><td><center><input class="submit" type="submit" name="submit" value="Submit" /></center></td></tr>';
-	echo '<table></form>';
+	echo "<div class='form-group'>
+			<div class='row'>
+			<div class='col-sm-6'><label>From:</label></div>
+			<div class='col-sm-6'>
+			<div class='input-group'>
+				<input type='text' id='datetimepicker' class='form-control open-datetimepicker' name='fromdate' value='".date('Y-m-d', strtotime("first day of january " . date('Y')))."' size='8' />
+				<label class='input-group-addon btn' for='date'>
+					<span class='fa fa-calendar open-datetimepicker'></span>
+				</label>
+			</div>
+				</div>
+		</div></div>
+		<div class='form-group'>
+			<div class='row'>
+			<div class='col-sm-6'><label>To:</label></div>
+			<div class='col-sm-6'>
+				<div class='input-group'>
+				<input type='text' id='datetimepicker1' class='form-control open-datetimepicker1' name='todate' value=".date('Y-m-d')." size='8' />
+				<label class='input-group-addon btn' for='date'>
+					<span class='fa fa-calendar open-datetimepicker'></span>
+				</label>
+			</div>
+			</div>
+		</div></div>";
+	echo '<div class="form-group">
+			<div class="row">
+			<div class="col-sm-12 text-center"><input class="submit btn btn-primary" type="submit" name="submit" value="Submit" /></div></div></div>';
+	echo '</div></div></form>';
 }
 
 function includeJQGrid()

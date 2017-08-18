@@ -1,44 +1,73 @@
 <?php
 session_start();
 require_once 'Library.php';
-require_once 'attendenceFunctions.php';
-require_once 'generalFunctions.php';
-error_reporting("E_ALL");
 $db=connectToDB();
 ?>
 <html>
-	<head>
-		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		<link rel="stylesheet" type="text/css" media="screen" href="css/frontend.css" />
-		<script src="public/js/jquery/jquery-1.10.2.min.js"></script>
-		<script type="text/javascript" src="js/jquery/jquery.searchFilter.js"></script>
-		<script src="public/js/countdown/countdown.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
-		<script type="text/javascript" src="projectjs/index.js"></script>
-		<script>
-		$(document).ready(function() {
-			$('body').bind('mousedown keydown', function(event) {
-				$('#counter').countdown('option', {
-					until : +1200
-				});
+<head>
+<?php 
+$getCalIds = array("fromdate", "todate");
+$calImg = getCalImg($getCalIds,-1,0);
+echo $calImg;
+?>
+	<link rel="stylesheet" type="text/css" media="screen" href="css/teamleavereport.css" />
+	<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="css/frontend.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="css/teamapproval.css">
+	<link href="js/jqueryui/css/redmond/jquery-ui.css" rel="stylesheet">
+	<script src="js/jquery/jquery.js" type="text/javascript"></script>
+	<script src="js/jqueryui/js/jquery-ui.js"></script>
+	<script src="js/jqgrid/grid.locale-en.js" type="text/javascript"></script>
+	<script type="text/javascript" src="js/jquery/jquery.validate.min.js"></script>
+	<script src="js/jqgrid/jquery.jqGrid.min.js" type="text/javascript"></script>
+	<script src="js/jquery/jquery.searchFilter.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="js/jqgrid/jqgridcss/ui.jqgrid.css" />
+	<script src="js/countdown/countdown.js" type="text/javascript"></script>
+	<script src="projectjs/fullcalendar.js"></script>		
+	<script type="text/javascript" src="projectjs/index.js"></script>
+	<script type="text/javascript">
+		$("document").ready(function() {
+
+		$('#teamleavereportId').submit(function() {
+		if($("#empid").val()=="Choose") {
+			alert("Please select an employee");
+			return false;
+		} else {
+			$.ajax({
+				data : $(this).serialize(),
+				type : $(this).attr('method'),
+				url : $(this).attr('action'),
+				success : function(response) {
+					$("#loadteamleavereport").html(response);
+				}
 			});
-		$(".open-datetimepicker").datetimepicker({
-		    format: "dd/mm/yy"
-		});
-		$(".open-datetimepicker1").datetimepicker({
-		    format: "dd/mm/yy"
-		});
-		$("#addextrawfhmanager").click(function() {
-		     hidealldiv('loadmanagersection');
-     		 //$("#loadmanagersection").load('wfhhours/manageraddwfhforemp.php?role=manager');
-  		});
-		});
-		</script>
-	</head>
-	<body>
-		<?php
+			return false;
+		}
+	});
+});
+
+$("document").ready(function(){
+    $(".table-1 tr:odd").addClass("odd");
+    $(".table-1 tr:not(.odd)").hide();
+    $(".table-1 tr:first-child").show();
+    $(".table-1 tr.odd").click(function(){
+        $(this).next("tr").toggle();
+        $(this).find(".arrow").toggleClass("up");
+    });
+  });
+
+</script>
+<style type="text/css">
+#teambalance {
+	color: black;
+	left: 1000px;
+	float:right;
+}
+</style>
+</head>
+<body>
+	<?php
 			$name = $_SESSION['u_fullname'];
 			$firstname = strtok($name, ' ');
 			$lastname = strstr($name, ' ');
@@ -142,120 +171,148 @@ $db=connectToDB();
 			</div><!--2 column end-->
 			<div class="col-sm-2"></div>
 			<div class="col-sm-6">
-				<div class="panel panel-primary">
-  								<div class="panel-heading text-center"><strong style="font-size:20px;">Manager Section</strong></div>
-  								<div class="panel-body table-responsive">
-									<table class="table table-bordered table-hover">
-										 <tr>
-                                            <td><a id="applyteammemberleaveid" href="applyteammemberleave.php?getEmp=1" >Apply Leave For Team</a></td>
-                                            <td>Manager can apply leaves for their team members.</td>
-                                        </tr>
-										<tr>
-                                            <td><a id='addextrawfhmanager' href="wfhhours/manageraddwfhforemp.php?role=manager&approveview=1">Add Extra WFH Hour</a></td>
-                                            <td>Manager can apply extra WFH hour for their team member.</td>
-                                        </tr>
-										<tr>
-											<td><a id="managermodifyempapprovedleaves" href="modifyempapprovedleaves.php">Modify Employee Approved Leaves</a></td>
-											<td>Manager can delete/edit/modify employee approved leaves.</td>
-										</tr>
-										<tr>
-                                            <td><a id="viewextrawfhmanager" href="wfhhours/managerviewwfhform.php?viewform=1">View/Modify Extra WFH Hour</a></td>
-                                            <td>Manager can view or modify extra WFH hour for their team member.</td>
-                                        </tr>
-										<tr>
-                                            <td><a id="managerApproveEmpLeave" href="approveEmpleave.php?role=manager">Approve Employee Leaves</a></td>
-                                            <td>Manager can approved employee pending leaves.</td>
-                                        </tr>
-                                         <tr>
-                                            <td><a id="approveextrawfhmanager" href="wfhhours/approveEmpExtrawfhhour.php?viewapprovalform=1">Approve/Cancel Extra WFH Hour</a></td>
-                                            <td>Manager can approve/delete extra WFH hour applied by their team member.</td>
-                                        </tr>
-                                        <tr>
-                                            <td><a id="teamreport" accesskey="2" title="Team Leave Report" href="teamleavereport.php">Team Leave Report</a></td>
-                                            <td>Manager can check their team leave report.</td>
-                                        </tr>  
-									</table>
-									<!-- <table class="table table-bordered table-hover">
-									for ($i = 0; $i < sizeof($keys); $i++) {
-					switch ($keys[$i]) {
-						case "applyleave" :
-							if ($row['applyleave'] == 1) {
-								echo '<li class="first"><a href="#" id="applyleaveid">Apply Leave</a></li>';
-							}
-							break;
-						case "compoff" :
-							if ($row['compoff'] == 1) {
-								echo '<li><a href="#" id="compoffleaveid">Apply Comp Off Leave</a></li>';
-							}
-							break;
-						case "ExtraWFHHour" :
-							if (($row['ExtraWFHHour'] == 1)) {
-								echo '<li><a href="#" id="extrawfhhrid">Apply Extra WFH Hour</a></li>';
-							}
-							break;
-						case "selfleavestatus" :
-							if ($row['selfleavestatus'] == 1) {
-								echo '<li><a href="#" id="selfleavestatusid">Emp Leave Status</a></li>';
-							}
-							break;
-						case "selfleavehistory" :
-							if ($row['selfleavehistory'] == 1) {
-								echo '<li><a href="#" id="selfleavehistoryid">Emp Leave History</a></li>';
-							}
-							break;
-						case "editprofile" :
-							if ($row['editprofile'] == 1) {
-								echo '<li><a href="#" id="editprofileid">Edit Emp Profile</a></li>';
-							}
-							break;
-						case "leaveapproval" :
-							if ($row['leaveapproval'] == 1) {
-								echo '<li><a href="#" id="leaveapprovalid">Leave Approval</a></li>';
-							}
-							break;
-						case "managersection" :
-							if (($row['managersection'] == 1) && ($_SESSION['user_dept'] != "HR")) {
-								echo '<li><a href="#" id="managersectionid">Manager Section</a></li>';
-							}
-							break;
-						case "hrsection" :
-							if (($row['hrsection'] == 1) || ($_SESSION['user_dept'] == "HR")) {
-								echo '<li><a href="#" id="hrsectionid">HR Section</a></li>';
-							}
-							break;
-						case "applyteammemberleave" :
-							if ($row['applyteammemberleave'] == 1) {
-								echo '<li><a href="#" id="applyteammemberleaveid">Apply Leave for Team</a></li>';
-							}
-							break;
-						case "optionalleave" :
-							if ($row['optionalleave'] == 1) {
-								echo '<li><a href="#" id="optionalLeaveStatus">Optional Holidays Applied</a></li>';
-							}
-							break;
-							
-						/*case "addWFHhr" :
-							if ($row['addWFHhr'] == 1) {
-								echo '<li><a href="#" id="addWFHhrStatus">Add WFH Hour</a></li>';
-							}
-							break;
-						case "viewWFHhr" :
-							if ($row['viewWFHhr'] == 1) {
-								echo '<li><a href="#" id="viewWFHhrStatus">View WFH Hour</a></li>';
-							}
-								break;*/
-						
-							
-							default:
-							break;
+				
+				<?php
+				function empHistory($empid,$query){
+					global $db;
+					global $_REQUEST;
+					$leaveTypeCount=0;
+					$allCount=0;
+					if($_REQUEST['leaveType']=="ALL")
+					{
+						echo "<table class='table table-hover'>
+								<tr class='info'>
+									<th width='20%'>Start Date</th>
+									<th width='20%'>End Date</th>
+									<th>PTO's Taken</th>
+									<th width='40%'>Reason</th>
+									<th width='40%'>Status</th>
+									<th width='40%'>Comments</th>
+									<th></th>
+								</tr><tr></tr>";
+					} else {
+						echo "<table class='table table-hover'>
+								<tr class='info'>
+									<th width='20%'>Date</th>
+									<th width='40%'>LeaveType</th>
+									<th width='40%'>Shift</th>
+								</tr><tr></tr>";
 					}
-				} 
-									</table> -->
-  								</div>
-							</div>
-				</div>
-				<div class="col-sm-4">
-				</div>
+					$sql=$db->query($query);
+					$splLeave = "";
+					
+					for($i=0;$i<$db->countRows($sql);$i++)
+					{
+						$row=$db->fetchArray($sql);
+						if($_REQUEST['leaveType']=="ALL") 
+						{
+							$allCount=$allCount+$row['count'];
+							echo '<tr></tr><tr>';
+							echo '<td>'.$row['startdate'].'</td>';
+							echo '<td>'.$row['enddate'].'</td>';
+							echo '<td>'.$row['count'].'</td>';
+							echo '<td>'.$row['reason'].'</td>';
+							echo '<td>'.$row['approvalstatus'].'</td>';
+							echo '<td>'.$row['approvalcomments'].'</td>';
+							echo '<td><div class="arrow"></div></td></tr>';
+						}
+						$tid=$row['transactionid'];
+						$sql1=$db->query("select * from perdaytransactions where transactionid='".$tid."'");
+						if($_REQUEST['leaveType']=="ALL")
+						{
+									echo '<tr>
+										<td colspan="6">
+										<table>
+											<tr>
+											<th>Date</th>
+											<th>Leave Type</th>
+											<th>Shift</th>
+											</tr>';
+						}
+						while($row1=$db->fetchArray($sql1))
+						{
+							if($_REQUEST['leaveType']=="ALL") 
+							{
+								$leavetype = $row1['leavetype'];
+								$Day = $row1['date'];
+								echo '<tr></tr><tr><td>'.$row1['date'].'</td>';
+								echo '<td>'.$row1['leavetype'].'</td>';
+								echo '<td>'.$row1['shift'].'</td>';
+								echo '</tr>';
+							} else {
+								if($_REQUEST['leaveType']==$row1['leavetype'])
+								{
+									$leaveTypeCount=$leaveTypeCount+1;
+									$leavetype = $row1['leavetype'];
+									$Day = $row1['date'];
+									echo '<tr></tr><tr><td>'.$row1['date'].'</td>';
+									echo '<td>'.$row1['leavetype'].'</td>';
+									echo '<td>'.$row1['shift'].'</td>';
+									echo '</tr>';
+								}	
+							}
+						}
+						if($_REQUEST['leaveType']=="ALL")
+						{
+							echo '</table>';
+							echo '</td></tr>';
+						} 
+					}
+					if($_REQUEST['leaveType']!="ALL")
+					{
+						echo "<tr></tr><tr><td colspan=3 align='right'><b>Total Count = ".$leaveTypeCount."</b></td></tr>";
+					}
+					if($_REQUEST['leaveType']=="ALL")
+					{
+						echo '<tr></tr><tr><td colspan=7><b style="float:right">Total Approved leaves = '.$allCount.'</b></td></tr>';
+					}
+					echo "</table>";
+				
+				}
+				
+				if(isset($_REQUEST['empid']) && isset($_REQUEST['leaveType']) )
+				{
+					getEmpSelectionBox($_SESSION['u_empid'],$_REQUEST['empid']);
+					echo "<br><br>";
+					if($_REQUEST['empid']!="All")
+					{
+						echo "<table class='table table-hover'>
+					    <tbody>";
+						$result1=$db->query("SELECT empname FROM `emp` WHERE empid=".$_REQUEST['empid']);
+						$row1=$db->fetchAssoc($result1);
+						$result3=$db->query("SELECT balanceleaves,carryforwarded FROM `emptotalleaves` WHERE empid=".$_REQUEST['empid']);
+						$row3=$db->fetchAssoc($result3);
+						echo "<tr><th>".$row1['empname']."(".$_REQUEST['empid'].")
+						<a id='teambalance'>Balance Leaves: ".($row3['balanceleaves']+$row3['carryforwarded'])."</a></th></tr></tbody></table>";
+						$query="SELECT * FROM empleavetransactions where empid=".$_REQUEST['empid']." and startdate between '".$_REQUEST['fromdate']."' and '".$_REQUEST['todate']."' and 
+											approvalstatus!='Pending' and approvalstatus!='Deleted' and approvalstatus!='Cancelled' order by startdate";
+						empHistory($_REQUEST['empid'],$query);
+					} else {
+						$emplist=getemp($_SESSION['u_empid']);
+						foreach ($emplist as $empid)
+						{
+							$result1=$db->query("SELECT empname FROM `emp` WHERE empid=".$empid);
+							$row1=$db->fetchAssoc($result1);
+							$result3=$db->query("SELECT balanceleaves,carryforwarded FROM `emptotalleaves` WHERE empid=".$empid);
+							$row3=$db->fetchAssoc($result3);
+							echo "<table id='table-2'>
+					 		<tbody>";
+							echo "<tr><th>".$row1['empname']."(".$empid.")
+						    <a id='teambalance'>Balance Leaves: ".($row3['balanceleaves']+$row3['carryforwarded'])."</a></th></tr></tbody></table>";
+							$query="SELECT * FROM empleavetransactions where empid=".$empid." and startdate between '".$_REQUEST['fromdate']."' and '".$_REQUEST['todate']."' and
+											approvalstatus!='Pending' and approvalstatus!='Deleted' and approvalstatus!='Cancelled' order by startdate";
+							empHistory($empid,$query);
+							
+						}
+					}
+				}
+				else {
+					getEmpSelectionBox($_SESSION['u_empid'],"");
+				}
+				
+				?>
+		</div>
+		<div class="col-sm-2"></div>
 		</div>
 		</div>
 		<footer class="footer1">
@@ -333,5 +390,5 @@ $db=connectToDB();
 			
 			
 			<!--footer end-->
-	</body>
+</body>
 </html>
