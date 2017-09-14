@@ -1,44 +1,17 @@
 <?php
-session_start();
-require_once 'Library.php';
-require_once 'attendenceFunctions.php';
-error_reporting("E_ALL");
+	session_start();
+	require_once 'Library.php';
+	require_once 'attendenceFunctions.php';
+	error_reporting("E_ALL");
 ?>
-<html>
 	<head>
-		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
-		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" type="text/css" media="screen" href="css/frontend.css" />
-		<link rel="stylesheet" href="public/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
-		<link rel="stylesheet" href="public/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		<script src="public/js/jquery/jquery-1.10.2.min.js"></script>
-		<script src="public/js/countdown/countdown.js"></script>
-		<link rel="stylesheet" href="public/js/jqueryui/css/redmond/jquery-ui.css">
-		<script type="text/javascript" src="public/js/jqueryui/js/jquery-ui.js"></script>
-		<script type="text/javascript" src="public/js/bootstrap/js/bootstrap.min.js"></script>
-  		<script type="text/javascript" src="public/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
-  		<script type="text/javascript" src="public/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
-		
-		<?php
-		$getCalIds = array("fromdate", "todate", "TypeOfDayfromdate", "TypeOfDaytodate");
-		$calImg = getCalImg($getCalIds);
-		echo $calImg;
-		?>
 		<script type="text/javascript">
-		$(document).ready(function() {
-			$('body').bind('mousedown keydown', function(event) {
-				$('#counter').countdown('option', {
-					until : +1200
-				});
-			});
-	        		$(".trackData tr:odd").addClass("odd");
-			        $(".trackData tr:not(.odd)").hide();
-	            		$(".trackData tr:first-child").show();
-	            		$(".trackData tr.odd").click(function(){
-		    	        	$(this).next("tr").toggle();
-	            		}); 
-	          	});
+	        $(".trackData tr:odd").addClass("odd");
+			$(".trackData tr:not(.odd)").hide();
+	        $(".trackData tr:first-child").show();
+	        $(".trackData tr.odd").click(function(){
+		    	$(this).next("tr").toggle();
+	        }); 
 			 
 			function toggle(thisname) {
 				tr = document.getElementsByTagName('tr')
@@ -53,15 +26,14 @@ error_reporting("E_ALL");
 				}
 			}
 
-
 			$('#TrackAttInd').submit(function() {
 				$('#TrackAccessData').html(" ");
 				if ( $("#hideDept").val()=="none" ) {
-					alert("Please selct the Department");
+					BootstrapDialog.alert("Please selct the Department");
 					return false;
 				}
 				if ( $("#hideDept").val()=="ALL" && $("#getEmpName").val()=="ALL") {
-					alert("Please wait for few minutes to get the results for all ECI Employeees.It will take more than a minute.");
+					BootstrapDialog.alert("Please wait for few minutes to get the results for all ECI Employeees.It will take more than a minute.");
 				}
 				$('#loadingmessage').show();
 				$.ajax({
@@ -71,542 +43,385 @@ error_reporting("E_ALL");
 					success : function(response) {
 						$('#loadtrackattendance').html(response);
 						if($("#balanceDialog")) {
-                                                       $("#balanceDialog").hide();
-                                                }
+                            $("#balanceDialog").hide();
+                        }
 					}
 				});
 				return false;
 			});
-			$(".open-datetimepicker").datetimepicker({
-			    format: "dd MM yyyy - hh:ii"
+			$( "#accordion-new" ).accordion({
+				heightStyle: "content",
+				collapsible: true
 			});
-			$(".open-datetimepicker1").datetimepicker({
-			    format: "dd MM yyyy - hh:ii"
-			});
-			 $( "#accordion-new" ).accordion({
-				 heightStyle: "content",
-				 collapsible: true
-			 });
 
-			 $.each( $( "#accordion-new h3"), function( i, val ) {
-					var first=$($(val)).next().find(".teamUntrackedLeaves").text();
-					if ( first > 10 ) { 
-						var firstString = "<font color=red>"+$(val).next().find(".teamUntrackedLeaves").text();
-					}  else { 
-						var firstString =$(val).next().find(".teamUntrackedLeaves").text();
-					}
+			$.each( $( "#accordion-new h3"), function( i, val ) {
+				var first=$($(val)).next().find(".teamUntrackedLeaves").text();
+				if ( first > 10 ) { 
+					var firstString = "<font color=red>"+$(val).next().find(".teamUntrackedLeaves").text();
+				}  else { 
+					var firstString =$(val).next().find(".teamUntrackedLeaves").text();
+				}
 					
-					$(val).html("<table class='table'><tr><td width='30%'><b>"+$(val).text()+"</b></td><td width='70%'><table class='table'><tr><td>Total Untracked Leaves: "+
+				$(val).html("<table class='table table-hover'><tr><td><b>"+$(val).text()+"</b></td><td><table class='table'><tr><td>Total Untracked Leaves: "+
 					firstString+"</td></tr></table>");
 			});
 			 
 		</script>
 		<?php
-		echo '
-		<script>
-		$("#hideDept").change(function() {
-			var dept=$("#hideDept").val();
-			var empid="' . $_SESSION['u_empid'] . '";
-			if(empid==dept || dept=="none") {
-				$("#hideName").hide();
-			} else {
-				$("#hideName").show();
-				$.post("getSplLeaveOptions.php?dept="+escape(dept),function(data) {
-					$("#getEmpName").empty();
-					$("#getEmpName").append(data);
+			echo '<script>
+				$("#hideDept").change(function() {
+					var dept=$("#hideDept").val();
+					var empid="' . $_SESSION['u_empid'] . '";
+					if(empid==dept || dept=="none") {
+						$("#hideName").hide();
+					} else {
+						$("#hideName").show();
+						$.post("getSplLeaveOptions.php?dept="+escape(dept),function(data) {
+							$("#getEmpName").empty();
+							$("#getEmpName").append(data);
+						});
+					}
 				});
-			}
-		});
-		</script>';
+			</script>';
 		?>
-		<link rel="stylesheet" type="text/css" media="screen" href="css/table.css" />
 		<title>track leaves....</title>
 	</head>
-	<body>
 		<?php
-	$name = $_SESSION['u_fullname'];
-	$firstname = strtok($name, ' ');
-	$lastname = strstr($name, ' ');
-	?>
-		<nav class="navbar navbar-inverse">
-			<div class="container">
-				<div class="navbar-header">
-					<div id="img">
-						<img class="img-responsive" src="img/3.jpg" style="height:50px;">
-					</div>
-					
-				</div>
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" style="font-size:16px; color:white; padding-top:20px; padding-right:30px; font-family:cursive;"><b>  Welcome, <?php echo $firstname; ?></b></a></li>
-					<li><a href="help.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-question-circle" aria-hidden="true"></i><b> Need Help</b></a></li>
-					<li><a href="login.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-sign-out" aria-hidden="true"></i><b> Logout</b></a></li>
-				</ul>
-			</div>
-		</nav>
-		<nav class="navbar navbar-default navbar-static-top">
-		<div class="container">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button><!--button close-->
-			<a class="navbar-brand" href="#">Leave Management System</a>
-			<label style="margin-left:60px; margin-right:5px;margin-top:14px; font-size:16px;">Time Left:-</label>
-		</div><!--navbar header-->
-		<h4 id="counter" class="countdown"></h4>
-
-			<script>
-				$('#counter').countdown({
-					until : +1200,
-					compact : true,
-					description : '',
-					onExpiry : liftOff,
-					format : 'HMS'
-				});
+			$untrackedLeaves=0;
+			$db = connectToDB();
+			# Generate departments based on the level of the employee
+			$deps = "<option selected value=\"ALL\">ALL</option>";
 			
-				function liftOff() {
-					var r = confirm("Your session is expired. Do you want to extend the session?");
-					if (r == true) {
-						window.location = "lms.php";
-					} else {
-						alert("Your session is expired. Logging out");
-						window.location = "login.php";
+			# Departments for HR
+			if (($_SESSION['user_dept'] == 'HR') || ($_SESSION['u_empid'] == "420064")) {
+				$query = "SELECT * FROM `emp` ORDER BY empname ASC";
+				$querydept = "SELECT distinct(dept) FROM `emp` ORDER BY dept ASC";
+				$resultdept = $db -> query($querydept);
+			} else if (strtoupper($_SESSION['user_desgn']) == 'MANAGER') {
+				# Departments for manager
+				$deps = "";
+				if ($_SESSION['u_managerlevel'] != 'level1') {
+					$query = "SELECT distinct(dept) FROM `emp` WHERE managerid='" . $_SESSION['u_empid'] . "' and state='Active' ORDER BY empname ASC";
+					$result = $db -> query($query);
+					$deps = " <option selected value=\"none\">NONE</option>";
+					$deps = $deps." <option value=\"ALL\">ALL</option>";
+				} else {
+					$query = "SELECT * FROM `emp` WHERE managerid='" . $_SESSION['u_empid'] . "' and state='Active' ORDER BY empname ASC";
+					$result = $db -> query($query);
+					$deps = " <option selected value=\"ALL\">ALL</option>";
+				}
+				
+				//Including self name also in the list
+				$deps = $deps . '<option value="' . $_SESSION["u_empid"] . '">';
+				$deps = $deps . $_SESSION['u_fullname'];
+				$deps = $deps . '</option>';
+				
+				if ($_SESSION['u_managerlevel'] != 'level1') {
+					while ($row = mysql_fetch_assoc($result)) {
+						$deps = $deps . '<option value="' . $row["dept"] . '">';
+						$deps = $deps . $row["dept"];
+						$deps = $deps . '</option>';
+					}
+				} else {
+					while ($row = mysql_fetch_assoc($result)) {
+						$deps = $deps . '<option value="' . $row["empid"] . '">';
+						$deps = $deps . $row["empname"];
+						$deps = $deps . '</option>';
 					}
 				}
-			</script>
-		<div id="navbar" class="navbar-collapse collapse">
-		<ul class="nav navbar-nav navbar-right" style="padding-right:10px;">
-		<li id="home"><a href="Holidays.php">Holiday List</a></li>
-		<li><a href="attendance.php">Attendance</a></li>
-		<li class="active"><a href="trackLeaves.php">Track Leaves</a></li>
-		<li><a href="leavecalender.php">Leave Calender</a></li>
-		<li><a href="ApplyVOE.php">Apply VOE</a></li>
-		</ul>
-		</div>
-		</div><!--container div close-->
-		</nav><!--nav close-->
-		
-		
-		<div class="container-fluid well" style="margin-top:-20px;">
-		<!--row start-->
-		<div class="row">
-		<!--2 column start-->
-			<div class="col-sm-2">
-				<div class="rectangle">
-					<a href="#"><img src="img/4.jpg" class="img-circle img-responsive" alt="" width="150px;" height="80px;"></a>
-				<h6 class="text-center" style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;"><?php echo $_SESSION['u_fullname']; ?></h6>
-				
-					 <center><span class="text-size-small" style="color:white;">
-					 <?php 
-						echo $_SESSION['u_emplocation'].", ".India;
-					?>
-					</span>
-					</center>
-		</div>
-				<hr>
-				<ul class="list-group">
-					<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
-					<li class="list-group-item"><a href="lms.php"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
-					<li class="list-group-item"><a href="personalinfo.php"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
-					<li class="list-group-item"><a href="officialinfo.php"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<?php
-					
-					if(strtoupper($_SESSION['user_dept'])=="HR") {?>
-					<li class="list-group-item"><a href="hr.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
-					<li class="list-group-item"><a href="manager.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
-					<?php }?>
-					<!--  <li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>-->
-				</ul>
-			</div><!--2 column end-->
-			<div class="col-sm-2"></div>
-		<?php
-		$untrackedLeaves=0;
-		$db = connectToDB();
-		
-		# Generate departments based on the level of the employee
-		$deps = "<option selected value=\"ALL\">ALL</option>";
-		
-		# Departments for HR
-		if (($_SESSION['user_dept'] == 'HR') || ($_SESSION['u_empid'] == "420064")) {
-			$query = "SELECT * FROM `emp` ORDER BY empname ASC";
-			$querydept = "SELECT distinct(dept) FROM `emp` ORDER BY dept ASC";
-			$resultdept = $db -> query($querydept);
-		} else if (strtoupper($_SESSION['user_desgn']) == 'MANAGER') {
-			# Departments for manager
-			$deps = "";
-			if ($_SESSION['u_managerlevel'] != 'level1') {
-				$query = "SELECT distinct(dept) FROM `emp` WHERE managerid='" . $_SESSION['u_empid'] . "' and state='Active' ORDER BY empname ASC";
-				$result = $db -> query($query);
-				$deps = " <option selected value=\"none\">NONE</option>";
-				$deps = $deps." <option value=\"ALL\">ALL</option>";
 			} else {
-				$query = "SELECT * FROM `emp` WHERE managerid='" . $_SESSION['u_empid'] . "' and state='Active' ORDER BY empname ASC";
+				# Name of Individual employee
+				$query = "SELECT * FROM `emp` WHERE empusername='" . $_SESSION['user_name'] . "' and state='Active'";
 				$result = $db -> query($query);
-				$deps = " <option selected value=\"ALL\">ALL</option>";
+				$deps = "";
+				$deps = $deps . '<option value="' . $_SESSION["u_empid"] . '">';
+				$deps = $deps . $_SESSION['u_fullname'];
+				$deps = $deps . '</option>';
 			}
-			
-			//Including self name also in the list
-			$deps = $deps . '<option value="' . $_SESSION["u_empid"] . '">';
-			$deps = $deps . $_SESSION['u_fullname'];
-			$deps = $deps . '</option>';
-			
-			if ($_SESSION['u_managerlevel'] != 'level1') {
-				while ($row = mysql_fetch_assoc($result)) {
-					$deps = $deps . '<option value="' . $row["dept"] . '">';
-					$deps = $deps . $row["dept"];
-					$deps = $deps . '</option>';
-				}
-			} else {
-				while ($row = mysql_fetch_assoc($result)) {
-					$deps = $deps . '<option value="' . $row["empid"] . '">';
-					$deps = $deps . $row["empname"];
-					$deps = $deps . '</option>';
-				}
-			}
-		} else {
-			# Name of Individual employee
-			$query = "SELECT * FROM `emp` WHERE empusername='" . $_SESSION['user_name'] . "' and state='Active'";
-			$result = $db -> query($query);
-			$deps = "";
-			$deps = $deps . '<option value="' . $_SESSION["u_empid"] . '">';
-			$deps = $deps . $_SESSION['u_fullname'];
-			$deps = $deps . '</option>';
-		}
 
-		$typeofday = "";
-		//Department name
-		$department = '<option value="none">';
-		$department = $department . "None";
-		$department = $department . '</option>';
-		if($resultdept) {
-			$department = $department . '<option value="ALL">';
-                        $department = $department . "ALL";
-                        $department = $department . '</option>';
-			while ($row = mysql_fetch_assoc($resultdept)) {
-				$department = $department . '<option value="' . $row["dept"] . '">';
-				$department = $department . $row["dept"];
+			$typeofday = "";
+			//Department name
+			$department = '<option value="none">';
+			$department = $department . "None";
+			$department = $department . '</option>';
+			if($resultdept) {
+				$department = $department . '<option value="ALL">';
+				$department = $department . "ALL";
 				$department = $department . '</option>';
+				while ($row = mysql_fetch_assoc($resultdept)) {
+					$department = $department . '<option value="' . $row["dept"] . '">';
+					$department = $department . $row["dept"];
+					$department = $department . '</option>';
+				}
 			}
-		}
-		
-		?>
-					
-				<div class="col-sm-5">
-				<form id="TrackAttInd" name="TrackAttInd" method="post" action="trackLeaves.php?TrackAttInd=1">
-				
+		?>	
+		<!--11 column div start-->
+		<div class="col-sm-11">
+			<!--track leave form start-->
+			<form id="TrackAttInd" name="TrackAttInd" method="post" action="trackLeaves.php?TrackAttInd=1">
+				<!--panel div start-->
 				<div class="panel panel-primary">
 					<div class="panel-heading text-center">
 						<strong style="font-size:20px;">Untracked Leave Info</strong>
-					</div>
+					</div><!--panel div close-->
+					<!--pnael body start-->
 					<div class="panel-body">
-							<?php
+						<?php
 							if (($_SESSION['u_managerlevel'] != 'level1') || ($_SESSION['user_dept'] == 'HR')) {
 								if (($_SESSION['user_dept'] == 'HR') || ($_SESSION['u_empid'] == "420064")) {
 									echo '<div class="form-group">
-										<div class="row">
-										<div class="col-sm-4"><label>Department:</label></div>
-										<div class="col-sm-8"><select class="form-control" id="hideDept" size="0" name="UDept">
-											' . $department . '
-											</select>
+											<div class="row">
+	        									<div class="col-sm-2"></div>
+												<div class="col-sm-3">
+	        										<label>Department:</label>
+	        									</div>
+												<div class="col-sm-5">
+	        										<select class="form-control" id="hideDept" size="0" name="UDept">' . $department . '</select>
+												</div>
+												<div class="col-sm-2"></div>
 											</div>
-											</div>
-											</div>';
-									echo '<div class="form-group" style="display:none">
-										<div class="row">
-										<div class="col-sm-4"><label>Name:</label></div>
-										<div class="col-sm-8">
-											<select class="form-control" id="getEmpName" size="0" name="getDeptemp"></select>
-											</div>
-		 									</div>
-											</div>';
-								} else {
-									echo '<div class="form-group">
-										<div class="row">
-										<div class="col-sm-4"><label>Department:</label></div>
-										<div class="col-sm-8">
-											<select class="form-control" id="hideDept" size="0" name="UDept">
-												' . $deps . '
-											</select>
-										</div>
-										</div>
 										</div>';
 									echo '<div class="form-group" style="display:none">
-										<div class="row">
-										<div class="col-sm-4"><label>Name:</label></div>
-										<div class="col-sm-8">
-											<select class="form-control" id="getEmpName" size="0" name="getDeptemp"></select>
+											<div class="row">
+												<div class="col-sm-2"></div>
+												<div class="col-sm-3">
+													<label>Emp Name:</label>
+												</div>
+												<div class="col-sm-5">
+													<select class="form-control" id="getEmpName" size="0" name="getDeptemp"></select>
+												</div>
+												<div class="col-sm-2"></div>
+			 								</div>
+										</div>';
+								} else {
+									echo '<div class="form-group">
+											<div class="row">
+												<div class="col-sm-2"></div>
+												<div class="col-sm-3">
+													<label>Department:</label>
+												</div>
+												<div class="col-sm-5">
+													<select class="form-control" id="hideDept" size="0" name="UDept">' . $deps . '</select>
+												</div>
+                            					<div class="col-sm-2"></div>
 											</div>
+										</div>';
+									echo '<div class="form-group" style="display:none">
+											<div class="row">
+												<div class="col-sm-2"></div>
+												<div class="col-sm-3">
+													<label>Emp Name:</label>
+												</div>
+												<div class="col-sm-5">
+													<select class="form-control" id="getEmpName" size="0" name="getDeptemp"></select>
+												</div>
+												<div class="col-sm-2"></div>
 											</div>
-											</div>';
+										</div>';
 								}
 							} else {
 								echo '<div class="form-group">
 										<div class="row">
-										<div class="col-sm-4"><label>Name:</label></div>
-									<div class="col-sm-8"><select class="form-control" size="0" name="UGroup">
-									'.$deps.'
-									</select>
-									</div>
-									</div>
+											<div class="col-sm-2"></div>
+											<div class="col-sm-3">
+												<label>Emp Name:</label>
+											</div>
+											<div class="col-sm-5">
+												<select class="form-control" size="0" name="UGroup">'.$deps.'</select>
+											</div>
+											<div class="col-sm-2"></div>
+										</div>
 									</div>';
 							}
-							?>
-							<div class="form-group">
+						?>
+						<div class="form-group">
 							<div class="row">
-							<div class="col-sm-4"><label>From:</label></div>
-							<div class="col-sm-8">
+								<div class="col-sm-2"></div>
+								<div class="col-sm-3">
+									<label>From Date:</label>
+								</div>
+								<div class="col-sm-5">
 									<div class="input-group">
-									    <input type="text" id="datetimepicker" class="form-control open-datetimepicker" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d') ?>'>
-									    <label class="input-group-addon btn" for="date">
-									       <span class="fa fa-calendar open-datetimepicker"></span>
-									    </label>
+										<input type="text" id="datetimepicker" class="form-control open-datetimepicker" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d') ?>'>
+										<label class="input-group-addon btn" for="date">
+											<span class="fa fa-calendar open-datetimepicker"></span>
+										</label>
 									</div>
+								</div>
+								<div class="col-sm-2"></div>
 							</div>
-							</div>
-							</div>
-							<div class="form-group">
+						</div>
+						<div class="form-group">
 							<div class="row">
-							<div class="col-sm-4"><label>To:</label></div>
-						<div class="col-sm-8">
-							<!--  <input type="text" class="form-control" size="8" name="todate" id="todate" value = '<?php echo date('Y-m-d') ?>'  />-->
-								<div class="input-group">
+								<div class="col-sm-2"></div>
+								<div class="col-sm-3">
+									<label>To Date:</label>
+								</div>
+								<div class="col-sm-5">
+								<!--  <input type="text" class="form-control" size="8" name="todate" id="todate" value = '<?php echo date('Y-m-d') ?>'  />-->
+									<div class="input-group">
 									    <input type="text" id="datetimepicker1" class="form-control open-datetimepicker1" name="todate" value='<?php echo date('Y-m-d')  ?>'>
 									    <label class="input-group-addon btn" for="date">
 									       <span class="fa fa-calendar open-datetimepicker1"></span>
 									    </label>
 									</div>
-							</div>
+								</div>
+								<div class="col-sm-2"></div>
                     		</div>
-                    		</div>
-							<div class="form-group">
+                    	</div>
+						<div class="form-group">
 							<div class="row">
-							<div class="col-sm-12 text-center">
-							<input type="submit" class="btn btn-primary submitBtn" value="Submit" name="TrackAttInd">
+								<div class="col-sm-12 text-center">
+									<input type="submit" class="btn btn-primary submitBtn" value="Submit" name="TrackAttInd">
+								</div>
 							</div>
-							</div>
-							</div>
-					
 						</div>
-						</div>
-					
-				</form>
-		<div id='loadingmessage' style='display:none'>
-			<img align="middle" src='images/loading.gif'/>
-		</div>
-		</div>
-		<div class="col-sm-3"></div>
-		</div>
+					</div><!--panel body end-->
+				</div><!--panel div end-->
+			</form><!--track leave form end-->
+			<script>
+				$(".open-datetimepicker").datetimepicker({
+				    format: "YY-MM-DD"
+				});
+				$(".open-datetimepicker1").datetimepicker({
+				    format: "YY-MM-DD"
+				});
+			</script>
+			<div id='loadingmessage' style='display:none'>
+				<img align="middle" src='images/loading.gif'/>
+			</div>
+		</div><!--11 column end-->
 		<div class="row" id="trackemployee">
-		<div class="col-sm-3"></div>
-		<div class="col-sm-9">
-<?php
-if (isset($_REQUEST['TrackAttInd'])) {
-		// Gather information
-		$fromDate = $_REQUEST['fromdate'];
-		$toDate = $_REQUEST['todate'];
-		if(isset($_REQUEST['UGroup'])) {
-                $grp = $_REQUEST['UGroup'];
-        }
-        if (isset($_REQUEST['getDeptemp'])) {
-                $getDeptemp = $_REQUEST['getDeptemp'];
-        } else {
-                $getDeptemp = "";
-        }
-        if (isset($_REQUEST['UDept'])) {
-                $getDept = $_REQUEST['UDept'];
-        } else {
-                $getDept = "";
-        }
-        echo '<script>
-                 $("#datetimepicker").val("' . $fromDate . '");
-                 $("#datetimepicker1").val("' . $toDate . '");
-                 $(".ui-dialog").remove();
-              </script>';
-        echo "<div id='untrackedLeaveData'>";
-        echo "<br><u><h4><center>Untracked Leave Information details from $fromDate to $toDate "; 
-
-        if (isset($_REQUEST['getDeptemp'])) {
-                echo getempName($_REQUEST['getDeptemp']);
-        }
-        if (isset($_REQUEST['UDept'])) {
-                echo " (" . $_REQUEST['UDept'] . ")</center></h4></u><br>";
-        } else {
-		echo "</center></h4></u><br>";
-	}
-        
-        
-		# Gather employees based on employee leavel
-		
-		# Gather employees if employee is HR
-        if (($_SESSION['user_dept'] == 'HR') || ($_SESSION['u_empid'] == "420064")) {
-                if ($getDept == 'ALL') {
-                        $query = "SELECT distinct(dept) FROM `emp` ORDER BY `dept` ASC";
-                        $self = 1;
-                } elseif ($getDeptemp == 'ALL') {
-                        $query = "SELECT * FROM emp WHERE dept='" . $getDept . "' and state='Active'";
-                        $self = 1;
-                } elseif ($_REQUEST['UDept'] == $_SESSION['u_empid']) {
-                        $query = "SELECT * FROM emp WHERE `empid` = '" . $getDept . "' and state='Active' ORDER BY `emp`.`empname` ASC";
-                } else {
-                        $query = "SELECT * FROM `emp` WHERE `empid` = '".$_REQUEST['getDeptemp']."' and state='Active' ORDER BY `emp`.`empname` ASC";
-                }
-                $result = $db -> query($query);
-                if ($getDept == 'ALL') {
-			echo '<div id="accordion-new">';			        
-                        while ($row = mysql_fetch_assoc($result)) {
-                                echo "<h3>".$row['dept']."</h3><div>";
-				setUntrackedTeamPercentageNull();
-                                $getEmployeesQueryResult=$db ->query("select * from emp where dept='".$row['dept']."' and state='Active'");
-                                trackAttendence($getEmployeesQueryResult, $fromDate,$toDate, $db);
-                                getTeamUntrackedPercentage();
-                                echo "</div>";
-                        }
-			echo "</div>";
-                } else {
-                        if ($getDeptemp == 'ALL') {
-                       		trackAttendence($result, $fromDate,$toDate, $db);
-                       		getTeamUntrackedPercentage();
-                        } else {
-                        	trackAttendence($result, $fromDate,$toDate, $db);
-                        }
-                }
-    	} else if (strtoupper($_SESSION['user_desgn']) == 'MANAGER') {
-		# Gather employee list if employee is a manager
-                if ($getDept == 'ALL') {
-                        $query = "SELECT distinct(dept) FROM emp WHERE managerid='".$_SESSION['u_empid']."' and state='Active'";
-                        $self = 1;
-                } elseif ($getDeptemp == 'ALL') {
-                        $query = "SELECT * FROM emp WHERE dept='".$getDept."' and state='Active'";
-                } elseif ($_REQUEST['UDept'] == $_SESSION['u_empid']) {
-                        $query = "SELECT * FROM emp WHERE `empid` = '" . $getDept . "' and state='Active' ORDER BY `emp`.`empname` ASC";
-                } else {
-                        if ($_SESSION['u_managerlevel'] != 'level1') {
-                                $query = "SELECT * FROM emp WHERE `empid` = '".$_REQUEST['getDeptemp']."' and state='Active' ORDER BY `emp`.`empname` ASC";
-                        } else {
-                                if($grp=="ALL") {
-                                        $query = "SELECT * FROM emp WHERE managerid='".$_SESSION['u_empid']."' and state='Active' union SELECT * FROM emp WHERE empid='".$_SESSION['u_empid']."' and state='Active' ORDER BY `empname` ASC";
-                                } else {
-                                        $query = "SELECT * FROM emp WHERE `empid` = '".$grp."' and state='Active' ORDER BY `emp`.`empname` ASC";
-                                }
-                        }
-                }
-                $result = $db -> query($query);
-                if ($getDept == 'ALL') {
-                        echo '<div id="accordion-new">';
-                        while ($row = mysql_fetch_assoc($result)) {
-                                echo "<h3>".$row['dept']."</h3><div>";
-                                $getEmployeesQueryResult=$db -> query("select * from emp where dept='".$row['dept']."' and state='Active'");
-				setUntrackedTeamPercentageNull();	
-  				trackAttendence($getEmployeesQueryResult, $fromDate,$toDate, $db);
-				getTeamUntrackedPercentage();
-                                echo "</div>";
-                        }
-                        echo "</div>";
-                } elseif ($getDeptemp == 'ALL') {
-					trackAttendence($result, $fromDate,$toDate, $db);
-					getTeamUntrackedPercentage();
-                } else {
-                      	if($grp=="ALL") {
-                       		trackAttendence($result, $fromDate,$toDate, $db);
-                       		getTeamUntrackedPercentage();
-                       	} else {
-                       		trackAttendence($result, $fromDate,$toDate, $db);
-                        }
-                }
-       } else {
-       		# Here the employee is at last position in hierarchy
-	   		trackAttendence($result, $fromDate,$toDate, $db);
-       }
-       $db -> closeConnection();
-}
-?>
-
-</div>
-	</div>
-	</div>
-	</div>
-	<footer class="footer1">
-		<div class="container-fluid">
-			<div class="row"><!-- row -->
-				<div class="col-lg-4 col-md-4"><!-- widgets column left -->
-					<ul class="list-unstyled clear-margins"><!-- widgets -->
-						<li class="widget-container widget_nav_menu"><!-- widgets list -->
-							<h1 class="title-widget">Email Us</h1>
-							<p><b>Anil Kumar Thatavarthi:</b> <a href="mailto:#"></a></p>
-							<p><b>Naidile Basvagde :</b> <a href="mailto:#"></a></p>
-							<p><b>Sneha Kumari:</b> <a href="mailto:#"></a></p>
-						</li>
-					</ul>
-				</div><!-- widgets column left end -->
-				
-				<div class="col-lg-4 col-md-4"><!-- widgets column left -->
-					<ul class="list-unstyled clear-margins"><!-- widgets -->
-						<li class="widget-container widget_nav_menu"><!-- widgets list -->
-							<h1 class="title-widget">Contact Us</h1>
-							<p><b>Helpline Numbers </b> 
-								<b style="color:#ffc106;">(8AM to 10PM): </b></p>
-							<p>  +91-9740464882, +91-9945732712  </p>
-							<p><b>Phone Numbers : </b>7042827160, </p>
-							<p> 011-2734562, 9745049768</p>
-						</li>
-					</ul>
-				</div><!-- widgets column left end -->
-						
-				<div class="col-lg-4 col-md-4"><!-- widgets column left -->
-					<ul class="list-unstyled clear-margins"><!-- widgets -->
-						<li class="widget-container widget_nav_menu"><!-- widgets list -->
-							<h1 class="title-widget">Office Address</h1>
-							<p><b>Corp Office / Postal Address</b></p>
-							<p>5th Floor ,Innovator Building, International Tech Park, Pattandur Agrahara Road, Whitefield, Bengaluru, Karnataka 560066</p>
-						</li>
-					</ul>
-				</div><!-- widgets column left end -->
-			</div>
-		</div>
-		</footer>
-		<!--header-->
-
-		<div class="footer-bottom">
-
-			<div class="container">
-
-				<div class="row">
-
-					<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-
-						<div class="copyright">
-
-							© 2017, All rights reserved
-
-						</div>
-
-					</div>
-
-					<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-
-						<div class="design">
-
-							 <a href="#"><b>ECI TELECOM</b> </a> |  <a href="#">LMS by ECI</a>
-
-						</div>
-
-					</div>
-
-				</div>
-
-			</div>
-
-		</div>
-			
-			
-			<!--footer end-->
-	</body>
-	</head>
-</html>
+			<div class="col-sm-11">
+				<?php
+					if (isset($_REQUEST['TrackAttInd'])) {
+						// Gather information
+						$fromDate = $_REQUEST['fromdate'];
+						$toDate = $_REQUEST['todate'];
+						if(isset($_REQUEST['UGroup'])) {
+							$grp = $_REQUEST['UGroup'];
+						}
+						if (isset($_REQUEST['getDeptemp'])) {
+							$getDeptemp = $_REQUEST['getDeptemp'];
+						} else {
+							$getDeptemp = "";
+						}
+						if (isset($_REQUEST['UDept'])) {
+							$getDept = $_REQUEST['UDept'];
+						} else {
+							$getDept = "";
+						}
+						echo '<script>
+							$("#datetimepicker").val("' . $fromDate . '");
+							$("#datetimepicker1").val("' . $toDate . '");
+							$(".ui-dialog").remove();
+						</script>';
+						echo "<div id='untrackedLeaveData'>";
+						echo "<br><u><h4><center>Untracked Leave Information details from $fromDate to $toDate "; 
+						if (isset($_REQUEST['getDeptemp'])) {
+							echo getempName($_REQUEST['getDeptemp']);
+						}
+						if (isset($_REQUEST['UDept'])) {
+							echo " (" . $_REQUEST['UDept'] . ")</center></h4></u><br>";
+						} else {
+							echo "</center></h4></u><br>";
+						}
+						# Gather employees based on employee leavel
+							
+							# Gather employees if employee is HR
+							if (($_SESSION['user_dept'] == 'HR') || ($_SESSION['u_empid'] == "420064")) {
+								if ($getDept == 'ALL') {
+									$query = "SELECT distinct(dept) FROM `emp` ORDER BY `dept` ASC";
+									$self = 1;
+								} elseif ($getDeptemp == 'ALL') {
+									$query = "SELECT * FROM emp WHERE dept='" . $getDept . "' and state='Active'";
+									$self = 1;
+								} elseif ($_REQUEST['UDept'] == $_SESSION['u_empid']) {
+									$query = "SELECT * FROM emp WHERE `empid` = '" . $getDept . "' and state='Active' ORDER BY `emp`.`empname` ASC";
+								} else {
+									$query = "SELECT * FROM `emp` WHERE `empid` = '".$_REQUEST['getDeptemp']."' and state='Active' ORDER BY `emp`.`empname` ASC";
+								}
+								$result = $db -> query($query);
+								if ($getDept == 'ALL') {
+									echo '<div id="accordion-new">';			        
+									while ($row = mysql_fetch_assoc($result)) {
+										echo "<h3>".$row['dept']."</h3><div>";
+										setUntrackedTeamPercentageNull();
+										$getEmployeesQueryResult=$db ->query("select * from emp where dept='".$row['dept']."' and state='Active'");
+										trackAttendence($getEmployeesQueryResult, $fromDate,$toDate, $db);
+										getTeamUntrackedPercentage();
+										echo "</div>";
+									}
+								echo "</div>";
+								} 
+								else {
+									if ($getDeptemp == 'ALL') {
+										trackAttendence($result, $fromDate,$toDate, $db);
+										getTeamUntrackedPercentage();
+									} else {
+										trackAttendence($result, $fromDate,$toDate, $db);
+									}
+								}
+							} 
+							else if (strtoupper($_SESSION['user_desgn']) == 'MANAGER') {
+								# Gather employee list if employee is a manager
+								if ($getDept == 'ALL') {
+									$query = "SELECT distinct(dept) FROM emp WHERE managerid='".$_SESSION['u_empid']."' and state='Active'";
+									$self = 1;
+								} elseif ($getDeptemp == 'ALL') {
+									$query = "SELECT * FROM emp WHERE dept='".$getDept."' and state='Active'";
+								} elseif ($_REQUEST['UDept'] == $_SESSION['u_empid']) {
+									$query = "SELECT * FROM emp WHERE `empid` = '" . $getDept . "' and state='Active' ORDER BY `emp`.`empname` ASC";
+								} 
+								else {
+									if ($_SESSION['u_managerlevel'] != 'level1') {
+										$query = "SELECT * FROM emp WHERE `empid` = '".$_REQUEST['getDeptemp']."' and state='Active' ORDER BY `emp`.`empname` ASC";
+									}
+									else {
+										if($grp=="ALL") {
+											$query = "SELECT * FROM emp WHERE managerid='".$_SESSION['u_empid']."' and state='Active' union SELECT * FROM emp WHERE empid='".$_SESSION['u_empid']."' and state='Active' ORDER BY `empname` ASC";
+										} 
+										else {
+											$query = "SELECT * FROM emp WHERE `empid` = '".$grp."' and state='Active' ORDER BY `emp`.`empname` ASC";
+										}
+									}
+								}
+								$result = $db -> query($query);
+								if ($getDept == 'ALL') {
+									echo '<div id="accordion-new">';
+									while ($row = mysql_fetch_assoc($result)) {
+										echo "<h3>".$row['dept']."</h3><div>";
+										$getEmployeesQueryResult=$db -> query("select * from emp where dept='".$row['dept']."' and state='Active'");
+										setUntrackedTeamPercentageNull();	
+										trackAttendence($getEmployeesQueryResult, $fromDate,$toDate, $db);
+										getTeamUntrackedPercentage();
+										echo "</div>";
+									}
+									echo "</div>";
+								}
+								elseif ($getDeptemp == 'ALL') {
+									trackAttendence($result, $fromDate,$toDate, $db);
+									getTeamUntrackedPercentage();
+								}
+								else {
+									if($grp=="ALL") {
+										trackAttendence($result, $fromDate,$toDate, $db);
+										getTeamUntrackedPercentage();
+									} 
+									else {
+										trackAttendence($result, $fromDate,$toDate, $db);
+									}
+								}
+							} 
+							else {
+								# Here the employee is at last position in hierarchy
+								trackAttendence($result, $fromDate,$toDate, $db);
+							}
+							$db -> closeConnection();
+					}
+				?>
+</div><!-- 11 column div close -->
+</div><!-- trackemployee id div close -->
 
 
 

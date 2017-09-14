@@ -74,7 +74,7 @@ $("document").ready(function() {
         jQuery('#empuser').autocomplete({
             minLength: 1,
             source: function(request, response) {
-                jQuery.getJSON('autocomplete/Users_JSON.php', {
+                jQuery.getJSON('../autocomplete/Users_JSON.php', {
                     term: request.term
                 }, response)
             },
@@ -95,7 +95,7 @@ $("document").ready(function() {
 		{
 			var tid=$("#deltid").attr("title");
 			var empid=$("#deltid").attr("class");
-			$('#'+divid).load("wfhhours/managerviewwfhform.php?viewrecordbymanager=1&&eid="+eid+"&date="+date);
+			$('#'+divid).load("wfhhours/managerviewwfhform.php?viewrecordbymanager=1&eid="+eid+"&date="+date);
   		}
 		else
   		{

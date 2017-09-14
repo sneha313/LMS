@@ -1,122 +1,157 @@
 <?php
-session_start();
-require_once '../Library.php';
-require_once '../attendenceFunctions.php';
-require_once '../generalFunctions.php';
-error_reporting("E_ALL");
-$db=connectToDB();
-if(isset($_REQUEST['addWFHhrForm']))
-{
-	echo '<html>
-		<head>
-			<link rel="stylesheet" type="text/css" media="screen" href="css/table.css" />';	
-			echo '<script type=""text/javascript"">
-			$("document").ready(function(){
-					$("#noh").spinner(
-                        { min: 1 },
-                        { max: 18 },
-						{ step: 0.25 }
-        			);
-					$("#addwfh").submit(function() {
-						$("#loadingmessage").show()
-		   				$.ajax({
-		       	 		data: $(this).serialize(),
-		       		 	type: $(this).attr("method"),
-		       		 	url: $(this).attr("action"),
-		        	 	success: function(response) {
-						  $("#loadingmessage").hide()
-						  if(response == "success") {
-								alert("WFH inserted successfully");
-						  } else {
-								alert("not successs");
-						  }
-						  $("#loadextrawfhhr").load("wfhhours/viewwfh.php");
-		        		}
+	session_start();
+	require_once '../Library.php';
+	require_once '../attendenceFunctions.php';
+	require_once '../generalFunctions.php';
+	error_reporting("E_ALL");
+	$db=connectToDB();
+	//add extra WFH hour form
+	if(isset($_REQUEST['addWFHhrForm']))
+	{
+		echo '<html>
+			<body>
+				<form method="post" action="wfhhours/addwfh.php?addwfhSubmit=1" id="addwfh">
+					<div class="panel panel-primary">
+						<div class="panel-heading text-center">
+							<strong style="font-size:20px;">Add Extra WFH Hours</strong>
+						</div>
+						<div class="panel-body">
+							<div class="form-group">
+							<div class="row">
+								<div class="col-sm-2">
+									<label>Employee Name</label>
+								</div>
+								<div class="col-sm-4">
+									<input name="emp_name" type="text" class="form-control" id="emp_name" value="'.$_SESSION['u_fullname'].'" readonly required>
+								</div>
+							</div>
+							</div>
+							<div class="form-group">
+							<div class="row">
+								<div class="col-sm-2">
+									<label>Employee Id</label>
+								</div>
+								<div class="col-sm-4">
+									<input name="empid" type="text" class="form-control" id="empid" value="'.$_SESSION['u_empid'].'" required>
+								</div>
+							</div>
+							</div>
+							<div class="form-group">
+							<div class="row">
+								<div class="col-sm-2">	
+									<label>Date</label>
+								</div>
+								<div class="col-sm-4">		
+									<div class="input-group">
+										<input type="text" id="Extrawfhhours" class="form-control open-datetimepicker" name="dynamicworked_day" readonly />
+											<label class="input-group-addon btn" for="date">
+												<span class="fa fa-calendar open-datetimepicker"></span>
+											</label>
+									</div>
+								</div>
+							</div>
+							</div>
+							<div class="form-group">
+							<div class="row">
+								<div class="col-sm-2">	
+									<label>No. of Hrs</label>
+								</div>
+								<div class="col-sm-4">
+									<input name="noh" type="text" class="form-control" id="noh" readonly>
+								</div>
+							</div>
+							</div>
+							<div class="form-group">
+							<div class="row">
+								<div class="col-sm-2">	
+									<label>Reason</label>
+								</div>
+								<div class="col-sm-4">
+									<textarea name="reason" class="form-control" id="reason" required></textarea>
+								</div>
+							</div>
+							</div>
+							<div class="form-group">
+							<div class="row">
+								<div class="col-sm-12 text-center">
+									<input name="submit" type="submit" class="btn btn-success" id="submit" value="Submit">
+									<input name="close" type="submit" class="btn btn-danger" id="close" value="Close">
+								</div>
+							</div>
+							</div>
+						</div>
+					</div>
+				</form>
+				<div id="loadingmessage" style="display:none">
+					<img align="middle" src="images/loading.gif"/>
+				</div> 
+				<script>
+					$(document).ready(function(){
+						$(".open-datetimepicker").datetimepicker({
+							changeMonth: true,
+							changeYear: true,
+							showButtonPanel: true,
+							dateFormat: "yy-mm-dd",
+							yearRange: "-1:+0",
+							maxDate: "+0D",
+							showOn: "both",
+							buttonImageOnly: true,
+						});
+						$("#noh").spinner(
+							{ min: 1 },
+							{ max: 18 },
+							{ step: 0.25 }
+						);
+						$("#addwfh").submit(function() {
+							$("#loadingmessage").show()
+							$.ajax({
+								data: $(this).serialize(),
+								type: $(this).attr("method"),
+								url: $(this).attr("action"),
+								success: function(response) {
+									$("#loadingmessage").hide()
+									if(response == "success") {
+										BootstrapDialog.alert("WFH inserted successfully");
+									} else {
+										BootstrapDialog.alert("not successs");
+									}
+									$("#loadextrawfhhr").load("wfhhours/viewwfh.php");
+								}
+							});
+							return false; // cancel original event to prevent form submitting
+						});
+						$("#Extrawfhhours").change(function() {
+							date=$("#Extrawfhhours").val();
+							eid= $("#empid").val();
+							$.ajax({
+								data: { date: date, eid: eid },
+								type: "GET",
+								url: "wfhhours/addwfh.php?getwfh=1",
+								success: function(response) {
+									arr=response.split("-");
+									$("#noh").val(arr[0]);
+									$("#reason").val(arr[1]);
+								}
+							});
+						});
+						$.validator.addClassRules({
+							workeddaydynamic: {
+								 required: true
+							}
+					   });	
 					});
-					return false; // cancel original event to prevent form submitting
-				});
-					$("#Extrawfhhours").change(function() {
-					date=$("#Extrawfhhours").val();
-					eid= $("#empid").val();
-		   			$.ajax({
-			       	 	 data: { date: date, eid: eid },
-			       		 type: "GET",
-			       		 url: "wfhhours/addwfh.php?getwfh=1",
-			        	 success: function(response) {
-							arr=response.split("-");
-		        	      	$("#noh").val(arr[0]);
-							$("#reason").val(arr[1]);
-		        		 }
-					});
-				});
-				$.validator.addClassRules({
-					workeddaydynamic: {
-					     required: true
-						}
-				   });	
-				$("body").on("click",".workeddaynoh",function() {
-					$(this).datepicker ({
-						changeMonth: true,
-				        changeYear: true,
-				        showButtonPanel: true,
-				        dateFormat: "yy-mm-dd",
-				        yearRange: "-1:+0",
-				        maxDate: "+0D",
-				        buttonImage: "js/datepicker/datepickerImages/calendar.gif",
-						showOn: "both",
-						buttonImageOnly: true,	 
-		    	});
-			});
-		});
-		</script>
-		</head>
-		<body>
-		<center>
-		<form method="post" action="wfhhours/addwfh.php?addwfhSubmit=1" id="addwfh">
-		<table id="table-2" width="400" border="0" cellspacing="1" cellpadding="2">
-		<tr>
-			<td width="140">Employee Name</td>
-			<td><input name="emp_name" type="text" id="emp_name" value="'.$_SESSION['u_fullname'].'" readonly required></td>
-		</tr>
-		<tr>
-			<td width="100">Employee Id</td>
-			<td><input name="empid" type="text" id="empid" value="'.$_SESSION['u_empid'].'" required></td>
-		</tr>
-		<tr>
-			<td width="100">Date</td>
-			<td><input class="workeddaynoh" id="Extrawfhhours"type="text" name="dynamicworked_day" readonly/></td>
-		</tr>
-		<tr>
-			<td width="100">No. of Hrs</td>
-			<td><input name="noh" type="text" id="noh" readonly>
-			</td>
-		</tr>
-		<tr>
-			<td width="100">Reason</td>
-			<td><textarea name="reason" id="reason" required></textarea>
-			</td>
-		</tr>
-		<tr>
-			<td width="100"></td>
-					<td><input name="submit" type="submit" id="submit" value="Submit">
-						<input name="close" type="submit" id="close" value="Close">
-			</td>
-		</tr>
-	</table>
-</form>
-</center>
-<div id="loadingmessage" style="display:none">
-	<img align="middle" src="images/loading.gif"/>
-</div> 
-</body></html>';
-}
-elseif(isset($_REQUEST['addwfhSubmit'])) {
+				</script>	
+			</body>
+		</html>';
+	}
+	
+	//to get value of all input field from add extra WFH hour form
+	elseif(isset($_REQUEST['addwfhSubmit'])) {
 		$transactionid = generate_transaction_id();
 		$empid= isset($_POST['empid']) ? $_POST['empid'] : '';
 		$name = isset($_POST['emp_name']) ? $_POST['emp_name'] : '';
 		$date= isset($_REQUEST['dynamicworked_day'])? $_REQUEST['dynamicworked_day'] : '';
 		$noh = isset($_POST['noh']) ? $_POST['noh'] : '';
-		
 		$reason = isset($_POST['reason']) ? $_POST['reason'] : '';
 		## ROW EXISTS
 		$checkquery= "select * from extrawfh where eid='$empid' and date='$date'";
@@ -138,20 +173,19 @@ elseif(isset($_REQUEST['addwfhSubmit'])) {
 		} else {
 			echo "unsuccessfull";
 		}
-} elseif(isset($_REQUEST['getwfh'])) {
-	$empid=$_REQUEST['eid'];
-	$date=$_REQUEST['dynamicworked_day'];
-	#query to check row exists
-	$getquery= "select * from extrawfh where eid='$empid' and date='$date'";
-	$result=$db->query($getquery);
-	if($db->countRows($result) > 0){
-		# if exists, auto fill number of hours and reason
-		$row= $db->fetchAssoc($result);
-		//$noh=$row['wfhHrs'];
-	//convert hh:mm:ss into hours
-		//$t = explode(':', $noh);
-		//$wfhhours= $t[0] + $t[1]/60 + $t[2]/3600;
-		echo $row['wfhHrs']."-".$row['reason'];
 	}
-}
+	
+	//if employee applied extra WFH hour and want to edit 
+	elseif(isset($_REQUEST['getwfh'])) {
+		$empid=$_REQUEST['eid'];
+		$date=$_REQUEST['dynamicworked_day'];
+		#query to check row exists
+		$getquery= "select * from extrawfh where eid='$empid' and date='$date'";
+		$result=$db->query($getquery);
+		if($db->countRows($result) > 0){
+			# if exists, auto fill number of hours and reason
+			$row= $db->fetchAssoc($result);
+			echo $row['wfhHrs']."-".$row['reason'];
+		}
+	}
 ?>

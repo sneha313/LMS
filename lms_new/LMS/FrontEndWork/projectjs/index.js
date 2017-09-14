@@ -2,9 +2,10 @@ $('#loadingmessage').show();
 $('document').ready(function() {
 	$('#loadingmessage').hide();
 	$("#loadempleavestatus").load('selfleavestatus.php');
+	$("#loadmyprofile").load('userDashboard.php');
 	$("#balanceleavesid").load('balanceleaves.php?getleaves=1');
 	function hidealldiv(div) {
-		var myCars=new Array("loadempapplyleave","loadempleavestatus","loadempleavehistory",
+		var myCars=new Array("loadmyprofile","loadpersonalinfo","loadofficialinfo","loadempapplyleave","loadempleavestatus","loadempleavehistory",
 							 "loadempleavereport","loadempeditprofile","loadholidays",
 							 "loadempleavereport","loadteamleavereport","loadhelp",
 							 "loadteamleaveapproval","loadattendance","loadcalender","loadoptionalleave","loadvoeform",
@@ -43,7 +44,6 @@ $('document').ready(function() {
 		$('#status').html(e.pageX +', '+ e.pageY);
 	}); 
 	
-	
 	$("#HomeButton").click(function(){
 		hidealldiv('loadempleavestatus');
 		$("#loadempleavestatus").load('selfleavestatus.php');
@@ -61,7 +61,6 @@ $('document').ready(function() {
 		$("#loadmanagersection").load('modifyempapprovedleaves.php?role=manager');
 	});
 	
-	
 	$("#hrsectionid").click(function(){
 		hidealldiv('loadhrsection');
 		$("#loadhrsection").load('hr.php?hrlinks=1');
@@ -71,6 +70,7 @@ $('document').ready(function() {
 		hidealldiv('loadmanagersection');
 		$("#loadmanagersection").load('managersection.php?managerlinks=1');
 	});
+	
 	$("#extrawfhhrid").click(function(){
 		hidealldiv('loadextrawfhhr');
 		$("#loadextrawfhhr").load('wfhhours/linkwfh.php');
@@ -98,7 +98,7 @@ $('document').ready(function() {
 		hidealldiv('loadwfhhr');
 		$("#loadwfhhr").load('wfhhours/viewwfh.php');
 	});
-	$("#teamreport").click(function(){
+	$("#teamLeavereport").click(function(){
 		hidealldiv('loadteamleavereport');
 		$("#loadteamleavereport").load('teamleavereport.php');
 	});
@@ -121,35 +121,75 @@ $('document').ready(function() {
 		hidealldiv('loadteamleaveapproval');
 		$("#loadteamleaveapproval").load('teamleaveapproval.php');
 	});
+	
 	$("#holidays").click(function(){
 		hidealldiv('loadholidays');
 		$("#loadholidays").load('Holidays.php');
 	});
+	
 	$("#calender").click(function(){
 		hidealldiv('loadcalender');
 		$("#footer").hide();
 		$("#loadcalender").load('leavecalender.php');
 	});
+	
 	$("#attendance").click(function(){
 		hidealldiv('loadattendance');
 		$("#loadattendance").load('attendance.php');
 	});
+	
 	$("#trackattendance").click(function(){
-                hidealldiv('loadtrackattendance');
-                $("#loadtrackattendance").load('trackattendance.php');
+         hidealldiv('loadtrackattendance');
+         $("#loadtrackattendance").load('trackLeaves.php');
         });
+	
 	$("#help").click(function(){
 		hidealldiv('loadhelp');
 		$("#loadhelp").load('help.php');
+	});
+	
+	$("#myprofile").click(function(){
+		hidealldiv('loadmyprofile');
+		$("#loadmyprofile").load('userDashboard.php');
+	});
+	
+	$("#personalinfo").click(function(){
+		hidealldiv('loadpersonalinfo');
+		$("#loadpersonalinfo").load('personalinfo.php');
+	});
+	
+	$("#officialinfo").click(function(){
+		hidealldiv('loadofficialinfo');
+		$("#loadofficialinfo").load('officialinfo.php');
+	});
+	
+	$("#applyleave").click(function(){
+		hidealldiv('loadempapplyleave');
+		$("#loadempapplyleave").load('applyLeave.php');
+	});
+	
+	$("#managersection").click(function(){
+		hidealldiv('loadmanagersection');
+		$("#loadmanagersection").load('manager.php');
+	});
+	
+	$("#hrsection").click(function(){
+		hidealldiv('loadhrsection');
+		$("#loadhrsection").load('hr.php');
+	});
+	
+	$("#department").click(function(){
+		hidealldiv('loadhrsection');
+		$("#loadhrsection").load('DepartmentActionbyHR.php');
 	});
 	
 	$("#voe").click(function(){
 		hidealldiv('loadvoeform');
 		$("#loadvoeform").load('voe.php');
 	});
+	
 	$("#compoffleaveid").click(function(){
 		hidealldiv('loadcompoffleave');
 		$("#loadcompoffleave").load('ApplyCompoffLeave.php?compoffleave=1');
 	});
 });
-

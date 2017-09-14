@@ -8,157 +8,72 @@ $db=connectToDB();
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-		<link rel="stylesheet" type="text/css" media="screen" href="css/frontend.css" />
-		<script src="public/js/jquery/jquery-1.10.2.min.js"></script>
-		<script src="public/js/countdown/countdown.js"></script>
-		<script>
-		$(document).ready(function() {
-			$('body').bind('mousedown keydown', function(event) {
-				$('#counter').countdown('option', {
-					until : +1200
-				});
-			});
-		});
-		</script>
+		<style>
+			.form-control {
+			    border: 0;
+			  }
+			  .form-control:focus {
+			    border: 1px solid blue;
+			  }
+		</style>
 	</head>
+	
 	<body>
-		<?php
-	$name = $_SESSION['u_fullname'];
-	$firstname = strtok($name, ' ');
-	$lastname = strstr($name, ' ');
-	?>
-		<nav class="navbar navbar-inverse">
-			<div class="container">
-				<div class="navbar-header">
-					<div id="img">
-						<img class="img-responsive" src="img/3.jpg" style="height:50px;">
-					</div>
-					
-				</div>
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" style="font-size:16px; color:white; padding-top:20px; padding-right:30px; font-family:cursive;"><b>  Welcome, <?php echo $firstname; ?></b></a></li>
-					<li><a href="help.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-question-circle" aria-hidden="true"></i><b> Need Help</b></a></li>
-					<li><a href="login.php" style="font-size:16px; color:white; padding-top:20px;"><i class="fa fa-sign-out" aria-hidden="true"></i><b> Logout</b></a></li>
-				</ul>
-			</div>
-		</nav>
-		<nav class="navbar navbar-default navbar-static-top">
-		<div class="container">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button><!--button close-->
-			<a class="navbar-brand" href="#">Leave Management System</a>
-			<label style="margin-left:60px; margin-right:5px;margin-top:14px; font-size:16px;">Time Left:</label>
-		</div><!--navbar header-->
-		<h4 id="counter" class="countdown"></h4>
-
-			<script>
-				$('#counter').countdown({
-					until : +1200,
-					compact : true,
-					description : '',
-					onExpiry : liftOff,
-					format : 'HMS'
-				});
-			
-				function liftOff() {
-					var r = confirm("Your session is expired. Do you want to extend the session?");
-					if (r == true) {
-						window.location = "lms.php";
-					} else {
-						alert("Your session is expired. Logging out");
-						window.location = "login.php";
-					}
-				}
-			</script>
-		<div id="navbar" class="navbar-collapse collapse">
-		<ul class="nav navbar-nav navbar-right" style="padding-right:10px;">
-		<li id="home"><a href="Holidays.php">Holiday List</a></li>
-		<li><a href="attendance.php">Attendance</a></li>
-		<li><a href="trackLeaves.php">Track Leaves</a></li>
-		<li><a href="leavecalender.php">Leave Calender</a></li>
-		<li><a href="ApplyVOE.php">Apply VOE</a></li>
-		</ul>
-		</div>
-		</div><!--container div close-->
-		</nav><!--nav close-->
-		
-		
-		<div class="container-fluid well" style="margin-top:-20px;">
-		<!--row start-->
-		<div class="row">
-		<!--2 column start-->
-			<div class="col-sm-2">
-				<div class="rectangle">
-					<a href="#"><img src="img/4.jpg" class="img-circle img-responsive" alt="" width="150px;" height="80px;"></a>
-				<h6 class="text-center" style="color:white; font-size:14px; font-family:Times New Roman, Georgia, Serif;"><?php echo $_SESSION['u_fullname']; ?></h6>
-				
-					 <center><span class="text-size-small" style="color:white;">
-					 <?php 
-						
-						echo $_SESSION['u_emplocation'].", India";
-					
-					?>
-					</span>
-					</center>
-		</div>
-							
-			
-				<hr>
-				<ul class="list-group">
-					<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
-					<li class="list-group-item"><a href="lms.php"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
-					<li class="list-group-item"><a href="personalinfo.php"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
-					<li class="list-group-item"><a href="officialinfo.php"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<li class="list-group-item"><a href="applyLeave.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<?php
-					
-					if(strtoupper($_SESSION['user_dept'])=="HR") {?>
-					<li class="list-group-item"><a href="hr.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-					<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
-					<li class="list-group-item"><a href="manager.php"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
-					<?php }?>
-					<!--  <li class="list-group-item"><a href="leaveinfo.php"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;My Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:20px;"></i></a></li>-->
-				</ul>
-			</div><!--2 column end-->
-		<div class="col-sm-9" style="margin-left:40px;">
+		<?php 
+			$fullname = $_SESSION['u_fullname'];
+			$empid=$_SESSION['u_empid'];
+			$empinfo=$db->query("select * from emp where empname='".$fullname."'");
+			$emprow=$db->fetchAssoc($empinfo);
+			$emplocation=$emprow['location'];
+			$managername=$emprow['managername'];
+			$department=$emprow['dept'];
+			$joiningdate=$emprow['joiningdate'];
+			$emailid=$emprow['emp_emailid'];
+			$birthdaydate=$emprow['birthdaydate'];
+			$empprofile=$db->query("select * from empprofile where empid='".$empid."'");
+			$row=$db->fetchAssoc($empprofile);
+			$phonenumber=$row['phonenumber'];
+			$bloodgroup=$row['bloodgroup'];
+			$address=$row['address'];
+			$yoe=date("Y-m-d")-$joiningdate;
+			$subdepartment=$db->query("select d.subDept from departments d join emp e on e.dept=d.mainDept where e.empid=$empid");
+		?>
+		<div class="container-fluid" style="margin-top:-20px;">
+			<!--row start-->
+			<div class="row">
+				<!--11 column start-->
+				<div class="col-sm-11" style="margin-left:40px; margin-top:20px;">
+					<!--panel div start-->
 					<div class="panel panel-primary">
-								
 						<div class="panel-heading text-center">
-				
 							<strong style="font-size:20px;">Official Info</strong>
-					
 						</div>
+						<!--panel body div start-->
 						<div class="panel-body">
 							<div class="form-group">
-							<div class="row">
+							<div class="row"><!--1st row start-->
 								<div class="col-sm-2">
 									<label>Emp Name:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="" >
+									<input type="text" class="form-control" value="<?php echo $fullname; ?>" >
 								</div>
 								<div class="col-sm-2">
 									<label>Emp Id:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $empid; ?>">
 								</div>
 							</div><!--1st row close-->
 							</div>
+							
 							<div class="form-group">
-							<div class="row">
+							<div class="row"><!--2nd row start-->
 								<div class="col-sm-2">
 									<label>Manager Name:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $managername; ?>">
 								</div>
 								<div class="col-sm-2">
 									<label>Designation:</label>
@@ -168,18 +83,28 @@ $db=connectToDB();
 								</div>
 							</div><!--2nd row close-->
 							</div>
-							
+								
 							<div class="form-group">
-							<div class="row">
+							<div class="row"><!--3rd row start-->
 								<div class="col-sm-2">
 									<label>Department:</label>
 								</div>
 								<div class="col-sm-4">
 									<select class="form-control">
-										<option>--Department--</option>
-										<option></option>
-										<option></option>
-										<option></option>
+										<option value=<?php echo $_SESSION['u_empid'];?>><?php echo $emprow['dept'];?></option>
+										<option>--Choose Department--</option>
+										<option>V&V</option>
+										<option>ST</option>
+										<option>DevTest</option>
+										<option>AIBI</option>
+										<option>HR</option>
+										<option>T3</option>
+										<option>LightSoft</option>
+										<option>STMS</option>
+										<option>ST</option>
+										<option>GSC Tier</option>
+										<option>GTD-V&V</option>
+										<option>IT</option>
 									</select>
 								</div>
 								<div class="col-sm-2">
@@ -208,114 +133,51 @@ $db=connectToDB();
 								</div>
 							</div><!--3rd row close-->
 							</div>
-							
+								
 							<div class="form-group">
-							<div class="row">
+							<div class="row"><!--4th row start-->
 								<div class="col-sm-2">
 									<label>Phone Number:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $phonenumber; ?>">
 								</div>
 								<div class="col-sm-2">
 									<label>Email Id:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $emailid; ?>">
 								</div>
 							</div><!--4th row close-->
 							</div>
-							
+								
 							<div class="form-group">
 							<div class="row">
 								<div class="col-sm-2">
-								<label>Years of Exp:</label>
+									<label>Years of Exp:</label>
 								</div>
-								<div class="col-sm-4"><input type="text" class="form-control" value=""></div>
-								<div class="col-sm-2"><label>Office Address:</label></div>
-								<div class="col-sm-4"><textarea class="form-control"  value=""></textarea></div>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" value="<?php echo $yoe; ?>">
+								</div>
+								<div class="col-sm-2">
+									<label>Office Address:</label>
+								</div>
+								<div class="col-sm-4">
+									<textarea class="form-control" id="address"></textarea>
+								</div>
 							</div><!--5th row close-->
 							</div>
-						</div>
-					</div>
-				</div>	
-				<div class="col-sm-1"></div>
-		</div>
-		</div>
-		<footer class="footer1">
-		<div class="container">
-			<div class="row"><!-- row -->
-				<div class="col-lg-4 col-md-4"><!-- widgets column left -->
-					<ul class="list-unstyled clear-margins"><!-- widgets -->
-						<li class="widget-container widget_nav_menu"><!-- widgets list -->
-							<h1 class="title-widget">Email Us</h1>
-							<p><b>Anil Kumar Thatavarthi:</b> <a href="mailto:#"></a></p>
-							<p><b>Naidile Basvagde :</b> <a href="mailto:#"></a></p>
-							<p><b>Sneha Kumari:</b> <a href="mailto:#"></a></p>
-						</li>
-					</ul>
-				</div><!-- widgets column left end -->
-				
-				<div class="col-lg-4 col-md-4"><!-- widgets column left -->
-					<ul class="list-unstyled clear-margins"><!-- widgets -->
-						<li class="widget-container widget_nav_menu"><!-- widgets list -->
-							<h1 class="title-widget">Contact Us</h1>
-							<p><b>Helpline Numbers </b> 
-								<b style="color:#ffc106;">(8AM to 10PM): </b></p>
-							<p>  +91-9740464882, +91-9945732712  </p>
-							<p><b>Phone Numbers : </b>7042827160, </p>
-							<p> 011-2734562, 9745049768</p>
-						</li>
-					</ul>
-				</div><!-- widgets column left end -->
-						
-				<div class="col-lg-4 col-md-4"><!-- widgets column left -->
-					<ul class="list-unstyled clear-margins"><!-- widgets -->
-						<li class="widget-container widget_nav_menu"><!-- widgets list -->
-							<h1 class="title-widget">Office Address</h1>
-							<p><b>Corp Office / Postal Address</b></p>
-							<p>5th Floor ,Innovator Building, International Tech Park, Pattandur Agrahara Road, Whitefield, Bengaluru, Karnataka 560066</p>
-						</li>
-					</ul>
-				</div><!-- widgets column left end -->
-			</div>
-		</div>
-		</footer>
-		<!--header-->
-
-		<div class="footer-bottom">
-
-			<div class="container">
-
-				<div class="row">
-
-					<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-
-						<div class="copyright">
-
-							© 2017, All rights reserved
-
-						</div>
-
-					</div>
-
-					<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-
-						<div class="design">
-
-							 <a href="#"><b>ECI TELECOM</b> </a> |  <a href="#">LMS by ECI</a>
-
-						</div>
-
-					</div>
-
-				</div>
-
-			</div>
-
-		</div>
-			
-			
-			<!--footer end-->
+						</div><!--panel body div close-->
+					</div><!--panel div close-->
+				</div><!--11 column close div-->	
+			</div><!--row close-->
+		</div><!--container-fluid div close-->
+		<!-- script is for, user will not be able to modify dropdown boxes -->
+		<script>
+			$(document).ready(function(){
+				$('select option:not(:selected)').attr('disabled',true);
+				$("#address").val("5th Floor ,Innovator Building, International Tech Park, Pattandur Agrahara Road, Whitefield, Bengaluru, Karnataka 560066");
+			});
+		</script>
 	</body>
 </html>

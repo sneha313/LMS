@@ -142,8 +142,9 @@ function getEmpSelectionBox($supervisorID,$selectedEmployee)
 			<div class="panel-body">
 			<div class="form-group">
 			<div class="row">
-				<div class="col-sm-6"><label>Leave Status Information for Employee:</label></div>
-		 		<div class="col-sm-6"><select class="form-control" name = "empid" id="empid">
+				<div class="col-sm-2"></div>
+				<div class="col-sm-4"><label>Leave Status Information for Employee:</label></div>
+		 		<div class="col-sm-4"><select class="form-control" name = "empid" id="empid">
 		 <option value="Choose">Choose</option>
 		 <option value="All">All</option>';
 	$query="select dept from emp where empid='".$supervisorID."' and state='Active'";
@@ -176,23 +177,29 @@ function getEmpSelectionBox($supervisorID,$selectedEmployee)
 			echo '<option value="'.$value.'">'.$key.'</option>';
 		}
 	}
-	echo'</select></div></div></div>
+	echo'</select></div>
+			<div class="col-sm-2"></div>
+			</div></div>
 			<div class="form-group">
 			<div class="row">
-			<div class="col-sm-6"><label>Select Leave Type:</label></div>
-			<div class="col-sm-6"><select class="form-control" name="leaveType" id="leaveTypeId">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-4"><label>Select Leave Type:</label></div>
+			<div class="col-sm-4"><select class="form-control" name="leaveType" id="leaveTypeId">
 				<option value="ALL">ALL</option>
 		 		<option value="FullDay">FullDay</option>
 			 	<option value="HalfDay">HalfDay</option>
 				<option value="WFH">WFH</option>
 				<option value="First Half-HalfDay & second Half-WFH">First Half-HalfDay & second Half-WFH</option>
 				<option value="First Half-WFH & Second Half-HalfDay">First Half-WFH & Second Half-HalfDay</option>
-			</select></div></div></div>';
+			</select></div>
+			<div class="col-sm-2"></div>
+			</div></div>';
 			
 	echo "<div class='form-group'>
 			<div class='row'>
-			<div class='col-sm-6'><label>From:</label></div>
-			<div class='col-sm-6'>
+			<div class='col-sm-2'></div>
+			<div class='col-sm-4'><label>From Date:</label></div>
+			<div class='col-sm-4'>
 			<div class='input-group'>
 				<input type='text' id='datetimepicker' class='form-control open-datetimepicker' name='fromdate' value='".date('Y-m-d', strtotime("first day of january " . date('Y')))."' size='8' />
 				<label class='input-group-addon btn' for='date'>
@@ -200,11 +207,13 @@ function getEmpSelectionBox($supervisorID,$selectedEmployee)
 				</label>
 			</div>
 				</div>
+			<div class='col-sm-2'></div>
 		</div></div>
 		<div class='form-group'>
 			<div class='row'>
-			<div class='col-sm-6'><label>To:</label></div>
-			<div class='col-sm-6'>
+			<div class='col-sm-2'></div>
+			<div class='col-sm-4'><label>To Date:</label></div>
+			<div class='col-sm-4'>
 				<div class='input-group'>
 				<input type='text' id='datetimepicker1' class='form-control open-datetimepicker1' name='todate' value=".date('Y-m-d')." size='8' />
 				<label class='input-group-addon btn' for='date'>
@@ -212,6 +221,7 @@ function getEmpSelectionBox($supervisorID,$selectedEmployee)
 				</label>
 			</div>
 			</div>
+			<div class='col-sm-2'></div>
 		</div></div>";
 	echo '<div class="form-group">
 			<div class="row">
@@ -645,7 +655,7 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 	$splLeave = getSpecialLeavesForType($splLeaveType, "specialleave");
 	//Statring of the form.. This form will contain all the dates and dropdwon list with the leave types
 	echo '<form name="leaves" id="displayDates" method="POST" action="'.$filename.'?getShift=1">
-		  	  <table cellspacing="2" cellpadding="2" border="3" id="table-2">';
+		  	  <table class="table table-hover">';
 	$count =0;
 	global $db;
 	$curYear = date('Y');
@@ -700,7 +710,7 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 		{
 			echo "<td> $numofDays[$j]  </td>";
 			echo '<td>';
-			echo '<SELECT class="optionSelection" id="Day'.$count.'" NAME="Day'.$count.'">; '
+			echo '<SELECT class="form-control optionSelection" id="Day'.$count.'" NAME="Day'.$count.'">; '
 			. $options .'</SELECT>';
 			echo '</td> </tr>';
 			$count++;
@@ -713,7 +723,7 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 					if(!in_array($splMatch[1],$optionalLeaveDates)) {
 						echo "<td>".str_replace('[special]','',$splMatch[2])."</td>";
 								echo "<td>Apply optional leave
-									<select class='applyOptionalLeave' name='selectOptionalLeave'>
+									<select class='form-control applyOptionalLeave' name='selectOptionalLeave'>
 									<option>YES</option>
 									<option>NO</option>
 									</select>
@@ -735,8 +745,6 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 			echo '</tr>';
 			$count++;
 		}
-		
-		
 	}
 	/*
 	 * This Method will display the all the dates between selected start and end dates by removing weekends and holidays
@@ -783,12 +791,11 @@ function getCalImg($arr,$minYear='-0',$maxYear='0')
 	$str.="</script>";
 	return $str;
 }
-
 function getselectbox($query,$field)
 {
 	global $db;
 	$selectstr="";
-	$selectstr.="<select name='$field' id='$field'>";
+	$selectstr.="<select class='form-control' name='$field' id='$field'>";
 	$result=$db->query($query);
 	for($i=0;$i<$db->countRows($result);$i++)
 	{
@@ -807,16 +814,16 @@ function add_day($days,$format)
 
 function getempName($empid)
 {
-        global $db;
-        $result=$db->query("select empname from emp where empid='$empid' and state='Active'");
-        $row=$db->fetchAssoc($result);
-        return $row['empname'];
+	global $db;
+	$result=$db->query("select empname from emp where empid='$empid' and state='Active'");
+	$row=$db->fetchAssoc($result);
+	return $row['empname'];
 }
 
 function getValueFromQuery($query, $element) {
-        global $db;
-        $result = $db -> query($query);
-        $res = $db -> fetchArray($result);
-        return $res[$element];
+	global $db;
+	$result = $db -> query($query);
+	$res = $db -> fetchArray($result);
+	return $res[$element];
 }
 ?>
