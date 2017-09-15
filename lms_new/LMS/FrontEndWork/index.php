@@ -3,7 +3,7 @@
 		session_start();
 	}
 	if (empty($_SESSION['user_name']))
-		header("Location:userlogin.php");
+		header("Location:login.php");
 	require_once ("Library.php");
 	if(browser_detection("browser")=="msie") {
 		echo '<!DOCTYPE html>';
@@ -193,18 +193,19 @@
 				</div>
 			</div><!--footer container div close-->
 		</div><!--footer bottom section close-->
-		<script src="public/js/jquery/jquery.js" type="text/javascript"></script>
-		<script src="public/js/jquery/jquery-1.10.2.min.js"></script>
-		<script src="public/js/countdown/countdown.js"></script>
-		<script src='public/js/bootstrap/js/bootstrap.min.js'></script>
+		<script type='text/javascript' src="public/js/jquery/jquery.js" type="text/javascript"></script>
+		<script type='text/javascript' src="public/js/jquery/jquery-1.10.2.min.js"></script>
+		<script type='text/javascript' src="public/js/countdown/countdown.js"></script>
+		<script type='text/javascript' src='public/js/bootstrap/js/bootstrap.min.js'></script>
 		<script type="text/javascript" src="public/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
-		<script src='public/js/DataTables/media/js/jquery.dataTables.min.js'></script>
-		<script src='public/js/jqueryui/js/jquery-ui.js'></script>
-		<script src='public/js/jqgrid/grid.locale-en.js' type='text/javascript'></script>
-		<script src='public/js/bootstrap3-dialog/bootstrap-dialog.js' type='text/javascript'></script>
-		<script src='public/js/jqgrid/jquery.jqGrid.min.js' type='text/javascript'></script>
+		<script type='text/javascript' src='public/js/DataTables/media/js/jquery.dataTables.min.js'></script>
+		<script type='text/javascript' src='public/js/jqueryui/js/jquery-ui.js'></script>
+		<script type='text/javascript' src='public/js/jqgrid/grid.locale-en.js'></script>
+		<script type='text/javascript' src='public/js/bootstrap3-dialog/bootstrap-dialog.js'></script>
+		<script type='text/javascript' src='public/js/jqgrid/jquery.jqGrid.min.js'></script>
+		<script type='text/javascript' src='public/js/jquery/jquery.validate.min.js'></script>
 		<script type="text/javascript" src="projectjs/index.js"></script>
-		<script src="projectjs/fullcalendar.js"></script>
+		<script type='text/javascript' src="projectjs/fullcalendar.js"></script>
 		<script>
 			$(document).ready(function() {
 				$('body').bind('mousedown keydown', function(event) {

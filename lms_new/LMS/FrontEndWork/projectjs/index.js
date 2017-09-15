@@ -61,16 +61,6 @@ $('document').ready(function() {
 		$("#loadmanagersection").load('modifyempapprovedleaves.php?role=manager');
 	});
 	
-	$("#hrsectionid").click(function(){
-		hidealldiv('loadhrsection');
-		$("#loadhrsection").load('hr.php?hrlinks=1');
-	});
-	
-	$("#managersectionid").click(function(){
-		hidealldiv('loadmanagersection');
-		$("#loadmanagersection").load('managersection.php?managerlinks=1');
-	});
-	
 	$("#extrawfhhrid").click(function(){
 		hidealldiv('loadextrawfhhr');
 		$("#loadextrawfhhr").load('wfhhours/linkwfh.php');
@@ -175,7 +165,7 @@ $('document').ready(function() {
 	
 	$("#hrsection").click(function(){
 		hidealldiv('loadhrsection');
-		$("#loadhrsection").load('hr.php');
+		$("#loadhrsection").load('hr.php?hrlinks=1');
 	});
 	
 	$("#department").click(function(){
