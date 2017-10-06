@@ -7,12 +7,14 @@
 ?>
 <html>
 	<head>
+		<script type="text/javascript" src="projectjs/flotr2.min.js"></script>
 		<style>
 			label{
 				font-size:16px;
 			}
 		</style>
 		<script>
+			
 			function showDialog(id, empid, first, month) {
 				$("#dialog-modal" + id).dialog({
 					width : 1250,
@@ -39,13 +41,14 @@
 			$('#AttInd').submit(function() {
 				$('#accessData').html(" ");
 				if ( $("#hideDept").val()=="none" ) {
-					alert("Please selct the Department");
+					BootstrapDialog.alert("Please select the Department");
 					return false;
 				}
 				if ( $("#hideDept").val()=="ALL" && $("#getEmpName").val()=="ALL") {
-					alert("Please wait for few minutes to get the results for all ECI Employeees.It will take more than a minute.");
+					
+					BootstrapDialog.alert("Please wait for few minutes to get the results for all ECI Employeees.It will take more than a minute.");
 				}
-				$('#loadingmessage').show();
+				$(this).find(':input[type=submit]').replaceWith('<center><img src="img/loader.gif" class="img-responsive" alt="processing"/></center>');
 				$.ajax({
 					data : $(this).serialize(),
 					type : $(this).attr('method'),
@@ -64,7 +67,7 @@
 				heightStyle: "content",
 				collapsible: true
 			});
-
+			
 			$.each( $( "#accordion h3"), function( i, val ) {
 				var first=$($(val)).next().find(".teamMorning").text().match((/(\((.*)(%)\))/i))[2];
 				var second=$($(val)).next().find(".teamEvening").text().match((/(\((.*)(%)\))/i))[2];
@@ -129,13 +132,9 @@
 			});
 			</script>';
 		?>
-		<title>Attendence analyze</title>
 	</head>
 	<body>
-		<!--container fluid start-->
-		<div class="container-fluid">
-			<!--row div start-->
-			<div class="row">
+		<div class="col-sm-12">
 				<?php
 					$sumOfInDays=0;
 					$sumOfTotalInDays=0;
@@ -211,7 +210,7 @@
 					?>
 			
 				<form id="AttInd" name="AttInd" method="post" action="attendance.php?AttInd=1">
-				<div class="col-sm-12">
+				
 					<div class="panel panel-primary">
 						<div class="panel-heading text-center">
 							<strong style="font-size:20px;">Attendance History</strong>
@@ -232,6 +231,7 @@
 													<option value="MEET">Meet</option>
 												</select>
 											</div>
+											<div class="col-sm-2"></div>
 										</div>
 									</div>';	
 								} else {
@@ -397,16 +397,18 @@
 								</div>
 							</div>
 						</div>
-						
-			   </div>
 			   </form>
 			   <script>
 				   $(document).ready(function(){
-					$(".open-datetimepicker").datetimepicker({
-						format: "YY-MM-DD"
-					});
+							$('.open-datetimepicker').datetimepicker({
+								format: 'yyyy-mm-dd',
+		                        minView : 2,
+		                        autoclose: true     
+							});
 					$(".open-datetimepicker1").datetimepicker({
-						format: "YY-MM-DD"
+						format: 'yyyy-mm-dd',
+                        minView : 2,
+                        autoclose: true  
 					});
 				   });
 			   </script>
@@ -887,9 +889,9 @@
 							$subempinfo= '<td><table class="table table-bordered table-hover">';
 							$subempinfo=$subempinfo. '<tr class="info">
 								<th>Day</th>
-								<th">In</th>
+								<th>In</th>
 								<th>Out</th>
-								<th>total Hr</th>
+								<th>Total Hr</th>
 								<th>WFH</th>
 								<th>Total WFH</th>
 								<th>Type Of day</th>
@@ -1963,7 +1965,6 @@
 						$db -> closeConnection();
 					}
 				?>
-			</div><!-- row div end -->
-		</div><!-- container-fluid div start -->
+			</div><!-- 10 column div end -->
 	</body>
 </html>

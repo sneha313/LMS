@@ -8,10 +8,23 @@
 	if(browser_detection("browser")=="msie") {
 		echo '<!DOCTYPE html>';
 	}
+	require_once 'Library.php';
+	error_reporting("E_ALL");
+	$db=connectToDB();
+	//Get current user ID from session
+	$userId = $_SESSION['u_empid'];
+	
+	//Get user data from database
+	$result = $db->query("SELECT * FROM profilepicture WHERE Empid = $userId");
+	$row = $db->fetchAssoc($result);
+	
+	//User profile picture
+	$userPicture = !empty($row['Image'])?$row['Image']:'no-image.png';
+	$userPictureURL = 'images/'.$userPicture;
 ?>
 <html>
 	<head>
-		<title>ECI Leave Management System..</title>
+		<title>ECI Leave Management System...</title>
 		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
 		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.min.css">
 		<link rel="stylesheet" href="public/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
@@ -21,7 +34,6 @@
 		<link rel='stylesheet' type='text/css' media='screen' href='public/js/bootstrap3-dialog/bootstrap-dialog.css' />
 		<link rel='stylesheet' href='public/js/jqueryui/css/redmond/jquery-ui.css'>
 		<link rel="stylesheet" type="text/css" media="screen" href="public/css/frontend.css" />
-
 	</head>
 	<body>
 		<?php
@@ -36,7 +48,9 @@
 					<div id="img">
 						<img id="image" class="img-responsive" src="img/3.jpg">
 					</div>
+					<label id="session">Session Expires in :-</label>
 				</div>
+				<h4 id="counter" class="countdown"></h4>
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="#" id="welcome"><b>  Welcome, <?php echo $firstname; ?></b></a></li>
 					<li><a id="help" href="#"><i class="fa fa-question-circle" aria-hidden="true"></i><b> Need Help</b></a></li>
@@ -55,12 +69,11 @@
 						<span class="icon-bar"></span>
 					</button><!--button close-->
 					<a class="navbar-brand" href="#">Leave Management System</a>
-					<label style="margin-left:60px; margin-right:5px;margin-top:14px; font-size:16px;">Session Expires in :-</label>
-				</div><!--navbar header close-->
-				<h4 id="counter" class="countdown"></h4>
+					</div><!--navbar header close-->
 				<div id="navbar" class="navbar-collapse collapse">
 					<ul class="nav navbar-nav navbar-right" style="padding-right:10px;">
-						<li id="home"><a id="holidays" href="#">Holiday List</a></li>
+						<li><a id="HomeButton" accesskey="1" title="Home" href="#">Home</a></li>
+						<li><a id="holidays" href="#">Holiday List</a></li>
 						<li><a id="attendance" href="#">Attendance</a></li>
 						<li><a id="trackattendance" href="#">Track Leaves</a></li>
 						<li><a id="calender" href="#">Leave Calender</a></li>
@@ -77,7 +90,22 @@
 				<!--2 column start-->
 				<div class="col-sm-2">
 					<div class="rectangle"><!--rectangle div for employee profile picture and location start-->
-						<a href="#"><img src="img/4.jpg" class="img-circle img-responsive" alt="" width="150px;" height="80px;"></a>
+						<div class="img-relative">
+					            <!-- Loading image -->
+					            <div class="overlay uploadProcess" style="display: none;">
+					                <!--  <div class="overlay-content"><img src="images/orbit-400px.gif"/></div>-->
+					                <div class="overlay-content"></div>
+					            </div>
+					            <!-- Hidden upload form -->
+					            <form method="post" action="upload.php" enctype="multipart/form-data" id="picUploadForm" target="uploadTarget">
+					                <input type="file" name="picture" id="fileInput"  style="display:none"/>
+					            </form>
+					            <iframe id="uploadTarget" name="uploadTarget" src="#" style="width:0;height:0;border:0px solid #fff;"></iframe>
+					            <!-- Image update link -->
+					            <a class="editLink" href="javascript:void(0);"><i class="fa fa-camera fa-2x" aria-hidden="true"></i></a>
+					            <!-- Profile image -->
+					            <img src="<?php echo $userPictureURL; ?>" class="img-circle img-responsive" id="imagePreview">
+					        </div>
 						<h4><?php echo $_SESSION['u_fullname']; ?></h4>
 						<span class="text-size-small">
 						 <?php 
@@ -88,14 +116,15 @@
 					<hr>
 					<ul class="list-group">
 						<li class="list-group-item active"><a href="#" style="color:white; font-size:18px;">My Account</a></li>
-						<li class="list-group-item"><a id="myprofile" href="#"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
-						<li class="list-group-item"><a id="personalinfo"  href="#"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Personal Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:30px;"></i></a></li>
-						<li class="list-group-item"><a id="officialinfo" href="#"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
-						<li class="list-group-item"><a id="applyleaveid" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+						<li class="list-group-item"><a id="myprofile" href="#"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:62px;"></i></a></li>
+						<li class="list-group-item"><a id="personalinfo"  href="#"><i class="fa fa-user-secret" aria-hidden="true"></i>&nbsp;Emp Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:66px;"></i></a></li>
+						<li class="list-group-item"><a id="officialinfo" href="#"><i class="fa fa-building" aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:52px;"></i></a></li>
+						<!--  <li class="list-group-item"><a id="applyleaveid" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Leave Info<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>-->
+						<li class="list-group-item"><a id="leaveinfo" href="#"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:40px;"></i></a></li>
 						<?php
 						
 						if(strtoupper($_SESSION['user_dept'])=="HR") {?>
-						<li class="list-group-item"><a id="hrsection" href="#"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:38px;"></i></a></li>
+						<li class="list-group-item"><a id="hrsection" href="#"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:50px;"></i></a></li>
 						<li class="list-group-item"><a id="teamLeavereport" href="#"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Team Leave Report<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:3px;"></i></a></li>
 						<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
 						<li class="list-group-item"><a id="managersection" href="#"><i class="fa fa-user" aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" aria-hidden="true" style="margin-left:10px;"></i></a></li>
@@ -105,6 +134,7 @@
 				</div>	<!--2 column end-->
 				<!--10 column start-->
 				<div class="col-sm-10">
+					<div id="loadinout"></div>
 					<div id="loadpendingstatus"></div>
 					<div id="loadempapplyleave"></div>
 					<div id="loadempleavestatus"></div>
@@ -129,6 +159,9 @@
 					<div id="loadmyprofile"></div>
 					<div id="loadpersonalinfo"></div>
 					<div id="loadofficialinfo"></div>
+					<div id="loadleaveinfo"></div>
+					<div id="loadDepartment"></div>
+					<div id="loadbalanceleavesid"></div>
 				</div><!--10 column end-->
 			</div><!--row end-->
 		</div><!--container fluid div end-->
@@ -206,12 +239,38 @@
 		<script type='text/javascript' src='public/js/jquery/jquery.validate.min.js'></script>
 		<script type="text/javascript" src="projectjs/index.js"></script>
 		<script type='text/javascript' src="projectjs/fullcalendar.js"></script>
-		<script>
-			$(document).ready(function() {
+		<script type="text/javascript">
+			$(document).ready(function () {
+			    //If image edit link is clicked
+			    $(".editLink").on('click', function(e){
+			        e.preventDefault();
+			        $("#fileInput:hidden").trigger('click');
+			    });
+			
+			    //On select file to upload
+			    $("#fileInput").on('change', function(){
+			        var image = $('#fileInput').val();
+			        var img_ex = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+			        
+			        //validate file type
+			        if(!img_ex.exec(image)){
+			            BootstrapDialog.alert('Please upload only .jpg/.jpeg/.png/.gif file.');
+			            $('#fileInput').val('');
+			            return false;
+			        }else{
+			            $('.uploadProcess').show();
+			            $('#uploadForm').hide();
+			            $( "#picUploadForm" ).submit();
+			        }
+			    });
 				$('body').bind('mousedown keydown', function(event) {
 					$('#counter').countdown('option', {
 						until : +1200
 					});
+				});
+				$('ul.nav li').click(function(){   
+					 $(this).addClass('active');
+					 $(this).siblings().removeClass('active');
 				});
 			});
 			$('#counter').countdown({
@@ -223,13 +282,27 @@
 			});
 
 			function liftOff() {
-				var r = confirm("Your session is expired. Do you want to extend the session?");
+				var r = BootstrapDialog.confirm("Your session is expired. Do you want to extend the session?");
 				if (r == true) {	
 					window.location = "index.php";
 				} else {
-					alert("Your session is expired. Logging out");
+					BootstrapDialog.alert("Your session is expired. Logging out");
 					window.location = "login.php";
 				}
+			}
+
+			//After completion of image upload process
+			function completeUpload(success, fileName) {
+			    if(success == 1){
+			        $('#imagePreview').attr("src", "");
+			        $('#imagePreview').attr("src", fileName);
+			        $('#fileInput').attr("value", fileName);
+			        $('.uploadProcess').hide();
+			    }else{
+			        $('.uploadProcess').hide();
+			        BootstrapDialog.alert('There was an error during file upload!');
+			    }
+			    return true;
 			}
 		</script>
 	</body>

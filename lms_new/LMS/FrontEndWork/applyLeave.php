@@ -20,7 +20,13 @@
 					$("#special_leave").empty();
 					$("#special_leave").append(data);
 				});	
-		});
+			});
+			$('#leaveapply').submit(function() {
+				$(this).find(':input[type=submit]').replaceWith('<center><img src="img/loader.gif" class="img-responsive" alt="processing"/></center>');
+			});
+			$('#getShift').submit(function() {
+				$(this).find(':input[type=submit]').replaceWith('<center><img src="img/loader.gif" class="img-responsive" alt="processing"/></center>');
+			});
 		</script>
 	</head>
 	<body id="applyleavebody">

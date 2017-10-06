@@ -40,8 +40,17 @@ if(isset($_REQUEST['inoutdetails']))
 	echo "<div class='form-group' id='currDayRow' style='display:none'>
 		<div class='row'>
 			<div class='col-sm-2'></div>
-			<div class='col-sm-3'><label>Date:</label></div>
-			<div class='col-sm-5'><input type='text' class='form-control' id='currentday' name='currentday' /></div>
+			<div class='col-sm-3'>
+				<label>Date:</label>
+			</div>
+			<div class='col-sm-5'>
+				<div class='input-group'>
+					<input type='text' id='currentday' class='form-control open-datetimepicker' name='currentday' >
+					<label class='input-group-addon btn' for='date'>
+						<span class='fa fa-calendar open-datetimepicker'></span>
+					</label>
+				</div>
+			</div>
 			<div class='col-sm-2'></div>
 		</div>
 	</div>";
@@ -78,11 +87,15 @@ if(isset($_REQUEST['inoutdetails']))
 		</div>
 	</div>";
 	echo "<div class='form-group'>
-		<div class='row' id='add'>
-			<div class='col-sm-12 text-center'><input type='submit' class='btn btn-primary' name='submit' value='ADD' /></div>
-			<div class='col-sm-12 text-center' style='display:none' >
-				<input type='button' id='edit' class='btn btn-info' name='edit' value='EDIT' onclick='editDetails();'/>
-				<input type='button' id='delete' class='btn btn-info' name='delete' value='DELETE' onclick='deleteDetails();' />
+		<div class='row'>
+			<div class='col-sm-12 text-center' id='add'>
+				<input type='submit' class='btn btn-primary' name='submit' value='ADD' />
+			</div>
+			<div class='col-sm-6 text-center' style='display:none; margin-left:140px;' id='edit'>
+				<input type='button' class='btn btn-warning' name='edit' value='EDIT' onclick='editDetails();'/>
+			</div>
+			<div class='col-sm-6 text-center' style='display:none; margin-left:280px; margin-top:-33px;' id='delete'>
+				<input type='button' class='btn btn-danger' name='delete' value='DELETE' onclick='deleteDetails();' />
 			</div>
 		</div>
 	</div>
@@ -101,7 +114,7 @@ if(isset($_REQUEST['Allinoutdetails'])) {
         $department = $department . "None";
         $department = $department . '</option>';
         if($resultdept) {
-                while ($row = mysql_fetch_assoc($resultdept)) {
+                while ($row = $db->fetchAssoc($resultdept)) {
                         $department = $department . '<option value="' . $row["dept"] . '">';
                         $department = $department . $row["dept"];
                         $department = $department . '</option>';
@@ -139,8 +152,17 @@ if(isset($_REQUEST['Allinoutdetails'])) {
         echo "<div class='form-group'>
 			<div class='row' id='currDayRow'>
 				<div class='col-sm-2'></div>
-				<div class='col-sm-3'><label>Date:</label></div>
-        		<div class='col-sm-5'><input type='text' class='form-control' id='currentday' name='currentday' /></div>
+				<div class='col-sm-3'>
+        			<label>Date:</label>
+        		</div>
+        		<div class='col-sm-5'>
+        			<div class='input-group'>
+						<input type='text' id='currentday' class='form-control open-datetimepicker' name='currentday'>
+							<label class='input-group-addon btn' for='date'>
+								<span class='fa fa-calendar open-datetimepicker'></span>
+							</label>
+					</div>
+        		</div>
         		<div class='col-sm-2'></div>
 	        </div>
         </div>";
@@ -178,7 +200,9 @@ if(isset($_REQUEST['Allinoutdetails'])) {
         </div>";
         echo "<div class='form-group'>
 			<div class='row' id='addAllInOut'>
-				<div class='col-sm-12 text-center'><input type='submit' class='btn btn-primary' name='submit' value='ADD' /></div>
+				<div class='col-sm-12 text-center'>
+        			<input type='submit' class='btn btn-primary' name='submit' value='ADD' />
+        		</div>
             </div>
         </div>
      </div></div></form>";
@@ -193,14 +217,14 @@ if (isset($_REQUEST['addAllInOut'])) {
 	$getDeptResult= $db->query($getDeptQuery);
 	$currDay=$_REQUEST['currentday'];
 	if(($db->countRows($getDeptResult)!=0)) {
-		while ($row = mysql_fetch_assoc($getDeptResult)) {
+		while ($row = $db->fetchAssoc($getDeptResult)) {
 			$empId=$row['empid'];
 			$empName=$row['empname'];
 			$empDept=$row['dept'];
 			if (! (isSpecialLeave($currDay,$empId) || isFullDayPTO($currDay,$empId) || isFulldayWFH($currDay,$empId) || isOptionalHolidayApplied($currDay,$empId)  ||
             	(getDay($empId,$currDay)=="First Half-WFH & Second Half-HalfDay" && getShiftforDay("First Half-WFH & Second Half-HalfDay",$empId,$currDay)!="") ||
                 (getDay($empId,$currDay)=="First Half-HalfDay & second Half-WFH" && getShiftforDay("First Half-HalfDay & second Half-WFH",$empId,$currDay)!=""))) {
-				$checkEntry=$db->query("SELECT * FROM `inout` WHERE empid='$empId' and Date='$currDay'") or die(mysql_error());
+				$checkEntry=$db->query("SELECT * FROM `inout` WHERE empid='$empId' and Date='$currDay'");
 				if ($db->countRows($checkEntry)== 0) {
 					$sqlq="insert into `inout`(EmpID,EmpName,Department,Type,Date,First,Last,TypeOfDay,reason,added_hrname) values('".$empId."','".$empName."','".$empDept."','".$empDept."','".$_REQUEST['currentday']."','".$_REQUEST['intime']."','".$_REQUEST['outtime']."','','".$_REQUEST['reason']."','".$_REQUEST['hrname']."')";
 				} else {
@@ -224,9 +248,9 @@ if (isset($_REQUEST['addAllInOut'])) {
 }
 if(isset($_REQUEST['add']))
 {
-	$sql= $db->query("SELECT * FROM `inout` WHERE empid='".$_REQUEST['empid']."' and Date='".$_REQUEST['currentday']."'") or die(mysql_error());
-	$query = $db->query("SELECT * FROM `perdaytransactions` WHERE empid='".$_REQUEST['empid']."' and date='".$_REQUEST['currentday']."'and leavetype in('WFH','halfDay') AND shift in('firsthalf', 'secondhalf')") or die(mysql_error());
-	$queries = $db->query("SELECT * FROM `perdaytransactions` WHERE empid='".$_REQUEST['empid']."' and date='".$_REQUEST['currentday']."'") or die(mysql_error());
+	$sql= $db->query("SELECT * FROM `inout` WHERE empid='".$_REQUEST['empid']."' and Date='".$_REQUEST['currentday']."'");
+	$query = $db->query("SELECT * FROM `perdaytransactions` WHERE empid='".$_REQUEST['empid']."' and date='".$_REQUEST['currentday']."'and leavetype in('WFH','halfDay') AND shift in('firsthalf', 'secondhalf')");
+	$queries = $db->query("SELECT * FROM `perdaytransactions` WHERE empid='".$_REQUEST['empid']."' and date='".$_REQUEST['currentday']."'");
 	
 	if(($db->countRows($sql)==0)&&($db->countRows($query)!=0)){
 		$sqlq="insert into `inout`(EmpID,EmpName,Department,Type,Date,First,Last,TypeOfDay,reason,added_hrname) values('".$_REQUEST['empid']."','".$_REQUEST['empname']."','".$_REQUEST['department']."','".$_REQUEST['department']."','".$_REQUEST['currentday']."','".$_REQUEST['intime']."','".$_REQUEST['outtime']."','','".$_REQUEST['reason']."','".$_REQUEST['hrname']."')";
@@ -276,10 +300,10 @@ if(isset($_REQUEST['add']))
 
 	$date=urldecode($_REQUEST['date']) ;
 	$empid=urldecode($_REQUEST['empid']) ;
-	$query= $db->query("SELECT * FROM `perdaytransactions` WHERE empid='$empid' and date='$date'and leavetype in('WFH','fullday') AND shift in('','fullday')") or die(mysql_error());
-	$sqlquery= $db->query("SELECT * FROM `perdaytransactions` WHERE empid='$empid' and date='$date'and leavetype in('WFH','HalfDay') AND shift='firsthalf'") or die(mysql_error());
-	$sqlquery1=$db->query("SELECT * FROM `perdaytransactions` WHERE empid='$empid' and date='$date'and leavetype in('WFH','HalfDay') AND shift='secondhalf'") or die(mysql_error());
-	$sqlquery2=$db->query("SELECT * FROM `inout` WHERE empid='$empid' and Date='$date'") or die(mysql_error());
+	$query= $db->query("SELECT * FROM `perdaytransactions` WHERE empid='$empid' and date='$date'and leavetype in('WFH','fullday') AND shift in('','fullday')");
+	$sqlquery= $db->query("SELECT * FROM `perdaytransactions` WHERE empid='$empid' and date='$date'and leavetype in('WFH','HalfDay') AND shift='firsthalf'");
+	$sqlquery1=$db->query("SELECT * FROM `perdaytransactions` WHERE empid='$empid' and date='$date'and leavetype in('WFH','HalfDay') AND shift='secondhalf'");
+	$sqlquery2=$db->query("SELECT * FROM `inout` WHERE empid='$empid' and Date='$date'");
 #	$sqlquery3=$db->query("SELECT * FROM `inout` WHERE empid='$empid' and Date='$date' and reason=''") or die(mysql_error());
 #	if($db->countRows($sqlquery3)!= 0)
 #	{
@@ -476,14 +500,6 @@ if(isset($_REQUEST['add']))
 		        });
 			
 				$( "#currentday" ).datepicker({
-					changeMonth: true,
-					changeYear: true,
-					buttonImage: 'public/js/datepicker/datepickerImages/calendar.gif',
-					dateFormat: 'yy-mm-dd',
-					showButtonPanel: true,
-					showOn: 'both',
-					maxDate:new Date(),
-					yearRange: '-1',
 					onSelect: function(dateText, inst) {
 				        var date = $(this).val();
 				        var empid= $("#empid").val();

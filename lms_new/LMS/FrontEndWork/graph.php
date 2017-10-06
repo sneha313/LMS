@@ -38,35 +38,35 @@ function getFourtyMark($empid,$from,$to)
 	$tickcount=$tickcount+7;
 	while($end<=getFriday($to)) 
 	{
-			$sum=0;
-			$numTicks=$numTicks+1;
-			$day=date('D,d M y', strtotime($end));
-			$xticksFortyCurve=$xticksFortyCurve."[$tickcount,\"$day\"],";
-			$tickcount=$tickcount+7;
-			$query="select * from `inout` where empid=".$empid." and Date between '$start' and '$end'  order by Date";
-			$result=$db->query($query);
-			$noRows=$db->countRows($result);
-			while($row=mysql_fetch_assoc($result)) 
-			{
-				$diff=timediffinHR($row['First'],$row['Last']);
-				$sum=$sum+$diff;
-			}
-			if($noRows!=0) {
-				$avg=($sum/$noRows);
-				$xcount=$xcount+7;
-				$curve=$curve."[".$xcount.",".$avg."],";
-			} else {
-				$xcount=$xcount+7;
-				$curve=$curve."[$xcount,null],";
-			}
-			$start=getNextMonday($start);
-			$end=getFriday($start);
+		$sum=0;
+		$numTicks=$numTicks+1;
+		$day=date('D,d M y', strtotime($end));
+		$xticksFortyCurve=$xticksFortyCurve."[$tickcount,\"$day\"],";
+		$tickcount=$tickcount+7;
+		$query="select * from `inout` where empid=".$empid." and Date between '$start' and '$end'  order by Date";
+		$result=$db->query($query);
+		$noRows=$db->countRows($result);
+		while($row=mysql_fetch_assoc($result)) 
+		{
+			$diff=timediffinHR($row['First'],$row['Last']);
+			$sum=$sum+$diff;
+		}
+		if($noRows!=0) {
+			$avg=($sum/$noRows);
+			$xcount=$xcount+7;
+			$curve=$curve."[".$xcount.",".$avg."],";
+		} else {
+			$xcount=$xcount+7;
+			$curve=$curve."[$xcount,null],";
+		}
+		$start=getNextMonday($start);
+		$end=getFriday($start);
 	}
-		$curve=rtrim($curve,",");
-		$curve=$curve."]";
-		$xticksFortyCurve=rtrim($xticksFortyCurve,",");
-		$xticksFortyCurve=$xticksFortyCurve."]";
-		return $curve;
+	$curve=rtrim($curve,",");
+	$curve=$curve."]";
+	$xticksFortyCurve=rtrim($xticksFortyCurve,",");
+	$xticksFortyCurve=$xticksFortyCurve."]";
+	return $curve;
 }
 
 
@@ -95,7 +95,7 @@ $foutyHourCurve=$foutyHourCurve."]";
 //<div> id's
 $contain_three="contain_three_$empid";
 
-echo "<table>
+echo "<table class='table table-hover'>
 	  <tr>
     <td>
 	  <div id='".$contain_three."' style='width:1200px;height:384px;margin:8px;'></div>

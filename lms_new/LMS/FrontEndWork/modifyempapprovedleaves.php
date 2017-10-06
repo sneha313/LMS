@@ -62,19 +62,18 @@
 													<td>'.$row['enddate'].'</td>
 													<td>'.$row['count'].'</td>
 													<td>'.$row['reason'].'</td>
-													<td>'.$row['approvalstatus'].'</td>';
+													<td>'.$row['approvalstatus'].'</td><td>';
 													if (!preg_match('/CompOff Leave/', $row['reason'])) {
-														echo '<td><button id="modifytid" title="'.$row['transactionid'].'" class="'.$row['empid'].'"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></td>';
+														echo '<button id="modifytid" title="'.$row['transactionid'].'" class="'.$row['empid'].'"><font color="green"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></font></button>';
 													}
-											  		echo '<td><button id="deltid" title="'.$row['transactionid'].'" class="'.$row['empid'].'"><font color="red"><i class="fa fa-trash" aria-hidden="true"></i></button></td>
+											  		echo '<button id="deltid" title="'.$row['transactionid'].'" class="'.$row['empid'].'"><font color="red"><i class="fa fa-trash" aria-hidden="true"></i></font></button>
+													</td>
 												</tr>
 											</table>';
 							}
 							else {
 								echo "<script>BootstrapDialog.alert(\"You dont have permissions to change '".$empnamerow['empname']." ' transaction\");</script>";
 							}
-
-							echo '</div></div>';
 					}
 					
 					function displayRecentTrans($emp)
@@ -85,6 +84,11 @@
 						$empnamerow=$db->fetchAssoc($empnametresult);
 						$sql=$db->query("select * from empleavetransactions where approvalstatus='Approved' and empid='".$empnamerow['empid']."'");
 						$childern=getChildren($_SESSION['u_empid']);
+						echo "<div class='panel panel-primary'>
+						<div class='panel-heading text-center'>
+						<strong style='font-size:20px;'>Modify Employee Approved Leaves</strong>
+						</div>
+						<div class='panel-body'>";
 						if(in_array($empnamerow['empid'],$childern) || ($_SESSION['user_dept']=="HR")) {
 							echo "<table class='table table-hover'>
 								  	<caption> Click on tranasaction Id to modify approved Leaves.</caption>
@@ -108,10 +112,13 @@
 												</tr>';
 									}
 										echo "</table>";
+								  
 							}
 							else {
 								echo "<script>BootstrapDialog.alert(\"You dont have permissions to change '".$empnamerow['empname']." ' transaction\");</script>";
 							}
+							echo "</div>
+							</div>";
 						}
 						if(isset($_REQUEST['change']))
 						{
@@ -196,11 +203,11 @@
 										<div class="row"> 
 								   		  <div class="col-sm-1"></div>
 							              <div class="col-sm-3"><label style="font-size:16px;">Enter Employee Name:</label></div>
-							        	  <div class="col-sm-4"><input type="text" id="empuser" class="form-control ui-autocomplete-input" autocomplete="off" name="empuser"/></div>';
-										  echo '<div class="col-sm-3"><input class="submit btn btn-primary" type="submit" name="submit" value="SUBMIT"/></div>	
+							        	  <div class="col-sm-4"><input type="text" id="empuser" class="form-control ui-autocomplete-input" autocomplete="off" name="empuser"/></div>
+										  <div class="col-sm-3"><input class="submit btn btn-primary" type="submit" name="submit" value="SUBMIT"/></div>	
 										<div class="col-sm-1"></div>
 									</div>
-									</form>';
+								</form>';
 							}
 				?>
 		</div>
@@ -210,11 +217,6 @@
 				 $('#'+divid).load(''+url+'');
 			}
 			$("document").ready(function() {
-				$("#addextrawfhmanager").click(function() {
-					hidealldiv('loadmanagersection');
-					$("#"+divid).load('wfhhours/manageraddwfhforemp.php?role=manager');
-				});
-				
 				$('#modifyday').submit(function() {
 					$.ajax({ 
 					data: $(this).serialize(), 
@@ -224,7 +226,7 @@
 						$('#'+divid).html(response); 
 					}
 					});
-							return false; 
+					return false; 
 				});
 				
 				$('#deletetid').submit(function() {
@@ -250,7 +252,6 @@
 						type: $(this).attr('method'), 
 						url: $(this).attr('action'), 
 						success: function(response) { 
-							//$("#loadmanagersection").html(response);
 						    $('#'+divid).html(response); 
 						}
 					});

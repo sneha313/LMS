@@ -5,7 +5,6 @@ $db=connectToDB();
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" media="screen" href="public/css/teamapproval.css" />
 		<?php
 			if(isset($_REQUEST['role']))
 			{
@@ -80,7 +79,8 @@ $db=connectToDB();
 		        	$('#'+divid).load('approveEmpleave.php?empuser='+empName);
 		        });
 		  	}        
-		        
+
+		  
 		</script>
 	</head>
 	<body>
@@ -178,7 +178,7 @@ $db=connectToDB();
 					$result=$db->query("UPDATE  empleavetransactions SET  `approvalstatus` =  'Cancelled',`approvalcomments` = '".$comments."'  WHERE  `transactionid` ='".$transactionid."'");
 					if($result)
 					{
-						echo "<script>BotstrapDialog.alert(\"Not Approved\");</script>";
+						echo "<script>BootstrapDialog.alert(\"Not Approved\");</script>";
 						//send mail for Not approved status to emp and manager to whom manager not approved leave
 						$cmd = '/usr/bin/php -f sendmail.php '.$transactionid.' '.$row1['empid'].'  notApproveLeave >> /dev/null &';
 						exec($cmd);
@@ -207,101 +207,121 @@ $db=connectToDB();
 					</form>';
 					if(!empty($empName)) {
 					?>
-					<table class="table table-hover" id="teamapprove">
-					<thead>
-						<tr class="info">
-							<th>Employee Name</th>
-							<th>Start Date</th>
-							<th>End Date</th>
-							<th>Count</th>
-							<th>Reason</th>
-							<th>Approval Status</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php
-						// Check whether the given employee is a manager or user
-						
-						//$emparray=getemp($_SESSION['u_empid']);
-						$empIdList=array();
-						$emparrayquery=$db->query("SELECT empid,empname,role FROM  `emp` WHERE state='Active' and empname='".$empName."'");
-						$emparray=$db->fetchAssoc($emparrayquery);
-						$childern=getemp($_SESSION['u_empid']);
-				        if(in_array($emparray['empid'],$childern) || ($_SESSION['user_dept']=="HR")) {	
-							if (strtoupper($emparray['role']) == "MANAGER") {
-								array_push($empIdList,$emparray['empid']);
-								$subOrdinateQuery=$db->query("select empid from emp where state='Active' and managerid='".$emparray['empid']."'");
-								while($subOrdinateResult = $db->fetchAssoc($subOrdinateQuery)) {
-									$val=$subOrdinateResult['empid'];
-									array_push($empIdList,$val);
+					<div class="panel panel-primary">
+						<div class="panel-heading text-center">
+							<strong style="font-size:20px;">Approve Employee Leaves</strong>
+						</div>
+						<div class="panel-body">
+							<table class="table table-hover" id="teamapprove">
+							<thead>
+								<tr class="info">
+									<th>Employee Name</th>
+									<th>Start Date</th>
+									<th>End Date</th>
+									<th>Count</th>
+									<th>Reason</th>
+									<th>Approval Status</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php
+								// Check whether the given employee is a manager or user
+								
+								//$emparray=getemp($_SESSION['u_empid']);
+								$empIdList=array();
+								$emparrayquery=$db->query("SELECT empid,empname,role FROM  `emp` WHERE state='Active' and empname='".$empName."'");
+								$emparray=$db->fetchAssoc($emparrayquery);
+								$childern=getemp($_SESSION['u_empid']);
+						        if(in_array($emparray['empid'],$childern) || ($_SESSION['user_dept']=="HR")) {	
+									if (strtoupper($emparray['role']) == "MANAGER") {
+										array_push($empIdList,$emparray['empid']);
+										$subOrdinateQuery=$db->query("select empid from emp where state='Active' and managerid='".$emparray['empid']."'");
+										while($subOrdinateResult = $db->fetchAssoc($subOrdinateQuery)) {
+											$val=$subOrdinateResult['empid'];
+											array_push($empIdList,$val);
+										}
+									} else {
+										array_push($empIdList,$emparray['empid']);
+									}
+									$count=0;
+									$pendingLeaves=0;	
+									foreach ($empIdList as $empID) {
+										$sql=$db->query("select id,transactionid,startdate,enddate,count,reason,approvalstatus,approvalcomments from empleavetransactions where empid='".$empID."' and approvalstatus='Pending'");
+							            $empnamequery=$db->query("select empname from emp where state='Active' and empid=".$empID);
+						        	    $emprow=$db->fetchAssoc($empnamequery);
+						               	for($x=0;$x<$db->countRows($sql);$x++)
+						                {
+						                	$row=$db->fetchArray($sql);
+						                    echo '<tr><td>'.$emprow['empname'].'</td>';
+							                echo '<td>'.$row['startdate'].'</td>';
+						        	        echo '<td>'.$row['enddate'].'</td>';
+						                	echo '<td>'.$row['count'].'</td>';
+						                    echo '<td>'.$row['reason'].'</td>';
+						                    echo '<td>'.$row['approvalstatus'].'</td>';
+						                  	echo '<td><div class="arrow"></div></td></tr>';
+							                $sql1=$db->query("select * from perdaytransactions where transactionid='".$row['transactionid']."'");
+						        	        echo '<tr>
+						                	      	<td colspan="6">
+						                        		<table class="table table-hover">
+						                        	    	<tr class="info">
+						                        		    	<th>Date</th>
+						                        	        	 <th>Leave Type</th>
+							                                     <th>Shift</th>
+						        	                        </tr>';
+						                	                for($j=0;$j<$db->countRows($sql1);$j++)
+						                        	        {
+						                        	         	$row1=$db->fetchArray($sql1);
+						                        		        echo '<tr></tr><tr><td>'.$row1['date'].'</td>';
+						                        	        	echo '<td>'.$row1['leavetype'].'</td>';
+							                                    echo '<td>'.$row1['shift'].'</td></tr>';
+						        	                        }
+						                	                echo '<tr></tr><tr><td colspan="6">
+																<div class="form-group">
+																	<div class="row">
+																		<div class="col-sm-12 text-center">
+																			<input type="submit" class="btn btn-info" id="notapprove" onclick="notapprove'.$count.'()" value="Not Approve">
+						                        	        				<input type="submit" class="btn btn-success" id="approve" onclick="approve(\''.$empName.'\',\''.$row['transactionid'].'\')" value="Approve">';
+						                        	        echo '</div></div></div></td></tr>
+					        							</table>
+														<div class="form-group">
+															<div class="row">
+																<div id="comments'.$count.'">
+																	<div class="col-sm-4">
+														        		<textarea class="form-control" id=txtMessage'.$count.' rows="2" cols="20" placeholder="Write Comments"></textarea>
+																	</div>
+																	<div class="col-sm-2">
+														        		<input type="submit" class="btn btn-primary" onclick="submitcomments(\''.$empName.'\',\''.$row['transactionid'].'\','.$count.')" value="OK">
+																	</div>
+																	<div class="col-sm-2"></div>
+																</div>
+															</div>
+														</div>
+													</td>
+												</tr><tr></tr>';             
+						                        		
+											echo '<script type="text/javascript">';
+						        	        echo '$("#comments'.$count.'").hide();';
+									        echo 'function notapprove'.$count.'(tid){
+						                    	$("#comments'.$count.'").toggle();
+											}';
+										    echo "</script>";
+											$count=$count+1;
+											$pendingLeaves=1;
+						            	}
+									}
+									if ($pendingLeaves == 0) {
+										echo "<tr><td colsapn='6'>No Pending Leaves Available</td></tr>";
+									}
+								} else {
+									echo "<script>BootstrapDialog.alert(\"You dont have permissions to approve '".$emparray['empname']." ' Leaves\");</script>"; 
 								}
-							} else {
-								array_push($empIdList,$emparray['empid']);
-							}
-							$count=0;
-							$pendingLeaves=0;	
-							foreach ($empIdList as $empID) {
-								$sql=$db->query("select id,transactionid,startdate,enddate,count,reason,approvalstatus,approvalcomments from empleavetransactions where empid='".$empID."' and approvalstatus='Pending'");
-					            $empnamequery=$db->query("select empname from emp where state='Active' and empid=".$empID);
-				        	    $emprow=$db->fetchAssoc($empnamequery);
-				               	for($x=0;$x<$db->countRows($sql);$x++)
-				                {
-				                	$row=$db->fetchArray($sql);
-				                    echo '<tr><td>'.$emprow['empname'].'</td>';
-					                echo '<td>'.$row['startdate'].'</td>';
-				        	        echo '<td>'.$row['enddate'].'</td>';
-				                	echo '<td>'.$row['count'].'</td>';
-				                    echo '<td>'.$row['reason'].'</td>';
-				                    echo '<td>'.$row['approvalstatus'].'</td>';
-				                  	echo '<td><div class="arrow"></div></td></tr>';
-					                $sql1=$db->query("select * from perdaytransactions where transactionid='".$row['transactionid']."'");
-				        	        echo '<tr>
-				                	      	<td colspan="3">
-				                        		<table class="table table-hover">
-				                        	    	<tr class="info">
-				                        		    	<th>Date</th>
-				                        	        	 <th>Leave Type</th>
-					                                     <th>Shift</th>
-				        	                        </tr>';
-				                	                for($j=0;$j<$db->countRows($sql1);$j++)
-				                        	        {
-				                        	         	$row1=$db->fetchArray($sql1);
-				                        		        echo '<tr></tr><tr><td>'.$row1['date'].'</td>';
-				                        	        	echo '<td>'.$row1['leavetype'].'</td>';
-					                                    echo '<td>'.$row1['shift'].'</td>';
-				        	                        }
-				                	                echo '<tr></tr><tr><td><button onclick="notapprove'.$count.'()">Not Approve</button></td>';
-				                        	        echo '<td><button onclick="approve(\''.$empName.'\',\''.$row['transactionid'].'\')">Approve</button></td>';
-				                        	        echo '</tr>
-			        							</table>
-			            						<div id="comments'.$count.'">
-									        		<textarea id=txtMessage'.$count.' rows="2" cols="20" placeholder="Write Comments"></textarea>
-									        		<button onclick="submitcomments(\''.$empName.'\',\''.$row['transactionid'].'\','.$count.')">OK</button>
-												</div>
-											</td>
-										</tr><tr></tr>';             
-				                        		
-									echo '<script type="text/javascript">';
-				        	        echo '$("#comments'.$count.'").hide();';
-							        echo 'function notapprove'.$count.'(tid){
-				                    	$("#comments'.$count.'").toggle();
-									}';
-								    echo "</script>";
-									$count=$count+1;
-									$pendingLeaves=1;
-				            	}
-							}
-							if ($pendingLeaves == 0) {
-								echo "<tr><td colsapn='6'>No Pending Leaves Available</td></tr>";
-							}
-						} else {
-							echo "<script>BootstrapDialog.alert(\"You dont have permissions to approve '".$emparray['empname']." ' Leaves\");</script>"; 
-						}
-					}	 
-				?>
-				</tbody>
-			</table>
-	</div><!-- 10 column div close -->
+							}	 
+						?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+	</div><!-- 12 column div close -->
 	</body>
 </html>

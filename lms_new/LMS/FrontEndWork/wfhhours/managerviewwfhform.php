@@ -156,12 +156,12 @@
 					}
 				}
 				if(isset($_REQUEST['deleteExtrahour'])){
-					//edit form here employee can edit extra work from home hour and date
+					//delete form here employee can delete extra work from home hour and date
 					$tid=$_REQUEST['tid'];
 					## query database if row exists
 					$tquery="select wfhHrs, date,eid from extrawfh where `tid`='$tid'";
-					$tresult=mysql_query($tquery);
-					$tresult=mysql_fetch_array($tresult);
+					$tresult=$db->query($tquery);
+					$tresult=$db->fetchArray($tresult);
 					## if exists, get number of hrs and date
 					$noh=$tresult['wfhHrs'];
 					$date=$tresult['date'];
@@ -336,7 +336,9 @@
 					</form><!-- form close -->
 						<script>
 							$(".open-datetimepicker").datetimepicker({
-							    format: "yyyy-mm-dd"
+								format: 'yyyy-mm-dd',
+		                        minView : 2,
+		                        autoclose: true  
 							});
 						</script>
 					<?php 

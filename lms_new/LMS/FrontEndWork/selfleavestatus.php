@@ -57,7 +57,8 @@ echo '<html>
         getDynamicSelectOptions();
 		echo '});</script>
 </head>
-<body><div class="container-fluid"><div class="row"><div class="col-sm-12">';
+<body>
+   <div class="col-sm-12">';
 	echo '<div class="panel panel-primary">
 	    	<div class="panel-heading text-center">
 	    		<strong style="font-size:20px;">Pending Leaves</strong>
@@ -68,8 +69,8 @@ echo '<html>
 					<th>Start Date</th>
 					<th>End Date</th>
 					<th>Count</th>
-					<th width="20%">Reason</th>
-					<th colspan=2>Actions</th>
+					<th>Reason</th>
+					<th>Actions</th>
 					<th></th>
 				</tr><tr>';
 				$sql = $db -> query("select * from empleavetransactions where empid='" . $_SESSION['u_empid'] . "' and approvalstatus='Pending'");
@@ -82,7 +83,7 @@ echo '<html>
 					echo '<td>' . $row['reason'] . '</td>';
 					if($row['leave_type']=='compoff')
 					{
-						echo '<td><a id="deltid' . $i . '" href=' . $_SERVER['PHP_SELF'] . '?deltid=1&tid=' . $row['transactionid'] . '&compoffdate='. $row['startdate'] .'>Delete</td>';
+						echo '<td><a id="deltid' . $i . '" href=' . $_SERVER['PHP_SELF'] . '?deltid=1&tid=' . $row['transactionid'] . '&compoffdate='. $row['startdate'] .'><i class="fa fa-trash" aria-hidden="true"></i></td>';
 					}
 					else{
 						echo '<td><a class="modify" href="#"><i class="fa fa-pencil" aria-hidden="true"></i></a> &nbsp;' . '<a id="deltid' . $i . '" href=' . $_SERVER['PHP_SELF'] . '?deltid=1&tid=' . $row['transactionid'] . '><i class="fa fa-trash" aria-hidden="true"></i></td>';
@@ -134,7 +135,7 @@ echo '<html>
 			});
 		';
 	}
-echo "</script></div></div></div></body>
+echo "</script></div></body>
 </html>";
 }
 ?>

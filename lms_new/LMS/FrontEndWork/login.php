@@ -160,7 +160,7 @@
 										<div class="row">
 											<div class="col-sm-3"></div>
 											<div class="col-sm-6">
-												<a href="help.php"><i class="fa fa-question-circle" aria-hidden="true"></i><b> Need Help</b></a>
+												<a href="needhelp.php"><i class="fa fa-question-circle" aria-hidden="true"></i><b> Need Help</b></a>
 											</div>
 											<div class="col-sm-3"></div>
 										</div>

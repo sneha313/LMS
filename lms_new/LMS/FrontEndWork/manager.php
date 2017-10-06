@@ -8,7 +8,7 @@
 ?>
 <html>
 	<head>
-			<script>
+		<script>
 			function removeByIndex(arr, index) {
 				arr.splice(index, 1);
 			}
@@ -22,6 +22,10 @@
 				}
 				return arr;
 			}
+			$("#applyteammemberleaveid").click(function(){
+				hidealldiv('loadmanagersection');
+				$("#loadmanagersection").load('applyteammemberleave.php?getEmp=1');
+			});
 			$("#managermodifyempapprovedleaves").click(function() {
 				hidealldiv('loadmanagersection');
 				$("#loadmanagersection").load('modifyempapprovedleaves.php?role=manager');
@@ -38,10 +42,6 @@
 			     hidealldiv('loadmanagersection');
           		     $("#loadmanagersection").load('wfhhours/managerviewwfhform.php?role=manager&viewform=1');
        		});
-			//$("#modifyextrawfhmanager").click(function() {
-			   //  hidealldiv('loadmanagersection');
-         		// $("#loadmanagersection").load('wfhhours/modifyExtrawfhhour.php?role=manager');
-      		//});
 			$("#approveextrawfhmanager").click(function() {
 			     hidealldiv('loadmanagersection');
          		 $("#loadmanagersection").load('wfhhours/approveEmpExtrawfhhour.php?role=manager&approveview=1');
@@ -75,9 +75,9 @@
 					<strong style="font-size:20px;">Manager Section</strong>
 				</div>
   				<div class="panel-body table-responsive">
-					<table class="table table-bordered table-hover">
-						<tr>
-                            <td><a id="applyteammemberleaveid" href="applyteammemberleave.php?getEmp=1" >Apply Leave For Team</a></td>
+					<!-- <table class="table table-bordered table-hover">
+						 <tr>
+                            <td><a id="applyteammemberleaveid" href="#" >Apply Leave For Team</a></td>
                             <td>Manager can apply leaves for their team members.</td>
                         </tr>
 						<tr>
@@ -100,10 +100,99 @@
                             <td><a id="approveextrawfhmanager" href="#">Approve/Cancel Extra WFH Hour</a></td>
                             <td>Manager can approve/delete extra WFH hour applied by their team member.</td>
                         </tr>
+					</table>-->
+					<!--Approve/Delete Extra WFH Hour by hr panel start-->
+					
+						
+					<table class="table table-bordered">
+						<tr>
+							<td>
+								<div class="panel panel-info">
+									<div class="panel-heading">Apply Leave For Team</div>
+									<!-- apply leave for team by manager panel body start-->
+									<div class="panel-body table-responsive">
+										<table class="table table-bordered table-hover">
+											<tr>
+												<td><a id="applyteammemberleaveid" href="#" >Apply Leave For Team</a></td>
+												<td>Manager can apply leaves for their team members.</td>
+											</tr>
+										</table>
+									</div><!-- apply leave for team by manager panel body close-->
+								</div><!-- apply leave for team by manager panel close -->
+								<div class="panel panel-info">
+									<div class="panel-heading">Add Extra WFH Hour</div>
+									<!-- Add Extra WFH Hour by manager panel body start-->
+									<div class="panel-body table-responsive">
+										<table class="table table-bordered table-hover">
+											<tr>
+												<td><a id='addextrawfhmanager' href="#">Add Extra WFH Hour</a></td>
+												<td>Manager can apply leaves for their team members.</td>
+											</tr>
+										</table>
+									</div><!-- Add Extra WFH Hour by manager panel body close-->
+								</div><!-- Add Extra WFH Hour by manager panel close -->
+								<!--Approve/Delete Extra WFH Hour by hr panel start-->
+								<div class="panel panel-info">
+									<div class="panel-heading">Approve/Cancel Extra WFH Hour</div>
+									<!-- apply leave by hr panel body start-->
+									<div class="panel-body table-responsive">
+										<table class="table table-bordered table-hover">
+											<tr>
+												<td><a id="approveextrawfhmanager" href="#">Approve/Cancel Extra WFH Hour</a></td>
+												<td>Manager can approve/delete extra WFH hour applied by their team member.</td>
+											</tr>
+										</table>
+									</div><!-- Approve/Delete Extra WFH Hour by hr panel body close-->
+								</div><!-- Approve/Delete Extra WFH Hour by hr panel close -->
+							</td>
+							
+	                        <td>
+								<!--hr report panel start-->
+								<div class="panel panel-info">
+	  								<div class="panel-heading">Modify Employee Approved Leaves</div>
+									<!--hr report panel body start-->
+	  								<div class="panel-body table-responsive">
+										<table class="table table-bordered table-hover">
+											<tr>
+												<td><a id="managermodifyempapprovedleaves" href="#">Modify Employee Approved Leaves</a></td>
+												<td>Manager can edit/delete employee approved leaves.</td>
+											</tr>
+										</table>
+									</div><!--hr report panel body close-->
+								</div><!--hr report panel close-->
+								
+								<!--apply leave by hr panel start-->
+								<div class="panel panel-info">
+									<div class="panel-heading">View/Modify Extra WFH Hour</div>
+									<!-- apply leave by hr panel body start-->
+									<div class="panel-body table-responsive">
+										<table class="table table-bordered table-hover">
+											<tr>
+												<td><a id="viewextrawfhmanager" href="#">View/Modify Extra WFH Hour</a></td>
+												<td>Manager can view or modify extra WFH hour for their team member.</td>
+											</tr>
+										</table>
+									</div><!-- apply leave by hr panel body close-->
+								</div><!-- apply leave by hr panel close -->
+								<!--Approve/Delete Extra WFH Hour by hr panel start-->
+								<div class="panel panel-info">
+									<div class="panel-heading">Approve Employee Leaves</div>
+									<!-- apply leave by hr panel body start-->
+									<div class="panel-body table-responsive">
+										<table class="table table-bordered table-hover">
+											<tr>
+												<td><a id="managerApproveEmpLeave" href="#">Approve Employee Leaves</a></td>
+												<td>Manager can approved employee pending leaves.</td>
+											</tr>
+										</table>
+									</div><!-- Approve/Delete Extra WFH Hour by hr panel body close-->
+								</div><!-- Approve/Delete Extra WFH Hour by hr panel close -->
+                        	</td>
+						</tr>
 					</table>
-  				</div>
-			</div>
-		</div>
+  				</div><!-- panel-body div close -->
+			</div><!-- panel div close -->
+		</div><!-- 12 column div close -->
 		<script>
 			function removeByValue(arr, val) {
 				for(var i=0; i<arr.length; i++) {
@@ -136,14 +225,18 @@
 				
 			$(document).ready(function() {
 				$(".open-datetimepicker").datetimepicker({
-					format: "dd-mm-yy"
+					format: 'yyyy-mm-dd',
+                    minView : 2,
+                    autoclose: true  
 				});
 				
 				$(".open-datetimepicker1").datetimepicker({
-					format: "dd-mm-yy"
+					format: 'yyyy-mm-dd',
+                    minView : 2,
+                    autoclose: true  
 				});
 				
-				$("#addextrawfhmanager").click(function() {
+				/*$("#addextrawfhmanager").click(function() {
 					//hidealldiv('loadmanagersection');
 					$.ajax({
 							data : $(this).serialize(),
@@ -154,9 +247,9 @@
 							}
 						});
 						return false;
-				});
+				});*/
 				
-				$("#viewextrawfhmanager").click(function() {
+				/*$("#viewextrawfhmanager").click(function() {
 					//hidealldiv('loadmanagersection');
 					$.ajax({
 							data : $(this).serialize(),
@@ -167,7 +260,7 @@
 							}
 						});
 						return false;
-				});
+				});*/
 			});
 		</script>
 	</body>

@@ -2,6 +2,16 @@
 	session_start();
 	include 'Library.php';
 	$db=connectToDB();
+?>
+<html>
+<body>
+<div class="col-sm-12">
+<div class="panel panel-primary">
+			<div class="panel-heading text-center">
+				<strong style="font-size:20px;">Balance Leaves</strong>
+			</div>
+			<div class="panel-body">
+<?php 
 	if(isset($_REQUEST['getdetailedleaves']))
 	{
 		$query="select * from emptotalleaves where empid='".$_SESSION['u_empid']."'";
@@ -19,7 +29,7 @@
 			$noOfLeavesUptocurrentMonth=$noOfLeavesUptoPreviousMonth+2.08;
 			$noOfLeavesUptocurrentMonth=ceil($noOfLeavesUptocurrentMonth);
 		}
-	echo '<table class="table table-hover" style="font-size: 2px" class="display">
+	echo '<table class="table table-hover table-bordered" class="display">
 			<thead>
 				<tr class="info">
 					<th>Status of Leave Balance</th>
@@ -42,6 +52,9 @@
 
 	echo "</tbody></table>";
 }
+?>
+</div></div>
+<?php 
 if(isset($_REQUEST['getleaves']))
 {
 	$query="select * from emptotalleaves where empid='".$_SESSION['u_empid']."'";
@@ -50,3 +63,5 @@ if(isset($_REQUEST['getleaves']))
 	echo ($row['carryforwarded']+$row['balanceleaves']);
 }
 ?>
+</div>
+</body></html>

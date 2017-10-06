@@ -78,12 +78,14 @@
 							<div class="panel-body">
 								<div class="form-group">
 								<div class="row">
-									<div class="col-sm-6">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
 										<label>Employee Name</label>
 									</div>
-									<div class="col-sm-6">
+									<div class="col-sm-5">
 										<input name="emp_name" type="text" class="form-control" id="emp_name" value="'.$empnamerow['empname'].'" readonly required>
 									</div>
+									<div class="col-sm-2"></div>
 								</div>
 								</div>
 								
@@ -97,21 +99,24 @@
 								
 								<div class="form-group">
 								<div class="row">
-									<div class="col-sm-6">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
 										<label>Employee Id</label>
 									</div>
-									<div class="col-sm-6">
+									<div class="col-sm-5">
 										<input name="empid" type="text" class="form-control" id="empid" value="'.$empnamerow['empid'].'" required readonly>
 									</div>
+									<div class="col-sm-2"></div>
 								</div>
 								</div>
 							
 								<div class="form-group">
 								<div class="row">
-									<div class="col-sm-6">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
 										<label>Date</label>
 									</div>
-									<div class="col-sm-6">
+									<div class="col-sm-5">
 										<div class="input-group">
 											<input type="text" id="Extrawfhhours" class="form-control open-datetimepicker" name="dynamicworked_day" readonly />
 											<label class="input-group-addon btn" for="date">
@@ -119,28 +124,33 @@
 											</label>
 										</div>
 									</div>
+									<div class="col-sm-2"></div>
 								</div>
 								</div>
 								
 								<div class="form-group">
 								<div class="row">
-									<div class="col-sm-6">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
 										<label>No. of Hrs</label>
 									</div>
-									<div class="col-sm-6">
+									<div class="col-sm-5">
 										<input name="noh" type="text" class="form-control" id="noh" readonly required>
 									</div>
+									<div class="col-sm-2"></div>
 								</div>
 								</div>
 								
 								<div class="form-group">
 								<div class="row">
-									<div class="col-sm-6">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
 										<label>Reason</label>
 									</div>
-									<div class="col-sm-6">
+									<div class="col-sm-5">
 										<textarea name="reason" class="form-control" id="reason" required></textarea>
 									</div>
+									<div class="col-sm-2"></div>
 								</div>
 								</div>
 								
@@ -158,14 +168,9 @@
 						<script>
 							$(document).ready(function(){
 								$(".open-datetimepicker").datetimepicker({
-									changeMonth: true,
-									changeYear: true,
-									showButtonPanel: true,
-									dateFormat: "yy-mm-dd",
-									yearRange: "-1:+0",
-									maxDate: "+0D",
-									showOn: "both",
-									buttonImageOnly: true,
+									format: "yyyy-mm-dd",
+			                        minView : 2,
+			                        autoclose: true  
 								});
 							});
 						</script>';

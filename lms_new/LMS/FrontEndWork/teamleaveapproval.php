@@ -5,8 +5,6 @@
 ?>
 <html>
 	<head>
-	<title>Team Approval</title>
-	<link rel="stylesheet" type="text/css" media="screen" href="css/teamapproval.css" />
 	<script type="text/javascript">  
 			$("document").ready(function(){
 				$("#teamapprove tr:odd").addClass("odd");

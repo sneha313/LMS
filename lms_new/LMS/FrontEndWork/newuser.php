@@ -8,11 +8,14 @@ $db=connectToDB();
 <head>
 <script type="text/javascript">
 $("document").ready( function () {
-	$("#view_emp").click(function(){
-		$("#loadhrsection").show("fast",function() {	
-			window.location="eciemp.php";
-		});
+	$('#addempform').submit(function() {
+		$(this).find(':input[type=submit]').replaceWith('<center><img src="img/loader.gif" class="img-responsive" alt="processing"/></center>');
 	});
+
+	$('#editempform2').submit(function() {
+		$(this).find(':input[type=submit]').replaceWith('<center><img src="img/loader.gif" class="img-responsive" alt="processing"/></center>');
+	});
+
 	jQuery(function() {
         jQuery('#empusername').autocomplete({
             minLength: 1,
@@ -33,7 +36,7 @@ $("document").ready( function () {
         });
     });
   	$('#delempform').submit(function() {
-  		var r=confirm("Delete Employee!");
+  		var r=BootstrapDialog.confirm("Delete Employee!");
 		if (r==true)
 		{
   				$.ajax({ 
@@ -47,7 +50,7 @@ $("document").ready( function () {
   				return false;
  		}
   		else {
-  			alert("You pressed Cancel!");
+  			BootstrapDialog.alert("You pressed Cancel!");
   			return false;
 		}
   	});
@@ -154,6 +157,9 @@ $("document").ready( function () {
 	$("#del_emp").click(function(){
 		$("#loadhrsection").load('newuser.php?del_emp=1');
 	});
+	$("#view_emp").click(function(){
+		$("#loadhrsection").load("eciemp.php");
+	});
 	$("#newrole").change(function(){
 		if($("#newrole").val()=="manager") {
 			$("#addmanagerlevel").show();
@@ -162,37 +168,28 @@ $("document").ready( function () {
 		} 
 	});
 	$("#editrole").change(function(){
-                if($("#editrole").val()=="manager") {
-                        $("#editmanagerlevel").show();
-                } else {
-                        $("#editmanagerlevel").hide();
-                } 
-        });
+    	if($("#editrole").val()=="manager") {
+       		$("#editmanagerlevel").show();
+     	} else {
+        	$("#editmanagerlevel").hide();
+        } 
+	});
 });
 </script>
 <style type="text/css">
 #add_emp {
 cursor: pointer;
 }
-
-#edit_emp {
+#edit_emp{
 cursor: pointer;
 }
-
 #del_emp {
 cursor: pointer;
 }
-
 #view_emp {
 cursor: pointer;
 }
-
 </style>
-<?php 
-$getCalIds = array("joiningdate","birthdate");
-$calImg=getCalImg($getCalIds,"-2","0");
-echo $calImg;
-?>
 </head>
 <body>
 <?php 
@@ -200,7 +197,7 @@ function getSelectBoxOptions($query,$value,$option,$id,$default)
 {
 	global $db;
 	$selectstr="";
-	$selectstr.="<select name='$option' id=$id'>";
+	$selectstr.="<select class='form-control' name='$option' id=$id'>";
 	$result=$db->query($query);
 	while($row=$db->fetchAssoc($result))
 	{
@@ -218,19 +215,38 @@ function getSelectBoxOptions($query,$value,$option,$id,$default)
 
 if(isset($_REQUEST['userlinks']))
 {
-	echo "<ul>";
-	echo "<li><a id='add_emp''>Add Employee </a></li><br>";
-	echo "<li><a id='edit_emp''>Edit Employee </a></li><br>";
-	echo "<li><a id='del_emp''>Delete Employee </a></li><br>";
-	echo "<li><a id='view_emp''>View Employee Details</a></li><br>";
-	echo "</ul>";
+	echo "<div class='panel panel-primary'>
+			<div class='panel-heading text-center'>
+				<strong style='font-size:20px;'>Employee Details</strong>
+			</div>
+			<div class='panel-body'>
+				<table class='table table-bordered table-hover'>
+					<tr>
+						<td><a id='add_emp'>Add Employee </a></td>                                                                                       
+						<td>HR can add new employee details.</td>
+					</tr>
+					<tr>
+						<td><a id='edit_emp'>Edit Employee </a></td>                                                                                       
+						<td>HR can edit existing employee details.</td>
+					</tr>
+					<tr>
+	               		<td><a id='del_emp'>Delete Employee </a></td>
+	                	<td>HR can delete employee, if employee no longer belongs to ECI.</td>
+	             	</tr>
+					<tr>
+	               		<td><a id='view_emp'>View Employee Details</a></td>
+	                	<td>HR can view all the employee details.</td>
+					</tr>
+	          	</table>
+			</div>
+         </div>";
 }
 if(isset($_REQUEST['showleaves']))
 {
 		$isEmpPresentquery="SELECT *FROM  `emp` WHERE empid =  '".$_POST['newempid']."'";
 		$isEmpPresent=$db->query($isEmpPresentquery);
 		if($db->hasRows($isEmpPresent)) {
-			echo "<script>alert('".$_POST['newempname']." (".$_POST['newempid'].") is already presnt in database.')</script>";
+			echo "<script>BootstrapDialog.alert('".$_POST['newempname']." (".$_POST['newempid'].") is already presnt in database.')</script>";
 		}
 		else {
 		$manager=$db->query("select empid,empusername,empname,emp_emailid from emp where empid='".$_POST['managername']."' and state='Active'");
@@ -254,153 +270,466 @@ if(isset($_REQUEST['showleaves']))
 		if($joiningday<15) { $balanceLeaves=$balanceLeaves+1.9; }
 		else {$balanceLeaves=$balanceLeaves+1; }
 		$balanceLeaves=ceil($balanceLeaves);
-		echo "<h2><center><u>Employee Leaves Balance</u></center></h2><br>";
-		echo "<table id='table-2'>
-		  <tbody>
-		  <tr>
-		  <td><label for='showempid'>Emp Id:</label></td>
-    	  <td><input type='text' size='20' readonly='true' value='".$_POST['newempid']."'/></td></tr>
-    	  <td><label for='showcf'>Employee User Name</label></td>
-    	  <td><input type='text' size='20' readonly='true' value='".$_POST['newempusername']."'/></td></tr>
-    	  <td><label for='showcf'>Carry Forwarded</label></td>
-    	  <td><input type='text' size='20' readonly='true' value='0'/></td></tr>
-    	  <td><label for='showbl'>Balance Leaves</label></td>
-    	  <td><input type='text' size='20' readonly='true' value='".$balanceLeaves."'/></td></tr>
-		  </tbody>
-		  </table>";
-		  $insertquery="INSERT INTO`emptotalleaves` (`empid` ,`carryforwarded` ,`previous year` ,`balanceleaves` ,`present year`)
-		  VALUES ('".$_POST['newempid']."', 0, '".(($joiningyear)-1)."', '".$balanceLeaves."', '".$joiningyear."')";
-		  $insert=$db->query($insertquery);
-		  $indertedemp=$db->query($insertemp);
-		  if($insert) {
-		  	echo "<script>alert('".$_POST['newempname']." (".$_POST['newempid'].") added successfully in database.')</script>";
-		  }else {
-		  	echo "<script>alert('".$_POST['newempname']." (".$_POST['newempid'].") is not added in database.')</script>";		  	
-		  }
+		echo "<div class='panel panel-primary'>
+				<div class='panel-heading text-center'>
+					<strong style='font-size:20px;'>Employee Leaves Balance</strong>
+				</div>
+				<div class='panel-body'>
+				  <div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+	  	        			<label for='showempid'>Employee Id:</label>
+	  	        		</div>
+		    	  		<div class='col-sm-5'>
+	  	        			<input type='text' class='form-control' size='20' readonly='true' value='".$_POST['newempid']."'/>
+	                	</div>
+	                	<div class='col-sm-2'></div>
+	                </div>
+	          	</div>
+		    	 <div class='panel-body'>
+				  <div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+	                		<label for='showcf'>Employee User Name:</label>
+	                	</div>
+		    	  		<div class='col-sm-5'>
+	                		<input type='text' class='form-control' size='20' readonly='true' value='".$_POST['newempusername']."'/>
+	                	</div>
+	                	<div class='col-sm-2'></div>
+	                </div>
+	            </div>
+		    	<div class='panel-body'>
+				  <div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+	                		<label for='showcf'>Carry Forwarded:</label>
+	                	</div>
+		    	  		<div class='col-sm-5'>
+	                		<input type='text' class='form-control' size='20' readonly='true' value='0'/>
+	                	</div>
+	                	<div class='col-sm-2'></div>
+	               	</div>
+	          	</div>
+		    	<div class='panel-body'>
+				  <div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+	                		<label for='showbl'>Balance Leaves:</label>
+	                	</div>
+		    	  		<div class='col-sm-5'>
+	                		<input type='text' class='form-control' size='20' readonly='true' value='".$balanceLeaves."'/>
+	                    </div>
+	                    <div class='col-sm-2'></div>
+				 	 </div>
+	        	</div>
+			</div>
+  		</div>";
+		$insertquery="INSERT INTO`emptotalleaves` (`empid` ,`carryforwarded` ,`previous year` ,`balanceleaves` ,`present year`)
+		 VALUES ('".$_POST['newempid']."', 0, '".(($joiningyear)-1)."', '".$balanceLeaves."', '".$joiningyear."')";
+		$insert=$db->query($insertquery);
+		$indertedemp=$db->query($insertemp);
+		if($insert) {
+		  echo "<script>BootstrapDialog.alert('".$_POST['newempname']." (".$_POST['newempid'].") added successfully in database.')</script>";
+		}else {
+		 	echo "<script>BootstrapDialog.alert('".$_POST['newempname']." (".$_POST['newempid'].") is not added in database.')</script>";		  	
 		}
+	}
 }
 
 if(isset($_REQUEST['add_emp']))
 {
-	echo "<h2><center><u>Add Employee</u></center></h2><br>";
 	echo "<form id='addempform' method='POST' action='newuser.php?showleaves=1'>
-		  <table id='table-2'>
-		  <tbody>
-		  <tr>
-		  <td><label for='newempid'>Emp Id:</label></td>
-    	  <td><input type='text' name='newempid' id='newempid' size='20' /></td></tr>
-		  <td><label for='newempusername'>Employee User Name</label></td>
-    	  <td><input type='text' name='newempusername' id='newempusername' size='20' /></td></tr>
-		  <td><label for='newempname'>Employee Name</label></td>
-    	  <td><input type='text' name='newempname' id='newempname' size='20' /></td></tr>
-		  <td><label for='joiningdate'>Joining Date</label></td>
-    	  <td><input type='text' name='joiningdate' id='joiningdate' size='20' /></td></tr>
-		  <td><label for='birthdate'>Birth Date</label></td>
-    	  <td><input type='text' name='birthdate' id='birthdate' size='20' /></td></tr>
-		  <td><label for='newdept'>Department</label></td>";
-    	  echo "<td id='dept'>".getSelectBoxOptions("select distinct(dept) from emp","dept","dept","newdept","")."</td></tr>";
-		  echo "<tr><td><label for='newmanager'>Manager</label></td>";
-    	  echo "<td id='getmanager'>".getSelectBoxOptions("select distinct(empname) as managername,empid from emp where state='Active' and (role='manager' or role='Manager')","empid","managername","newmanager","")."</td></tr>";
-		  echo "<tr><td><label for='newrole'>Role</label></td>
-    	  <td><SELECT name='newrole' id='newrole'>
-					<option></option>
-					<option>user</option>
-	    	  			<option>manager</option>
-					<option>hr</option>    	  
-		  </select></td></tr>
-	  <tr id='addmanagerlevel' style='display:none'><td><label for='hideaddmanagerlevel'>Manager Level</label></td>
-          <td><SELECT name='hideaddmanagerlevel'>
-		       <option></option>
-                       <option>level1</option>
-                       <option>level2</option>
-                       <option>level3</option>       
-		       <option>level4</option>	
-                  </select></td></tr>					
-    	  <tr><td><label for='newgroup'>Group</label></td>
-    	  <td><input type='text' name='newgroup' id='newgroup' size='20' /></td></tr>
-    	  <tr><td><label for='newemail'>Employee Email</label></td>
-    	  <td><input type='text' name='newemail' id='newemail' size='20' /></td></tr>
-		<tr><td><label for='location'>Location</label></td>
-			<td><SELECT name='location' id='location'>
-					
-					<option id='BLR'>BLR</option>
-					<option id='MUM'>MUM</option>
-		</select>
-		</td>
-		</tr>
-		  <tr><td colspan=\"3\" align='center'><input class='submit' type='submit' name='submit' value='Add'/></td>
-		   </tr></tbody>
-	</table></form>";
+		<div class='panel panel-primary'>
+			<div class='panel-heading text-center'>
+				<strong style='font-size:20px;'>Add New Employee</strong>
+			</div>
+			<div class='panel-body'>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'><label for='newempid'>Employee Id:</label></div>
+    	  				<div class='col-sm-5'><input type='text' class='form-control' name='newempid' id='newempid' size='20' /></div>
+		  				<div class='col-sm-2'></div>
+                	</div>
+                </div>
+                <div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'><label for='newempusername'>Employee User Name:</label></div>
+    	  				<div class='col-sm-5'><input type='text' class='form-control' name='newempusername' id='newempusername' size='20' /></div>
+                		<div class='col-sm-2'></div>
+                	</div>
+                </div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'><label for='newempname'>Employee Name:</label></div>
+    	  				<div class='col-sm-5'><input type='text' class='form-control' name='newempname' id='newempname' size='20' /></div>
+                		<div class='col-sm-2'></div>
+                	</div>
+                </div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='joiningdate'>Joining Date:</label>
+						</div>
+    	  				<div class='col-sm-5'>
+							<div class='input-group'>
+								<input type='text' class='form-control open-datetimepicker' name='joiningdate' id='joiningdate' size='20' />
+								<label class='input-group-addon btn' for='date'>
+									<span class='fa fa-calendar open-datetimepicker'></span>
+								</label>
+							</div>
+						</div>
+                		<div class='col-sm-2'></div>
+                	</div>
+                </div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'><label for='birthdate'>Birth Date:</label></div>
+    	  				<div class='col-sm-5'>
+							<div class='input-group'>
+								<input type='text' class='form-control open-datetimepicker1' name='birthdate' id='birthdate' size='20' />
+								<label class='input-group-addon btn' for='date'>
+									<span class='fa fa-calendar open-datetimepicker1'></span>
+								</label>
+							</div>
+						</div>
+                		<div class='col-sm-2'></div>
+                	</div>
+                </div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'><label for='newdept'>Department:</label></div>
+    	  				<div class='col-sm-5' id='dept'>".getSelectBoxOptions("select distinct(dept) from emp","dept","dept","newdept","")."</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>";
+		  echo "<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'><label for='newmanager'>Manager:</label></div>
+    	  				<div class='col-sm-5' id='getmanager'>".getSelectBoxOptions("select distinct(empname) as managername,empid from emp where state='Active' and (role='manager' or role='Manager')","empid","managername","newmanager","")."</div>
+						<div class='col-sm-2'></div>	
+					</div>
+				</div>";
+		  echo "<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'><label for='newrole'>Role:</label></div>
+    	  				<div class='col-sm-5'>
+							<SELECT class='form-control' name='newrole' id='newrole'>
+								<option></option>
+								<option>user</option>
+				    	  		<option>manager</option>
+								<option>hr</option>    	  
+					  		</select>
+						</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>
+				<div class='form-group'>
+					<div class='row' id='addmanagerlevel' style='display:none'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='hideaddmanagerlevel'>Manager Level:</label>
+						</div>
+          				<div class='col-sm-5'>
+							<SELECT class='form-control' name='hideaddmanagerlevel'>
+						    	<option></option>
+				                <option>level1</option>
+				                <option>level2</option>
+				             	<option>level3</option>       
+						       	<option>level4</option>	
+                  			</select>
+						</div>
+						<div class='col-sm-2'></div>
+					</div>		
+				</div>			
+    	  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'><label for='newgroup'>Group:</label></div>
+    	  				<div class='col-sm-5'>
+							<input type='text' class='form-control' name='newgroup' id='newgroup' size='20' />
+						</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>
+    	  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='newemail'>Employee Email:</label>
+						</div>
+    	  				<div class='col-sm-5'>
+							<input type='text' class='form-control' name='newemail' id='newemail' size='20' />
+						</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>
+				<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='location'>Location:</label>
+						</div>
+						<div class='col-sm-5'>
+							<SELECT class='form-control' name='location' id='location'>
+								<option id='BLR'>BLR</option>
+								<option id='MUM'>MUM</option>
+							</select>
+						</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-12 text-center'>
+							<input class='submit btn btn-primary' type='submit' size='10px' name='submit' value='Add'/>
+						</div>
+		   			</div>
+				</div>
+			</div>
+		</div>
+	</form>
+         <script>
+			$(document).ready(function(){
+				$('.open-datetimepicker').datetimepicker({
+					format: 'yyyy-mm-dd',
+		           	minView : 2,
+		          	autoclose: true     
+				});
+				$('.open-datetimepicker1').datetimepicker({
+					format: 'yyyy-mm-dd',
+                   	minView : 2,
+                  	autoclose: true  
+				});
+			});
+		</script>";
 }
 if(isset($_REQUEST['edit_emp']))
 {
 	echo "<form id='editempform1' method='POST' action='newuser.php?editempdetails=1'>
-		  <table id='table-2'>
-		  <tbody>
-		  <tr>
-	  	  <td><label for='empusername'>Enter Employee User Name:</label></td>
-    	  <td><input type='text' name='empname' id='empusername' size='20' /></td>
-    	  <td colspan=\"3\" align='center'><input class='submit' type='submit' name='submit' value='Edit'/></td>
-    	  </tr></tbody>
-	</table></form>";
+		<div class='row'> 
+			<div class='col-sm-1'></div>
+			<div class='col-sm-3'><label for='empusername'>Enter Employee User Name:</label></div>
+    	  	<div class='col-sm-4'><input type='text' class='form-control' name='empname' id='empusername' size='20' /></div>
+    	  	<div class='col-sm-3'><input class='submit btn btn-primary' type='submit' name='submit' value='Edit'/></div>
+    	  	<div class='col-sm-1'></div>
+		  </div>
+	</form>";
 	
 }
 if(isset($_REQUEST['editempdetails']))
 {
 	$getEmpDetails=$db->query("select * from emp where empname='".$_POST['empname']."' and state='Active'");
 	$row=$db->fetchAssoc($getEmpDetails);
-	echo "<h2><center><u>Edit Employee Details</u></center></h2><br>";
 	echo "<form id='editempform2' method='POST' action='newuser.php?submitdetails=1'>
-		  <table id='table-2'>
-		  <tbody>
-		  <tr>
-		  <td><label for='editempid'>Emp Id:</label></td>
-    	  <td><input type='text' name='editempid' id='editempid' size='20' value='".$row['empid']."' readonly='true' /></td></tr>
-		  <td><label for='editempusername'>Employee User Name</label></td>
-    	  <td><input type='text' name='editempusername' id='editempusername' size='20' value='".$row['empusername']."'/></td></tr>
-		  <td><label for='editempname'>Employee Name</label></td>
-    	  <td><input type='text' name='editempname' id='editempname' size='20' value='".$row['empname']."'/></td></tr>
-		  <td><label for='joiningdate'>Joining Date</label></td>
-    	  <td><input type='text' name='joiningdate' id='joiningdate' size='20' value='".$row['joiningdate']."'/></td></tr>
-		  <td><label for='birthdate'>Birth Date</label></td>
-    	  <td><input type='text' name='birthdate' id='birthdate' size='20' value='".$row['birthdaydate']."'/></td></tr>
-		  <td><label for='editdept'>Department</label></td>";
-    	  echo "<td id='dept'>".getSelectBoxOptions("select distinct(dept) from emp","dept","dept","editdept",$row['dept'])."</td></tr>";
-		  echo "<tr><td><label for='editmanager'>Manager</label></td>";
-    	  echo "<td id='getmanager'>".getSelectBoxOptions("select distinct(empname) as managername,empid from emp where state='Active' and (role='manager' or role='Manager')","empid","managername","editmanager",$row['managername'])."</td></tr>";
-		  echo "<tr><td><label for='editrole'>Role</label></td>
-    	  <td><SELECT name='editrole' id='editrole'>
-				<option></option>
-    	  			<option>user</option>
-				<option>manager</option>
-				<option>hr</option>    	  
-		  </select></td></tr>
-	  <tr id='editmanagerlevel' style='display:none'><td><label for='hideeditmanagerlevel'>Manager Level</label></td>
-          <td><SELECT name='hideeditmanagerlevel'>
-		       <option></option>
-                       <option>level1</option>
-                       <option>level2</option>
-                       <option>level3</option>       
-		       <option>level4</option> 
-                  </select></td></tr>			
-    	  <tr><td><label for='editgroup'>Group</label></td>
-    	  <td><input type='text' name='editgroup' id='editgroup' size='20' value='".$row['group']."' /></td></tr>
-    	  <tr><td><label for='editemail'>Employee Email</label></td>
-    	  <td><input type='text' name='editemail' id='editemail' size='20' value='".$row['emp_emailid']."'/></td></tr>
-    	  <tr>
-    	  		<td><label for='location'>Location</label></td>
-    	  		<td>
-    	  			<SELECT name='location' id='location'>
-    	  				
-    	  				<option>BLR</option>
-    	  				<option>MUM</option>
-    	  			</select>
-    	  		</td>
-    	  		
-    	  </tr>
-		  <tr><td colspan=\"3\" align='center'><input class='submit' type='submit' name='submit' value='Edit'/></td>
-		   </tr></tbody>
-	</table></form>";
+		<div class='panel panel-primary'>
+			<div class='panel-heading text-center'>
+				<strong style='font-size:20px;'>Edit Employee Details</strong>
+			</div>
+			<div class='panel-body'>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+                			<label for='editempid'>Employee Id:</label>
+                		</div>
+    	  				<div class='col-sm-5'>
+                			<input type='text' class='form-control' name='editempid' id='editempid' size='20' value='".$row['empid']."' readonly='true' />
+    	  				</div>
+    	  				<div class='col-sm-2'></div>
+    	  			</div>
+    	  		</div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+    	  					<label for='editempusername'>Employee User Name:</label>
+    	  				</div>
+    	  				<div class='col-sm-5'>
+    	  					<input type='text' class='form-control' name='editempusername' id='editempusername' size='20' value='".$row['empusername']."'/>
+                		</div>
+                		<div class='col-sm-2'></div>
+                	</div>
+                </div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+                			<label for='editempname'>Employee Name:</label>
+                		</div>
+    	  				<div class='col-sm-5'>
+                			<input type='text' class='form-control' name='editempname' id='editempname' size='20' value='".$row['empname']."'/>
+						</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='joiningdate'>Joining Date:</label>
+						</div>
+    	 				<div class='col-sm-5'>
+    	  					<div class='input-group'>
+								<input type='text' class='form-control open-datetimepicker2' name='joiningdate' id='joiningdate' size='20' value='".$row['joiningdate']."'/>
+								<label class='input-group-addon btn' for='date'>
+									<span class='fa fa-calendar open-datetimepicker2'></span>
+								</label>
+							</div>
+						</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='birthdate'>Birth Date:</label>
+						</div>
+    	  				<div class='col-sm-5'>
+    	  					<div class='input-group'>
+								<input type='text' class='form-control open-datetimepicker3' name='birthdate' id='birthdate' size='20' value='".$row['birthdaydate']."'/>
+								<label class='input-group-addon btn' for='date'>
+									<span class='fa fa-calendar open-datetimepicker3'></span>
+								</label>
+							</div>
+							</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='editdept'>Department:</label>
+						</div>
+						<div class='col-sm-5' id='dept'>
+							".getSelectBoxOptions("select distinct(dept) from emp","dept","dept","editdept",$row['dept'])."
+						</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>
+				<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='editmanager'>Manager:</label>
+						</div>
+						<div class='col-sm-5' id='getmanager'>
+							".getSelectBoxOptions("select distinct(empname) as managername,empid from emp where state='Active' and (role='manager' or role='Manager')","empid","managername","editmanager",$row['managername'])."
+				    	</div>
+				     	<div class='col-sm-2'></div>
+				  	</div>
+				</div>
+				<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+				        	<label for='editrole'>Role:</label>
+				        </div>
+    	  				<div class='col-sm-5'>
+				        	<SELECT class='form-control' name='editrole' id='editrole'>
+								<option></option>
+				    	  		<option>user</option>
+								<option>manager</option>
+								<option>hr</option>    	  
+		  					</select>
+				    	</div>
+				     	<div class='col-sm-2'></div>	
+				   	</div>
+				</div>
+	  			<div class='form-group'>
+					<div class='row' id='editmanagerlevel' style='display:none'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+				        	<label for='hideeditmanagerlevel'>Manager Level:</label>
+				    	</div>
+				        <div class='col-sm-5'>
+				       		<SELECT class='form-control' name='hideeditmanagerlevel'>
+		       					<option></option>
+		                       	<option>level1</option>
+		                       	<option>level2</option>
+		                       	<option>level3</option>       
+				       			<option>level4</option> 
+                  			</select>
+				      	</div>
+				     	<div class='col-sm-2'></div>
+				  	</div>	
+				</div>		
+    	  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+				        	<label for='editgroup'>Group:</label>
+				       	</div>
+    	  				<div class='col-sm-5'>
+				       		<input type='text' class='form-control' name='editgroup' id='editgroup' size='20' value='".$row['group']."' />
+						</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>
+    	  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='editemail'>Employee Email:</label>
+						</div>
+    	  				<div class='col-sm-5'>
+							<input type='text' class='form-control' name='editemail' id='editemail' size='20' value='".$row['emp_emailid']."'/>
+    	  				</div>
+    	  				<div class='col-sm-2'></div>
+    	  			</div>
+    	  		</div>
+		    	<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+    	  					<label for='location'>Location:</label>
+    	  				</div>
+    	  				<div class='col-sm-5'>
+    	  					<SELECT name='location' class='form-control' id='location'>
+		    	  				<option>BLR</option>
+		    	  				<option>MUM</option>
+    	  					</select>
+    	  				</div>
+    	  				<div class='col-sm-2'></div>
+    	  			</div>
+    	  		</div>
+		  		<div class='form-group'>
+					<div class='row'>
+						<div class='col-sm-12 text-center'>
+    	  					<input class='submit btn btn-info' type='submit' name='submit' value='Edit'/>
+    	  				</div>
+		  			 </div>
+    	  		</div>
+			</div>
+   		</div>
+  	</form>
+	<script>
+		$(document).ready(function(){
+			$('.open-datetimepicker2').datetimepicker({
+				format: 'yyyy-mm-dd',
+		       	minView : 2,
+		       	autoclose: true     
+			});
+			$('.open-datetimepicker3').datetimepicker({
+				format: 'yyyy-mm-dd',
+              	minView : 2,
+               	autoclose: true  
+			});
+		});
+	</script>";
 }
 if(isset($_REQUEST['submitdetails']))
 {
@@ -418,20 +747,27 @@ if(isset($_REQUEST['submitdetails']))
 	
 	$update=$db->query($updateemp);
 	if($update) {
-		  	echo "<script>alert('".$_POST['editempname']." (".$_POST['editempid'].") Updated successfully in database.')</script>";
+		  	echo "<script>BootstrapDialog.alert('".$_POST['editempname']." (".$_POST['editempid'].") Updated successfully in database.')</script>";
 	}
 }
 if(isset($_REQUEST['del_emp']))
 {
 		echo "<form id='delempform' method='POST' action='newuser.php?delempdetails=1'>
-		  <table id='table-2'>
-		  <tbody>
-		  <tr>
-	  	  <td><label for='empusername'>Enter Employee User Name:</label></td>
-    	  <td><input type='text' name='empusername' id='empusername' size='20' /></td>
-    	  <td colspan=\"3\" align='center'><input class='submit' type='submit' name='submit' id='delemp' value='Delete'/></td>
-    	  </tr></tbody>
-		  </table></form>";	
+		  	<div class='row'> 
+				<div class='col-sm-1'></div>
+				<div class='col-sm-3'>
+					<label for='empusername'>Enter Employee User Name:</label>
+				</div>
+    	  		<div class='col-sm-4'>
+					<input type='text' class='form-control' name='empusername' id='empusername' size='20' />
+				</div>
+    	  		<div class='col-sm-3'>
+					<input class='submit btn btn-primary' type='submit' name='submit' id='delemp' value='Delete'/>
+				</div>
+				<div class='col-sm-1'></div>
+    	  	</div>
+		</div>
+	</form>";	
 }
 if(isset($_REQUEST['delempdetails']))
 {
@@ -453,10 +789,10 @@ if(isset($_REQUEST['delempdetails']))
 #	$delemp=$db->query("DELETE FROM `emp` WHERE `empid` = '".$row['empid']."'");
 	if($setEmpState)
 	{
-  		echo "<script>alert('Employee is set to InActive state.')</script>";
+  		echo "<script>BootstrapDialog.alert('Employee is set to InActive state.')</script>";
 	}
 	else {
-		echo "<script>alert('Employee is not set to InActive state.')</script>";
+		echo "<script>BootstrapDialog.alert('Employee is not set to InActive state.')</script>";
 	}	
 }
 

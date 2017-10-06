@@ -9,12 +9,12 @@
 	<head>
 		<link rel="stylesheet" type="text/css" media="screen" href="public/css/teamapproval.css" />
 		<?php
-		if(isset($_REQUEST['role']))
-		{
-			$_SESSION['roleofemp']=$_REQUEST['role'];
-			if($_REQUEST['role']=="manager") {$divid="loadmanagersection";echo "<script>var divid=\"loadmanagersection\";</script>"; }
-			if($_REQUEST['role']=="hr") { $divid="loadhrsection";echo "<script>var divid=\"loadhrsection\";</script>";}
-		}
+			if(isset($_REQUEST['role']))
+			{
+				$_SESSION['roleofemp']=$_REQUEST['role'];
+				if($_REQUEST['role']=="manager") {$divid="loadmanagersection";echo "<script>var divid=\"loadmanagersection\";</script>"; }
+				if($_REQUEST['role']=="hr") { $divid="loadhrsection";echo "<script>var divid=\"loadhrsection\";</script>";}
+			}
 		?>
 		<script type="text/javascript">  
 			$("#loadingmessage").show();
@@ -27,7 +27,11 @@
 					$(this).next("tr").toggle();
 					$(this).find(".arrow").toggleClass("up");
 				}); 
-				
+				$("#wfhHrs").spinner(
+					{ min: 1 },
+					{ max: 18 },
+					{ step: 0.25 }
+				);
 				$('#getempExtraWFHhr').submit(function() {
 					var empUser=$("#empuser").val();
 					if($("#empuser").val()=="")
@@ -149,8 +153,15 @@
 					$join1="select a.empname, a.empid, b.wfhHrs, b.status, b.date, b.reason, b.tid from emp a, extrawfh b where b.status='pending' and a.empid=b.eid and a.empname in(SELECT empname FROM emp where state='Active' and managerid='".$_SESSION['u_empid']."')order by a.empname";
 				}
 				$sql1=$db->query($join1);
-					echo "<div id='showtable'><table class='table table-hover'>
+					echo "<div id='showtable'>
+					<div class='panel panel-primary'>
+						<div class='panel-heading text-center'>
+							<strong style='font-size:20px;'>Approval Extra WFH Hour List</strong>
+						</div>
+						<div class='panel-body'>
+					<table class='table table-hover'>
 						<form method='POST' action='' id='WFH' name='ExtraWFHHour'>
+						
 						<tr class='info'>
 							<th>Emp Name</th>
 							<th>Date</th>
@@ -175,7 +186,7 @@
 									</td>
 						</tr>';
 					}	
-					echo "</table>";
+					echo "</form></table></div></div>";
 			}
 			if(isset($_REQUEST['approve']))
 			{
@@ -190,7 +201,13 @@
 				}
 				$sqlapproved=$db->query($showapproved);
 				
-				echo "<div id='showtable'><table class='table table-hover'>
+				echo "<div id='showtable'>
+					<div class='panel panel-primary'>
+						<div class='panel-heading text-center'>
+							<strong style='font-size:20px;'>Approved Extra WFH Hour List</strong>
+						</div>
+						<div class='panel-body'>
+					<table class='table table-hover'>
 					<form method='POST' action='' id='WFH' name='ExtraWFHHour'>
 					<tr class='info'>
 						<th>Emp Name</th>
@@ -211,7 +228,7 @@
 								<td>'.$row['status'].'</td>
 							</tr>';
 				}
-				echo "</table>";
+				echo "</table></div></div>";
 			}
 			//Extra WFH hour By Manager Not Approval form   
 			if(isset($_REQUEST['notapprove']))
@@ -229,7 +246,7 @@
 				<form method="post" action="wfhhours/approveEmpExtrawfhhour.php?comment=1" id="comments" name="comments">
 					<div class="panel panel-primary">
 					<div class="panel-heading text-center">
-						<strong style='font-size:20px;'>Not Approve Extra WFH Hour by Manager</strong>
+						<strong style='font-size:20px;'>Not Approve Extra WFH Hour</strong>
 					</div>
 					<div class="panel-body">					
 						<div class="form-group">
@@ -263,7 +280,12 @@
 									<label>Date</label>
 								</div>
 								<div class="col-sm-5">
-									<input type="text" class="form-control" name="fromdate" id="fromdate" value="<?php echo $date; ?>" readonly>
+									<div class="input-group">
+										<input type="text" class="form-control open-datetimepicker" name="fromdate" id="fromdate" value="<?php echo $date; ?>" readonly>
+										<label class="input-group-addon btn" for="date">
+											<span class="fa fa-calendar open-datetimepicker"></span>
+										</label>
+									</div>
 								</div>
 								<div class="col-sm-2"></div>
 							</div>
@@ -297,6 +319,15 @@
 				   </div><!-- panel body div end here -->
 				</div><!-- panel div end here -->
 			</form><!-- form end here -->
+			<script>
+				$(document).ready(function(){
+					$('.open-datetimepicker').datetimepicker({
+						format: 'yyyy-mm-dd',
+		               	minView : 2,
+		              	autoclose: true     
+					});
+				});
+			</script>
 			<?php 
 			}
 			if(isset($_REQUEST['comment']))

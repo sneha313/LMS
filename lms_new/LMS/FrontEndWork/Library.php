@@ -231,17 +231,17 @@ function getEmpSelectionBox($supervisorID,$selectedEmployee)
 
 function includeJQGrid()
 {
-	echo '<link href="js/jqueryui/css/redmond/jquery-ui.css" rel="stylesheet">';
-        echo '<script src="js/jquery/jquery.js" type="text/javascript"></script>';
-        echo '<script src="js/jqueryui/js/jquery-ui.js"></script>';
-        echo '<script src="js/jqgrid/grid.locale-en.js" type="text/javascript"></script>';
-        echo '<script type="text/javascript" src="js/jquery/jquery.validate.min.js"></script>';
-        echo '<script src="js/jqgrid/jquery.jqGrid.min.js" type="text/javascript"></script>';
-        echo '<script src="js/jquery/jquery.searchFilter.js" type="text/javascript"></script>';
-        echo '<link rel="stylesheet" type="text/css" media="screen" href="js/jqgrid/jqgridcss/ui.jqgrid.css" />';
-        echo '<link rel="stylesheet" type="text/css" media="screen" href="css/table.css" />';
-	echo '<script src="js/countdown/countdown.js" type="text/javascript"></script>';
-	echo '<link rel="stylesheet" type="text/css" media="screen" href="js/countdown/countdown.css" />';
+	echo '<link href="public/js/jqueryui/css/redmond/jquery-ui.css" rel="stylesheet">';
+  	echo '<link rel="stylesheet" type="text/css" media="screen" href="public/js/jqgrid/jqgridcss/ui.jqgrid.css" />';
+  	//echo '<link rel="stylesheet" type="text/css" media="screen" href="public/css/table.css" />';
+ 	//echo '<script type="text/javascript" src="public/js/jquery/jquery.js"></script>';
+  	echo '<script type="text/javascript" src="public/js/jqueryui/js/jquery-ui.js"></script>';
+ 	echo '<script type="text/javascript" src="public/js/jqgrid/grid.locale-en.js"></script>';
+  	echo '<script type="text/javascript" src="public/js/jquery/jquery.validate.min.js"></script>';
+  	echo '<script type="text/javascript" src="public/js/jqgrid/jquery.jqGrid.min.js"></script>';
+  	echo '<script type="text/javascript" src="public/js/jquery/jquery.searchFilter.js"></script>';
+	echo '<script type="text/javascript" src="public/js/countdown/countdown.js"></script>';
+	//echo '<link rel="stylesheet" type="text/css" media="screen" href="public/js/countdown/countdown.css" />';
 	echo '<script src="projectjs/fullcalendar.js"></script>';
 }
 
@@ -655,7 +655,14 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 	$splLeave = getSpecialLeavesForType($splLeaveType, "specialleave");
 	//Statring of the form.. This form will contain all the dates and dropdwon list with the leave types
 	echo '<form name="leaves" id="displayDates" method="POST" action="'.$filename.'?getShift=1">
-		  	  <table class="table table-hover">';
+			<form id="AttInd" name="AttInd" method="post" action="attendance.php?AttInd=1">
+				<div class="col-sm-12">
+					<div class="panel panel-primary">
+						<div class="panel-heading text-center">
+							<strong style="font-size:20px;">Applied Leave Date</strong>
+						</div>
+						<div class="panel-body">
+		  	  <table class="table table-striped table-bordered">';
 	$count =0;
 	global $db;
 	$curYear = date('Y');
@@ -733,7 +740,9 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 						echo "<td>Optional leave (".str_replace('[special]','',$splMatch[2])." applied. Check Optional Leave table</td>";
 						if(preg_match('/(.*)(\(Optional\))/', $splMatch[2],$actaulmatch)) {
 							$numofDays[$j]=str_replace('[special]','',$actaulmatch[1]);
+							
 						}
+						echo "<td></td>";
 					}
 				}
 				} else {
@@ -765,8 +774,12 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 	echo "<input type = hidden  id ='optionalleaveempcount' name = optionalleaveempcount value ='".$empid."_".$optionalLeaveCount."'/> ";
 	echo "<input type = hidden name = splType value =  ".urlencode($splLeave)." /></table>";
 	echo '	<br></br>
-		<input type="submit" name="submit" value="Next" />
-		</form>';
+			<div class="form-group">
+			<div class="row">
+			<div class="col-sm-12 text-center">
+				<input type="submit" class="btn btn-primary" name="submit" value="Next" />
+			</div></div></div>
+		</div></div></form>';
 }
 function getCalImg($arr,$minYear='-0',$maxYear='0')
 {

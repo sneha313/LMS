@@ -11,23 +11,23 @@ require_once 'generalFunctions.php';
 				if(isset($_REQUEST['leaveform']))
 				{
 					$empId=getValueFromQuery("select empid from emp where empname='".$_REQUEST['empuser']."' and state='Active'","empid");
-					getApplyLeaveJs("teamApplyLeave","teamfromDate","teamtoDate","loadapplyteammemberleave","employeeid","applyteammemberleave.php",$empId);
+					getApplyLeaveJs("teamApplyLeave","teamfromDate","teamtoDate","loadmanagersection","employeeid","applyteammemberleave.php",$empId);
 					getSetOptionsJs("hideteammemsplLeave","teamleaveForm","teamsetOptions");
 				}
 				if(isset($_REQUEST['getdates']))
 				{
-					getDisplayDatesJs("loadapplyteammemberleave");
+					getDisplayDatesJs("loadmanagersection");
 				}
 				if (isset($_REQUEST['getShift']))
 				{
-					getSubmitJs("getShift","loadapplyteammemberleave");
+					getSubmitJs("getShift","loadmanagersection");
 				}
 			?>
 			
 		</script>
 	</head>
 	<body>
-		<div class="col-sm-10" id="applyleavebody">
+		<div class="col-sm-12" id="applyleavebody">
 			<div id="wrapper">
 			<div id="form-div">
 	<?php
@@ -44,7 +44,7 @@ require_once 'generalFunctions.php';
 				getLeaveForm("applyteammemberleave.php","teamleaveForm","teamApplyLeave","team_leave_type","hideteammemsplLeave","team_special_leave","teamfromDate","teamtoDate","teamsetOptions");
 			} else {
 				echo "<script>BootstrapDialog.alert(\"You dont have permissions to apply leave for this employee '".$_REQUEST['empuser']."'\");
-						$('#loadapplyteammemberleave').load('applyteammemberleave.php?getEmp=1');
+						$('#loadmanagersection').load('applyteammemberleave.php?getEmp=1');
 						</script>";
 			}
 		}
@@ -65,6 +65,6 @@ require_once 'generalFunctions.php';
 	?>
 		</div><!-- form-div close -->
 	</div><!-- wrapper div close -->
-	</div><!-- 10 column div close -->
+	</div><!-- 12 column div close -->
 	</body>
 </html>

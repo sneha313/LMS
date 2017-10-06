@@ -29,9 +29,11 @@
 			$('#TrackAttInd').submit(function() {
 				$('#TrackAccessData').html(" ");
 				if ( $("#hideDept").val()=="none" ) {
-					BootstrapDialog.alert("Please selct the Department");
+					BootstrapDialog.alert("Please select the Department");
 					return false;
 				}
+				$(this).find(':input[type=submit]').replaceWith('<center><img src="img/loader.gif" class="img-responsive" alt="processing"/></center>');
+				
 				if ( $("#hideDept").val()=="ALL" && $("#getEmpName").val()=="ALL") {
 					BootstrapDialog.alert("Please wait for few minutes to get the results for all ECI Employeees.It will take more than a minute.");
 				}
@@ -281,10 +283,14 @@
 			</form><!--track leave form end-->
 			<script>
 				$(".open-datetimepicker").datetimepicker({
-				    format: "YY-MM-DD"
+					format: 'yyyy-mm-dd',
+                    minView : 2,
+                    autoclose: true  
 				});
 				$(".open-datetimepicker1").datetimepicker({
-				    format: "YY-MM-DD"
+					format: 'yyyy-mm-dd',
+                    minView : 2,
+                    autoclose: true  
 				});
 			</script>
 			<div id='loadingmessage' style='display:none'>

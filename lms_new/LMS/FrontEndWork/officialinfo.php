@@ -27,6 +27,8 @@ $db=connectToDB();
 			$emplocation=$emprow['location'];
 			$managername=$emprow['managername'];
 			$department=$emprow['dept'];
+			$role=$emprow['role'];
+			$managerlevel=$emprow['managerlevel'];
 			$joiningdate=$emprow['joiningdate'];
 			$emailid=$emprow['emp_emailid'];
 			$birthdaydate=$emprow['birthdaydate'];
@@ -56,13 +58,13 @@ $db=connectToDB();
 									<label>Emp Name:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="<?php echo $fullname; ?>" >
+									<input type="text" class="form-control" value="<?php echo $fullname; ?>" readonly>
 								</div>
 								<div class="col-sm-2">
 									<label>Emp Id:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="<?php echo $empid; ?>">
+									<input type="text" class="form-control" value="<?php echo $empid; ?>" readonly>
 								</div>
 							</div><!--1st row close-->
 							</div>
@@ -73,13 +75,13 @@ $db=connectToDB();
 									<label>Manager Name:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="<?php echo $managername; ?>">
+									<input type="text" class="form-control" value="<?php echo $managername; ?>" readonly>
 								</div>
 								<div class="col-sm-2">
 									<label>Designation:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="">
+									<input type="text" class="form-control" value="<?php echo $managerlevel." ".$role;?>">
 								</div>
 							</div><!--2nd row close-->
 							</div>
@@ -90,7 +92,8 @@ $db=connectToDB();
 									<label>Department:</label>
 								</div>
 								<div class="col-sm-4">
-									<select class="form-control">
+									<input type="text" class="form-control" value="<?php echo $department;?>">
+									<!--  <select class="form-control">
 										<option value=<?php echo $_SESSION['u_empid'];?>><?php echo $emprow['dept'];?></option>
 										<option>--Choose Department--</option>
 										<option>V&V</option>
@@ -105,13 +108,13 @@ $db=connectToDB();
 										<option>GSC Tier</option>
 										<option>GTD-V&V</option>
 										<option>IT</option>
-									</select>
+									</select>-->
 								</div>
 								<div class="col-sm-2">
 									<label>Team Member:</label>
 								</div>
 								<div class="col-sm-4">
-									<select class="form-control">
+									<!--  <select class="form-control">
 										<option>--Team Members--</option>
 										<option>Giridhar Naga</option>
 										<option>Anil Kumar Thatavarthi</option>
@@ -129,7 +132,7 @@ $db=connectToDB();
 										<option>Roshin Kalariparambath</option>
 										<option>Sneha Kumari</option>
 										<option>Sumanth Saligram Venkatesh</option>
-									</select>
+									</select>-->
 								</div>
 							</div><!--3rd row close-->
 							</div>
@@ -146,7 +149,7 @@ $db=connectToDB();
 									<label>Email Id:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="<?php echo $emailid; ?>">
+									<input type="text" class="form-control" value="<?php echo $emailid; ?>" readonly>
 								</div>
 							</div><!--4th row close-->
 							</div>
@@ -154,10 +157,10 @@ $db=connectToDB();
 							<div class="form-group">
 							<div class="row">
 								<div class="col-sm-2">
-									<label>Years of Exp:</label>
+									<label>Years In ECI:</label>
 								</div>
 								<div class="col-sm-4">
-									<input type="text" class="form-control" value="<?php echo $yoe; ?>">
+									<input type="text" class="form-control" value="<?php echo $yoe; ?>" readonly>
 								</div>
 								<div class="col-sm-2">
 									<label>Office Address:</label>

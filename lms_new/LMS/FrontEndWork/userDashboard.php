@@ -6,7 +6,8 @@ require_once 'generalFunctions.php';
 error_reporting("E_ALL");
 $db=connectToDB();
 ?>
-	
+<html>
+<body>
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-sm-12">
@@ -62,7 +63,7 @@ $db=connectToDB();
 		<div class="col-sm-6">
 			<div class="panel panel-primary">
 				<div class="panel-heading text-center">
-					<strong style="font-size:20px;">Birthday's List this week</strong>
+					<strong style="font-size:20px;">Employee Birthday this week</strong>
 				</div>
 				<div class="panel-body">
 					<table class="table">
@@ -74,16 +75,17 @@ $db=connectToDB();
 						</thead>
 						<tbody>
 							<?php
-								  $result = $db->query("SELECT empname, birthdaydate FROM emp WHERE DATE_ADD(birthdaydate, INTERVAL YEAR(CURDATE())-YEAR(birthdaydate) + IF(DAYOFYEAR(CURDATE()) >= DAYOFYEAR(birthdaydate),1,0) YEAR) BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY)");
-								 
+								 $result = $db->query("SELECT empname, birthdaydate FROM emp WHERE WEEK(birthdaydate) = WEEK(CURDATE()) AND MONTH(birthdaydate) = MONTH(CURDATE())ORDER BY DAYOFYEAR(`birthdaydate`) ASC");
 								  for($i=0;$i<$db->countRows($result);$i++)
 									{
 										$row=$db->fetchArray($result);
 									  	$empname=$row['empname'];
 									  	$birthdaydate=$row['birthdaydate'];
+									  	//only month and date extract from birthdaydate
+									  	$birthday=date("d F", strtotime($birthdaydate));
 								  	echo '<tr>';
 									echo '<td class="info">'.$row['empname'].'</td>';
-									echo '<td class="warning">'.$row['birthdaydate'].'</td>';
+									echo '<td class="warning">'.$birthday.'</td>';
 								  	echo '</tr>';
 								  }
 								
@@ -97,7 +99,7 @@ $db=connectToDB();
 		<div class="col-sm-6">
 			<div class="panel panel-primary">
 				<div class="panel-heading text-center">
-					<strong style="font-size:20px;">Holiday in Current Month</strong>
+					<strong style="font-size:20px;">Holidays in Current Month</strong>
 				</div>
 				<div class="panel-body">
 					<table class="table">
@@ -105,12 +107,13 @@ $db=connectToDB();
 						  <tr class="success">
 							<th>Date</th>
 							<th>Holiday Name</th>
+							<th>Leave Type</th>
 						  </tr>
 						</thead>
 						<tbody>
 							<?php
 								 $curdate = date('Y-m-d', time());
-								 $res = $db->query("SELECT date, holidayname FROM holidaylist WHERE date > DATE_SUB(NOW(), INTERVAL 1 MONTH) and date < DATE_SUB(NOW(), INTERVAL -1 MONTH )");
+								 $res = $db->query("SELECT * FROM `holidaylist` WHERE MONTH(date) = MONTH(CURDATE()) AND YEAR(date) = YEAR(CURDATE())");
 								 for($i=0;$i<$db->countRows($res);$i++)
 								{
 									$row=$db->fetchArray($res);
@@ -119,6 +122,7 @@ $db=connectToDB();
 									echo '<tr>';
 										echo '<td class="info">'.$row['date'].'</td>';
 										echo '<td class="warning">'.$row['holidayname'].'</td>';
+										echo '<td class="danger">'.$row['leavetype'].'</td>';
 									echo '</tr>';
 								}
 							?>
@@ -129,5 +133,6 @@ $db=connectToDB();
 		</div><!-- 6 column div close -->
 	</div><!-- row div close -->
 </div>
-
+</body>
+</html>
 	

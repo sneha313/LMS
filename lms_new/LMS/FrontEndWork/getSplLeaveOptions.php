@@ -56,8 +56,8 @@ if(isset($_REQUEST['empid']))
 					$splSelectionBox.='<option value='.$row['id'].'>'.$row['specialleave'].'</option>';
 				}
 				if (preg_match("/Team Event: 0.5 day/",$row['specialleave']) && $teamEventFullTaken ==0) {
-		                    $splSelectionBox.='<option value='.$row['id'].'>'.$row['specialleave'].'</option>';
-                		}
+		        	$splSelectionBox.='<option value='.$row['id'].'>'.$row['specialleave'].'</option>';
+                }
 			}
 			echo $splSelectionBox;
 }
