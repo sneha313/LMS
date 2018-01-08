@@ -294,7 +294,7 @@ ini_set('max_execution_time', 600);
 							
 							<tr>
 							<td><?php echo $dayhours; ?>
-							Hr/Day:</td>
+							Hr/Day</td>
 							<td><select size="1" name="AdvCond2">
 							<option value="NOTMEET" selected>Not Meet</option>
 							<option value="MEET">Meet</option>
@@ -302,18 +302,18 @@ ini_set('max_execution_time', 600);
 							</tr>
 							<tr>
 							<td><?php echo $dayhours * 5; ?>
-							Hr/Week:</td>
+							Hr/Week</td>
 							<td><select size="1" name="AdvCond3">
 							<option value="NOTMEET" selected>Not Meet</option>
 							<option value="MEET">Meet</option>
 							</select></td>
 							</tr>
 							<tr>
-							<td>From:</td>
+							<td>From Date</td>
 							<td><input type="text" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d'); ?>' id="fromdate" size="8" /></td>
 							</tr>
 							<tr>
-							<td>To:</td>
+							<td>To Date</td>
 							<td><input size="8" name="todate" id="todate" value = '<?php echo date('Y-m-d') ?>' type="text" /></td>
 							</tr>
 							<tr>

@@ -5,7 +5,7 @@
 	$db=connectToDB();
 	if (isset($_REQUEST['table'])) 
 	{
-		echo "<tr><th>Date on which vehicle used</th><th>Day</th><th>To and fro Kms</th><th>Fuel cost per Km</th><th>Total cost</th></tr>";
+		echo "<table class='table table-bordered'><tr class='info'><th>Date on which vehicle used</th><th>Day</th><th>To and from Kms</th><th>Fuel cost per Km</th><th>Total cost</th></tr>";
 		if (isset ( $_REQUEST['date'])) {
 			$date= $_REQUEST['date'];
 		} else {
@@ -38,12 +38,12 @@
     			$overall_cost=$overall_cost+$total_cost;
     			$total_distance=$total_distance+$toandfro_kms;
     		 	echo "<tr><td>
-	    		<input readonly type='text' value='$dates'/></td><td>
-	    		<input readonly type='text' value='$days'/></td><td>
+	    		<input readonly type='text' class='form-control' value='$dates'/></td><td>
+	    		<input readonly type='text' class='form-control' value='$days'/></td><td>
 	    		
-	    		<input readonly type='text' value='$toandfro_kms'/></td><td>
-	    		<input readonly type='text'value='$fuel_cost'/></td><td>
-	    		<input readonly type='text'value='$total_cost'/></td></tr>";
+	    		<input readonly type='text' class='form-control' value='$toandfro_kms'/></td><td>
+	    		<input readonly type='text' class='form-control' value='$fuel_cost'/></td><td>
+	    		<input readonly type='text' class='form-control' value='$total_cost'/></td></tr>";
     		}
     		while($row1 = $db->fetchArray($sqlQuery))
     		{
@@ -53,14 +53,14 @@
     			$overall_cost=$overall_cost+$total_cost;
     			$total_distance=$total_distance+$toandfro_kms;
     			echo "<tr bgcolor='grey'><td>
-    			<input style='font-weight:bold' readonly type='text' value='$dates'/></td><td>
-    			<input style='font-weight:bold' readonly type='text' value='$days'/></td><td>
+    			<input style='font-weight:bold' readonly type='text' class='form-control' value='$dates'/></td><td>
+    			<input style='font-weight:bold' readonly type='text'  class='form-control' value='$days'/></td><td>
     		
-    			<input style='font-weight:bold' readonly type='text' value='$toandfro_kms'/></td><td>
-    			<input style='font-weight:bold' readonly type='text'value='$fuel_cost'/></td><td>
-    			<input style='font-weight:bold' readonly type='text'value='$total_cost'/></td></tr>";
+    			<input style='font-weight:bold' readonly type='text' class='form-coontrol' value='$toandfro_kms'/></td><td>
+    			<input style='font-weight:bold' readonly type='text' class='form-control' value='$fuel_cost'/></td><td>
+    			<input style='font-weight:bold' readonly type='text' class='form-control' value='$total_cost'/></td></tr>";
     		}
-    		echo "<tr><td>Total Days</td><td><input readonly type='text'id='total_days' value='$total'/></td><td><input readonly type='text'id='totaltoandfrokms' value='$total_distance'/></td><td><input readonly type='text'/></td><td><input readonly type ='text' id='overall_cost'value='$overall_cost'/></td></tr>";
+    		echo "<tr><td>Total Days</td><td><input readonly type='text' class='form-control' id='total_days' value='$total'/></td><td><input readonly type='text' class='form-control' id='totaltoandfrokms' value='$total_distance'/></td><td><input readonly type='text' class='form-control'/></td><td><input readonly type ='text' id='overall_cost'value='$overall_cost' class='form-control'/></td></tr>";
     	} else {
 	    	$employee_number=$_SESSION['u_empid'];
 	    	$resultset1 =  $db->query("SELECT * FROM dynamic_table WHERE employee_number='$employee_number'");
@@ -101,15 +101,15 @@
 						$total_distance=$total_distance+$toandfro_kms;
 						echo "<tr>
 								<td>
-									<input readonly type='text' value='$i/$month/$year'name='dates[$i]'/></td>
+									<input readonly type='text' class='form-control' value='$i/$month/$year'name='dates[$i]'/></td>
 								<td>
-									<input readonly type='text' id='days$i'value='$day'name='days[$i]'/></td>
+									<input readonly type='text' class='form-control' id='days$i'value='$day'name='days[$i]'/></td>
 								<td>";
 					echo "
 						
-						<input readonly type='text'id='toandfrokms$i'name='toandfrokms' value='$toandfro_kms'/></td><td>
-						<input readonly type='text'id='fuel_cost_per_km$i'name='fuelcost' value='$fuel_cost'/></td>
-						<td><input readonly type='text'id='total_cost$i'name='totalcost' value='$total_cost'/></td></tr>";  
+						<input readonly type='text' class='form-control' id='toandfrokms$i'name='toandfrokms' value='$toandfro_kms'/></td><td>
+						<input readonly type='text' class='form-control' id='fuel_cost_per_km$i'name='fuelcost' value='$fuel_cost'/></td>
+						<td><input readonly type='text' class='form-control' id='total_cost$i'name='totalcost' value='$total_cost'/></td></tr>";  
 					$total_days+=1;
 			     }	   
 	     else {
@@ -117,19 +117,19 @@
 				$day=jddayofweek($jd,1);
 				echo "<tr>
 				    	<td>
-				     	<input readonly type='text' value='$i/$month/$year'name='dates[$i]'/></td><td>
-				     	<input readonly type='text' id='days$i'value='$day'name='days[$i]'/></td><td>";
+				     	<input readonly type='text' class='form-control' value='$i/$month/$year'name='dates[$i]'/></td><td>
+				     	<input readonly type='text' class='form-control' id='days$i'value='$day'name='days[$i]'/></td><td>";
 				echo "
 				     	
-				     	<input readonly type='text'id='toandfrokms$i'name='toandfrokms'/></td><td>
-				     	<input readonly type='text'id='fuel_cost_per_km$i'name='fuelcost' /></td>
-				     	<td><input readonly type='text'id='total_cost$i'name='totalcost'/></td></tr>";
+				     	<input readonly type='text' class='form-control' id='toandfrokms$i'name='toandfrokms'/></td><td>
+				     	<input readonly type='text' class='form-control' id='fuel_cost_per_km$i'name='fuelcost' /></td>
+				     	<td><input readonly type='text' class='form-control' id='total_cost$i'name='totalcost'/></td></tr>";
 				$total_days+=1;
 	     	 }
 		}
 	}
-	echo "<tr><td>Total Days</td><td><input readonly type='text'id='total_days' value='$total_days'/></td><td><input type='text'id='totaltoandfrokms' value='$total_distance'/></td><td><input readonly type='text'/></td><td><input readonly id='overall_cost'value='$overall_cost' name='total_fuelcost'/></td>
-	<td><input type='button' id='addrow' value='ADD DAY' onclick='addRow();'/></td></tr>";
+	echo "<tr><td>Total Days</td><td><input readonly type='text' class='form-control' id='total_days' value='$total_days'/></td><td><input type='text' class='form-control' id='totaltoandfrokms' value='$total_distance'/></td><td><input readonly type='text' class='form-control'/></td><td><input readonly id='overall_cost'value='$overall_cost' name='total_fuelcost' class='form-control'/></td>
+	<td><input type='button' class='btn btn-primary' id='addrow' value='ADD DAY' onclick='addRow();'/></td></tr></table>";
 	}
 	}
 	if (isset($_REQUEST['table1']))
@@ -160,7 +160,7 @@
 		}
 		elseif($db->countRows($query1)!=0)
 		{
-			echo "For that date you are work from home or on speecial leave";
+			echo "For that date you are work from home or on special leave";
 		}
 		elseif($db->countRows($query4)!=0)
 		{

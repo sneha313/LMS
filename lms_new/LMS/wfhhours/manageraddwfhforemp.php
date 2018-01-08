@@ -1,57 +1,49 @@
 <?php
-session_start();
-require_once '../Library.php';
-require_once '../generalFunctions.php';
-$db=connectToDB();
+	session_start();
+	require_once '../Library.php';
+	require_once '../generalFunctions.php';
+	$db=connectToDB();
 ?>
-	<?php
+<?php
 	function insertRecord() {
-		echo "<center>
-		<h3>View/Update Extra WFH Hours for Employee</h3>
-		</center>";
-		global $db;
-		$name=$_SESSION['u_fullname'];
-		$empid=isset($_POST['empid']) ? $_POST['empid'] : '';
-		$noh = isset($_POST['noh']) ? $_POST['noh'] : '';
-		//change number of hours format from hour to hour:minute:second format
-		//$second=$noh*3600;
-		//$hours=floor($second / (60 * 60));
-		// extract minutes
-		//$divisor_for_minutes = $second % (60 * 60);
-		//$minutes = floor($divisor_for_minutes / 60);
+		echo "<div class='panel panel-primary'>
+				<div class='panel-heading text-center'>
+					<strong style='font-size:20px;'>View/Update Extra WFH Hours for Employee</strong>
+				</div>
+				<div class='panel-body'>";
+				global $db;
+				$name=$_SESSION['u_fullname'];
+				$empid=isset($_POST['empid']) ? $_POST['empid'] : '';
+				$noh = isset($_POST['noh']) ? $_POST['noh'] : '';
+				$reason = isset($_POST['reason']) ? $_POST['reason'] : '';
+				$date= isset($_REQUEST['dynamicworked_day'])? $_REQUEST['dynamicworked_day'] : '';
+				
+				$transactionid = generate_transaction_id();
+				$query="select * from extrawfh where eid='".$empid."' and date='".$date."' order by date";
+				$sql=$db->query($query);
+				//$createdAt = date('Y-m-d H:i:s');
+				if($db->countRows($sql) > 0){
+					# IF ROW EXISTS, UPDATE QUERY
+					$reason=mysql_escape_string($reason);
+					$sqlQuery=$db->query("UPDATE `extrawfh` SET wfhHrs='$noh', reason='$reason',updatedBy='$name' WHERE date='$date' and eid='$empid'");
+				}
+				else {
+					# ELSE , INSERT
+					$insertQuery="INSERT INTO extrawfh (createdAt, createdBy, updatedAt, updatedBy, eid, tid, date, wfhHrs, reason, comments, status)
+					VALUES (CURTIME(), '$name','', '', '$empid', '$transactionid','$date', '$noh', '$reason', '', 'Approved')";
+					$sqlQuery = $db->query($insertQuery);
+				}
+				
+				if($sqlQuery){
+					echo "success";
+				} else {
+					echo "unsuccessfull";
+				}
+			echo "</div>";//panel-body div close
+		echo "</div>";//panel div close
 		
-		// extract the remaining seconds
-		//$divisor_for_seconds = $divisor_for_minutes % 60;
-		//$seconds = ceil($divisor_for_seconds);
-		//$h=(int)$hours;
-		//$m=(int)$minutes;
-		//$s=(int)$seconds;
-		//$wfhhours="$h:$m:$s";
-		$reason = isset($_POST['reason']) ? $_POST['reason'] : '';
-		$date= isset($_REQUEST['dynamicworked_day'])? $_REQUEST['dynamicworked_day'] : '';
-		
-		$transactionid = generate_transaction_id();
-		$query="select * from extrawfh where eid='".$empid."' and date='".$date."' order by date";
-		$sql=$db->query($query);
-		//$createdAt = date('Y-m-d H:i:s');
-		if($db->countRows($sql) > 0){
-			# IF ROW EXISTS, UPDATE QUERY
-			$reason=mysql_escape_string($reason);
-			$sqlQuery=$db->query("UPDATE `extrawfh` SET wfhHrs='$noh', reason='$reason',updatedBy='$name' WHERE date='$date' and eid='$empid'");
-		}
-		else {
-			# ELSE , INSERT
-			$insertQuery="INSERT INTO extrawfh (createdAt, createdBy, updatedAt, updatedBy, eid, tid, date, wfhHrs, reason, comments, status)
-			VALUES (CURTIME(), '$name','', '', '$empid', '$transactionid','$date', '$noh', '$reason', '', 'Approved')";
-			$sqlQuery = $db->query($insertQuery);
-		}
-		
-		if($sqlQuery){
-			echo "success";
-		} else {
-			echo "unsuccessfull";
-		}
 	}
+	
 	function getWFHForm($empid,$date){
 		global $db;
 		global $divid;
@@ -64,81 +56,147 @@ $db=connectToDB();
 				echo $row['wfhHrs']."-".$row['reason'];
 			}
 	}
+	
 	function displayWFHForm($emp)
 	{
-		echo "<center>
-		<h3>Add Extra WFH Hours for Employee</h3>
-		</center>";
-		global $db;
-		global $divid;
-		
-		$empnametresult=$db->query("select empid,empname from emp where empname='".$emp."' and state='Active'");
-		$empnamerow=$db->fetchAssoc($empnametresult);
-		$sql=$db->query("select * from extrawfh where status='Approved' and eid='".$empnamerow['empid']."'");
-		$childern=getChildren($_SESSION['u_empid']);
-		if((in_array($empnamerow['empid'],$childern) && (strtoupper($_SESSION['user_desgn'])=="MANAGER")) || strtoupper($_SESSION['user_dept'])=="HR") {
-			
-			//$getCalIds = array("fromdate", "todate", "TypeOfDayfromdate", "TypeOfDaytodate");
-			//$calImg = getCalImg($getCalIds);
-			//echo $calImg;
-			echo '<center>
-				<form method="post" action="wfhhours/manageraddwfhforemp.php?change=1&addEmpWFH=1" id="managerAddWFH">
-				<table id="table-2" width="400" border="0" cellspacing="1" cellpadding="2">
-				<tr>
-					<td width="140">Employee Name</td>
-					<td><input name="emp_name" type="text" id="emp_name" value="'.$empnamerow['empname'].'" readonly required></td>
-				</tr>
-				<tr style="display:none">
-					<td><input name="emp_tid" type="text" id="emp_tid"></td>
-				</tr>
-				<tr>
-					<td width="100">Employee Id</td>
-					<td><input name="empid" type="text" id="empid" value="'.$empnamerow['empid'].'" required></td>
-				</tr>
-				<tr>
-					<td width="100">Date</td>
-					<td><input id="Extrawfhhours" class="workeddaynoh" type="text" name="dynamicworked_day" readonly/></td>
-		
-				</tr>
-				<tr>
-					<td width="100">No. of Hrs</td>
-					<td><input name="noh" type="text" id="noh" readonly required></td>
-				</tr>
-				<tr>
-					<td width="100">Reason</td>
-					<td><textarea name="reason" id="reason" required></textarea></td>
-				</tr>
-				<tr>
-					<td width="100"></td>
-					<td><input name="submit" type="submit" id="submit" value="Submit">
-						<input name="close" type="submit" id="close" value="Close"></td>
-				</tr>
-			</table>
-		</form>
-	</center>';
+					global $db;
+					global $divid;
+					$empnametresult=$db->query("select empid,empname from emp where empname='".$emp."' and state='Active'");
+					$empnamerow=$db->fetchAssoc($empnametresult);
+					$sql=$db->query("select * from extrawfh where status='Approved' and eid='".$empnamerow['empid']."'");
+					$childern=getChildren($_SESSION['u_empid']);
+					if((in_array($empnamerow['empid'],$childern) && (strtoupper($_SESSION['user_desgn'])=="MANAGER")) || strtoupper($_SESSION['user_dept'])=="HR") {
+						
+						echo '<form method="post" action="wfhhours/manageraddwfhforemp.php?change=1&addEmpWFH=1" name="manageraddExtraWFH" id="managerAddWFH">
+							<div class="panel panel-primary">
+								<div class="panel-heading text-center">
+									<strong style="font-size:20px;">Add Extra WFH Hours for Employee</strong>
+								</div>
+							<div class="panel-body">
+								<div class="form-group">
+								<div class="row">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
+										<label>Employee Name</label>
+									</div>
+									<div class="col-sm-5">
+										<input name="emp_name" type="text" class="form-control" id="emp_name" value="'.$empnamerow['empname'].'" readonly required>
+									</div>
+									<div class="col-sm-2"></div>
+								</div>
+								</div>
 								
-		}
-	
-		else {
-			echo "<script>alert(\"You dont have permissions to change '".$empnamerow['empname']." ' transaction\");</script>";
-		}
+								<div class="form-group">
+								<div class="row" style="display:none">
+									<div class="col-sm-12">
+										<input name="emp_tid" type="text" id="emp_tid">
+									</div>
+								</div>
+								</div>
+								
+								<div class="form-group">
+								<div class="row">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
+										<label>Employee Id</label>
+									</div>
+									<div class="col-sm-5">
+										<input name="empid" type="text" class="form-control" id="empid" value="'.$empnamerow['empid'].'" required readonly>
+									</div>
+									<div class="col-sm-2"></div>
+								</div>
+								</div>
+							
+								<div class="form-group">
+								<div class="row">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
+										<label>Date</label>
+									</div>
+									<div class="col-sm-5">
+										<div class="input-group">
+											<input type="text" id="Extrawfhhours" class="form-control open-datetimepicker" name="dynamicworked_day" readonly />
+											<label class="input-group-addon btn" for="date">
+												<span class="fa fa-calendar"></span>
+											</label>
+										</div>
+									</div>
+									<div class="col-sm-2"></div>
+								</div>
+								</div>
+								
+								<div class="form-group">
+								<div class="row">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
+										<label>No. of Hrs</label>
+									</div>
+									<div class="col-sm-5">
+										<input name="noh" type="text" class="form-control" id="noh" readonly required>
+									</div>
+									<div class="col-sm-2"></div>
+								</div>
+								</div>
+								
+								<div class="form-group">
+								<div class="row">
+									<div class="col-sm-2"></div>
+									<div class="col-sm-3">
+										<label>Reason</label>
+									</div>
+									<div class="col-sm-5">
+										<textarea name="reason" class="form-control" id="reason" required></textarea>
+									</div>
+									<div class="col-sm-2"></div>
+								</div>
+								</div>
+								
+								<div class="form-group">
+								<div class="row">
+									<div class="col-sm-12 text-center">
+										<input name="submit" class="btn btn-success" type="submit" id="submit" value="Submit">
+										<input name="close" class="btn btn-danger" type="submit" id="close" value="Close">
+									</div>
+								</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<script>
+						$(document).ready(function(){
+							$(".open-datetimepicker").datepicker({
+								changeMonth: true,
+								changeYear: true,
+								showButtonPanel: true,
+								dateFormat: "yy-mm-dd",
+								yearRange: "-1:+0",
+								maxDate: "+0D",
+								showOn: "both",
+								buttonImageOnly: true,
+							});
+						});
+					</script>';
+				}
+				
+					else {
+						echo "<script>BootstrapDialog.alert(\"You dont have permissions to apply Extra WFH Hour for '".$_REQUEST['empuser']."'\");
+							$('#loadmanagersection').load('wfhhours/manageraddwfhforemp.php');
+						</script>";
+					}
 	}
-	
-	
 	if(isset($_REQUEST['change']))
 	{
 		if(isset($_REQUEST['addEmpWFH']))
 		{	
-				insertRecord();
+				insertRecord(); //to view or update extra WFH hour for employee
 		}
 		if(isset($_REQUEST['displayWFHForm']))
 		{
-			echo '<link rel="stylesheet" type="text/css" media="screen" href="css/applyleave.css" />
-	 			 <link rel="stylesheet" type="text/css" media="screen" href="css/table.css" />';
-			displayWFHForm($_REQUEST['empuser']);
+			displayWFHForm($_REQUEST['empuser']); //to display Add Extra WFH Hour Form
 			?>
 			
 			<?php 
+			//check whether role is MANAGER or HR
 				if(isset($_REQUEST['role']))
 				{
 					$_SESSION['roleofemp']=$_REQUEST['role'];
@@ -176,32 +234,20 @@ $db=connectToDB();
 					});
 				});
 			
-				$("body").on("click",".workeddaynoh",function() {
-					$(this).datepicker ({
-						changeMonth: true,
-				        changeYear: true,
-				        showButtonPanel: true,
-				        dateFormat: "yy-mm-dd",
-				        yearRange: "-1:+0",
-				        maxDate: "+0D",
-				        buttonImage: "js/datepicker/datepickerImages/calendar.gif",
-						showOn: "both",
-						buttonImageOnly: true,	 
-		    	});
-			});
 				$("#managerAddWFH").submit(function() {
+					$(this).find(':input[type=submit]').replaceWith('<center><img src="public/img/loader.gif" class="img-responsive" alt="processing"/></center>');
 					$.ajax({
 			 		data: $(this).serialize(),
 				 	type: $(this).attr("method"),
 				 	url: $(this).attr("action"),
 			 		success: function(response) {
 				 	  if(response.match(/success/)) {
-							alert("WFH inserted successfully");
+							BootstrapDialog.alert("WFH inserted successfully");
 							var eid=$("#empid").val();
 							var date = $(".workeddaydynamic").val();
 							$('#'+divid).load("wfhhours/managerviewwfhform.php?viewrecordbymanager=1&eid="+eid+"&date="+date);
 							 } else {
-							alert("not successs");
+							BootstrapDialog.alert("not successs");
 					   }
 				    }
 				 });
@@ -214,7 +260,6 @@ $db=connectToDB();
 			
 	}
 	
-	
 	else if(isset($_REQUEST['getwfhbymanager'])) {
 		# to get the details of employee if data is already available
 		getWFHForm($_REQUEST['eid'],$_REQUEST['date']);
@@ -222,17 +267,24 @@ $db=connectToDB();
 	else
 	{
 		echo '<form action="wfhhours/manageraddwfhforemp.php?change=1&displayWFHForm=1" method="POST" id="getemptrans">
-				<table id="table-2">
-		<tr>
-			<td><p><label>Enter Employee Name:</label></p></td>
-         	<td><p><input id="empuser" type="text" name="empuser"/></p></td>';
-		echo '<td><input class="submit" type="submit" name="submit" value="SUBMIT"/></td>
-        </tr> 	
-		 </table>
-		</form>';
+				<div class="row"> 
+					<div class="col-sm-1"></div>
+					<div class="col-sm-3">
+						<label style="font-size:16px;">Enter Employee Name:</label>
+					</div>
+					<div class="col-sm-4">
+						<input id="empuser" type="text" class="form-control" name="empuser"/>
+					</div>
+					<div class="col-sm-3">
+						<input class="submit btn btn-primary" type="submit" name="submit" value="SUBMIT"/>
+					</div>
+       				<div class="col-sm-1"></div>
+				</div>
+			</form>';
 		?>
 		
 		<?php 
+		//check whether role is MANAGER or HR
 		if(isset($_REQUEST['role']))
 		{
 			$_SESSION['roleofemp']=$_REQUEST['role'];
@@ -255,7 +307,7 @@ $db=connectToDB();
 			$('#getemptrans').submit(function() {
 				if($("#empuser").val()=="")
 				{
-					alert("Please Enter Employee Name");
+					BootstrapDialog.alert("Please Enter Employee Name");
 					return false;
 				}
 				$.ajax({ 

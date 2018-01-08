@@ -1,0 +1,3 @@
+<?php
+$defaultLocation = "BLR";
+?>

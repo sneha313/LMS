@@ -1,5 +1,24 @@
 <?php
 require_once ("db.class.php");
+function getempListString($query) {
+	global $db;
+	$employeesList = $db -> query($query);
+	$employeeListString = "";
+	while ($employeesrow = $db -> fetchArray($employeesList)) {
+		$employeeListString = "$employeeListString" . $employeesrow['empid'] . ",";
+	}
+	$employeeListString = rtrim($employeeListString, ",");
+	return $employeeListString;
+}
+
+function getDeptByEmpid($empid)
+{
+	global $db;
+	$result=$db->query("select dept from emp where empid='$empid' and state='Active'");
+	$row=$db->fetchAssoc($result);
+	return $row['dept'];
+}
+
 function getChildren($supervisorID)
 {
 	global $db;
@@ -116,10 +135,17 @@ function getOptions($empid)
 function getEmpSelectionBox($supervisorID,$selectedEmployee)
 {
 	global $db;
-	echo '<form method="POST" name="teamleavereportName" id="teamleavereportId" action="teamleavereport.php"><table id="table-2" align="center" style="border-style:none">
-		 <tr>
-		 <td><b>Leave Status Information for <i>Employee</i></b>:</td>
-		 <td><select name = "empid" id="empid">
+	echo '<form method="POST" name="teamleavereportName" id="teamleavereportId" action="teamleavereport.php">
+		 <div class="panel panel-primary">
+			<div class="panel-heading text-center">
+				<strong style="font-size:20px;">Team Leave Report</strong>
+			</div>
+			<div class="panel-body">
+			<div class="form-group">
+			<div class="row">
+				<div class="col-sm-2"></div>
+				<div class="col-sm-4"><label>Leave Status Information for Employee</label></div>
+		 		<div class="col-sm-4"><select class="form-control" name = "empid" id="empid">
 		 <option value="Choose">Choose</option>
 		 <option value="All">All</option>';
 	$query="select dept from emp where empid='".$supervisorID."' and state='Active'";
@@ -152,51 +178,94 @@ function getEmpSelectionBox($supervisorID,$selectedEmployee)
 			echo '<option value="'.$value.'">'.$key.'</option>';
 		}
 	}
-	echo'</select></td><tr>
-			<td><b>Select Leave Type</b></td><td><select name="leaveType" id="leaveTypeId">
+	echo'</select></div>
+			<div class="col-sm-2"></div>
+			</div></div>
+			<div class="form-group">
+			<div class="row">
+			<div class="col-sm-2"></div>
+			<div class="col-sm-4"><label>Select Leave Type</label></div>
+			<div class="col-sm-4"><select class="form-control" name="leaveType" id="leaveTypeId">
 				<option value="ALL">ALL</option>
 		 		<option value="FullDay">FullDay</option>
 			 	<option value="HalfDay">HalfDay</option>
 				<option value="WFH">WFH</option>
 				<option value="First Half-HalfDay & second Half-WFH">First Half-HalfDay & second Half-WFH</option>
 				<option value="First Half-WFH & Second Half-HalfDay">First Half-WFH & Second Half-HalfDay</option>
-			</select></td></tr>';
+			</select></div>
+			<div class="col-sm-2"></div>
+			</div></div>';
 			
-	echo "<tr>
-			<td><b>From:</b></td>
-			<td>
-				<input type='text' name='fromdate' value='".date('Y-m-d', strtotime("first day of january " . date('Y')))."' id='fromdate' size='8' />
-			</td>
-		</tr>
-		<tr>
-			<td><b>To:</b></td>
-			<td>
-				<input size='8' name='todate' id='todate' value=".date('Y-m-d')." type='text' />
-			</td>
-		</tr>";
-	echo '<tr><td><center><input class="submit" type="submit" name="submit" value="Submit" /></center></td></tr>';
-	echo '<table></form>';
+	echo "<div class='form-group'>
+			<div class='row'>
+			<div class='col-sm-2'></div>
+			<div class='col-sm-4'><label>From Date</label></div>
+			<div class='col-sm-4'>
+			<div class='input-group'>
+				<input type='text' id='datetimepicker' class='form-control open-datetimepicker' name='fromdate' value='".date('Y-m-d', strtotime("first day of january " . date('Y')))."' size='8' />
+				<label class='input-group-addon btn' for='date'>
+					<span class='fa fa-calendar '></span>
+				</label>
+			</div>
+				</div>
+			<div class='col-sm-2'></div>
+		</div></div>
+		<div class='form-group'>
+			<div class='row'>
+			<div class='col-sm-2'></div>
+			<div class='col-sm-4'><label>To Date</label></div>
+			<div class='col-sm-4'>
+				<div class='input-group'>
+				<input type='text' id='datetimepicker1' class='form-control open-datetimepicker1' name='todate' value=".date('Y-m-d')." size='8' />
+				<label class='input-group-addon btn' for='date'>
+					<span class='fa fa-calendar'></span>
+				</label>
+			</div>
+			</div>
+			<div class='col-sm-2'></div>
+		</div></div>";
+	echo '<div class="form-group">
+			<div class="row">
+			<div class="col-sm-12 text-center"><input class="submit btn btn-primary" type="submit" name="submit" value="Submit" /></div></div></div>';
+	echo "</div></div></form>
+			<script>
+				$('.open-datetimepicker').datepicker({
+					format: 'yyyy-mm-dd',
+		            minView : 2,
+		            buttonImageOnly: true,
+		            orientation: 'auto',
+		            autoclose: true
+				});
+						
+				$('.open-datetimepicker1').datepicker({
+					format: 'yyyy-mm-dd',
+	                minView : 2,
+	                buttonImageOnly: true,
+					orientation: 'auto',
+	                autoclose: true
+				});
+		</script>";
 }
 
 function includeJQGrid()
 {
-	echo '<link href="js/jqueryui/css/redmond/jquery-ui.css" rel="stylesheet">';
-        echo '<script src="js/jquery/jquery.js" type="text/javascript"></script>';
-        echo '<script src="js/jqueryui/js/jquery-ui.js"></script>';
-        echo '<script src="js/jqgrid/grid.locale-en.js" type="text/javascript"></script>';
-        echo '<script type="text/javascript" src="js/jquery/jquery.validate.min.js"></script>';
-        echo '<script src="js/jqgrid/jquery.jqGrid.min.js" type="text/javascript"></script>';
-        echo '<script src="js/jquery/jquery.searchFilter.js" type="text/javascript"></script>';
-        echo '<link rel="stylesheet" type="text/css" media="screen" href="js/jqgrid/jqgridcss/ui.jqgrid.css" />';
-        echo '<link rel="stylesheet" type="text/css" media="screen" href="css/table.css" />';
-	echo '<script src="js/countdown/countdown.js" type="text/javascript"></script>';
-	echo '<link rel="stylesheet" type="text/css" media="screen" href="js/countdown/countdown.css" />';
+	echo '<link href="public/js/jqueryui/css/redmond/jquery-ui.css" rel="stylesheet">';
+  	echo '<link rel="stylesheet" type="text/css" media="screen" href="public/js/jqgrid/jqgridcss/ui.jqgrid.css" />';
+  	//echo '<link rel="stylesheet" type="text/css" media="screen" href="public/css/table.css" />';
+ 	//echo '<script type="text/javascript" src="public/js/jquery/jquery.js"></script>';
+  	echo '<script type="text/javascript" src="public/js/jqueryui/js/jquery-ui.js"></script>';
+ 	echo '<script type="text/javascript" src="public/js/jqgrid/grid.locale-en.js"></script>';
+  	echo '<script type="text/javascript" src="public/js/jquery/jquery.validate.min.js"></script>';
+  	echo '<script type="text/javascript" src="public/js/jqgrid/jquery.jqGrid.min.js"></script>';
+  	echo '<script type="text/javascript" src="public/js/jquery/jquery.searchFilter.js"></script>';
+	echo '<script type="text/javascript" src="public/js/countdown/countdown.js"></script>';
+	//echo '<link rel="stylesheet" type="text/css" media="screen" href="public/js/countdown/countdown.css" />';
 	echo '<script src="projectjs/fullcalendar.js"></script>';
 }
 
 function connectToDB()
 {
-	$config = new config("localhost", "root", "Manor441", "lms", "", "mysql");
+	$config = new config("localhost", "lms", "eciTele!", "lmsng", "", "mysql");
 	$db = new db($config);
 	$db->openConnection();
 	return $db;
@@ -595,7 +664,11 @@ function jqGrid_GetData($query,$request) {
 }
 function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$reason,$specialleaveid,$filename,$empid)
 {
+	
 	//This array will hold all the Leave Types
+	//$Leaves=$db->query("select * from regularleaves");
+	//$leaveres=$db->fetchAssoc($Leaves);
+	//$LeavesTypes=$leaveres['regularleave'];
 	$LeavesTypes = array("FullDay", "HalfDay", "WFH","First Half-HalfDay & second Half-WFH","First Half-WFH & Second Half-HalfDay");
 	$mailBody="";
 	$splLeave="";
@@ -604,7 +677,14 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 	$splLeave = getSpecialLeavesForType($splLeaveType, "specialleave");
 	//Statring of the form.. This form will contain all the dates and dropdwon list with the leave types
 	echo '<form name="leaves" id="displayDates" method="POST" action="'.$filename.'?getShift=1">
-		  	  <table cellspacing="2" cellpadding="2" border="3" id="table-2">';
+			<form id="AttInd" name="AttInd" method="post" action="attendance.php?AttInd=1">
+				<div class="col-sm-12">
+					<div class="panel panel-primary">
+						<div class="panel-heading text-center">
+							<strong style="font-size:20px;">Applied Leave Date</strong>
+						</div>
+						<div class="panel-body">
+		  	  <table class="table table-striped table-bordered">';
 	$count =0;
 	global $db;
 	$curYear = date('Y');
@@ -620,7 +700,7 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 		if(!preg_match('/[special]/',$numofDays[$j],$match))
 		{
 		$options = "";
-		//If special leave is selected by the user.. we will add the selected special leave type to the Options1 (Later will add it to html element)
+		//If special leave is selected by the user.. we will add the selected special leave type to the Optiona1 (Later will add it to html element)
 		if($splLeaveDays == 0 && $splLeaveType ==" "){
 			for ($i=1;$i<=sizeof($LeavesTypes);$i++){
 				$id=$i;
@@ -659,7 +739,7 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 		{
 			echo "<td> $numofDays[$j]  </td>";
 			echo '<td>';
-			echo '<SELECT class="optionSelection" id="Day'.$count.'" NAME="Day'.$count.'">; '
+			echo '<SELECT class="form-control optionSelection" id="Day'.$count.'" NAME="Day'.$count.'">; '
 			. $options .'</SELECT>';
 			echo '</td> </tr>';
 			$count++;
@@ -672,7 +752,7 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 					if(!in_array($splMatch[1],$optionalLeaveDates)) {
 						echo "<td>".str_replace('[special]','',$splMatch[2])."</td>";
 								echo "<td>Apply optional leave
-									<select class='applyOptionalLeave' name='selectOptionalLeave'>
+									<select class='form-control applyOptionalLeave' name='selectOptionalLeave'>
 									<option>YES</option>
 									<option>NO</option>
 									</select>
@@ -682,7 +762,9 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 						echo "<td>Optional leave (".str_replace('[special]','',$splMatch[2])." applied. Check Optional Leave table</td>";
 						if(preg_match('/(.*)(\(Optional\))/', $splMatch[2],$actaulmatch)) {
 							$numofDays[$j]=str_replace('[special]','',$actaulmatch[1]);
+							
 						}
+						echo "<td></td>";
 					}
 				}
 				} else {
@@ -694,8 +776,6 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 			echo '</tr>';
 			$count++;
 		}
-		
-		
 	}
 	/*
 	 * This Method will display the all the dates between selected start and end dates by removing weekends and holidays
@@ -716,8 +796,12 @@ function displayDates($numofDays,$splLeaveDays,$splLeaveType,$fromDate,$toDate,$
 	echo "<input type = hidden  id ='optionalleaveempcount' name = optionalleaveempcount value ='".$empid."_".$optionalLeaveCount."'/> ";
 	echo "<input type = hidden name = splType value =  ".urlencode($splLeave)." /></table>";
 	echo '	<br></br>
-		<input type="submit" name="submit" value="Next" />
-		</form>';
+			<div class="form-group">
+			<div class="row">
+			<div class="col-sm-12 text-center">
+				<input type="submit" class="btn btn-primary" name="submit" value="Next" />
+			</div></div></div>
+		</div></div></form>';
 }
 function getCalImg($arr,$minYear='-0',$maxYear='0')
 {
@@ -730,7 +814,6 @@ function getCalImg($arr,$minYear='-0',$maxYear='0')
 		$('#".$arr[$i]."').datepicker({
 			changeMonth: true,
 			changeYear: true,
-			buttonImage: 'js/datepicker/datepickerImages/calendar.gif',
 			dateFormat: 'yy-mm-dd',
 			showButtonPanel: true,
 			showOn: 'both',
@@ -742,12 +825,11 @@ function getCalImg($arr,$minYear='-0',$maxYear='0')
 	$str.="</script>";
 	return $str;
 }
-
 function getselectbox($query,$field)
 {
 	global $db;
 	$selectstr="";
-	$selectstr.="<select name='$field' id='$field'>";
+	$selectstr.="<select class='form-control' name='$field' id='$field'>";
 	$result=$db->query($query);
 	for($i=0;$i<$db->countRows($result);$i++)
 	{
@@ -766,16 +848,16 @@ function add_day($days,$format)
 
 function getempName($empid)
 {
-        global $db;
-        $result=$db->query("select empname from emp where empid='$empid' and state='Active'");
-        $row=$db->fetchAssoc($result);
-        return $row['empname'];
+	global $db;
+	$result=$db->query("select empname from emp where empid='$empid' and state='Active'");
+	$row=$db->fetchAssoc($result);
+	return $row['empname'];
 }
 
 function getValueFromQuery($query, $element) {
-        global $db;
-        $result = $db -> query($query);
-        $res = $db -> fetchArray($result);
-        return $res[$element];
+	global $db;
+	$result = $db -> query($query);
+	$res = $db -> fetchArray($result);
+	return $res[$element];
 }
 ?>

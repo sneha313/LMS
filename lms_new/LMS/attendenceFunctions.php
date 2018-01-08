@@ -416,9 +416,9 @@ function getDataForEMP($empID,$empName,$first,$last,$P10to4,$hr9,$hr45) {
 	$totdayHrV=0;
 	$totweekHr=0;
 	$totweekHrV=0;
-	$subempinfoComp='<table id="table-2"><tr>';
+	$subempinfoComp='<table class="table" style="width:30%;"><tr>';
 	$empinfo="";
-	$empinfo=$empinfo. '<tr><td width=180><u>';
+	$empinfo=$empinfo. '<tr><td><u>';
 	$counter=0;
 	while ($row = mysql_fetch_assoc($result)) {
 		$in = $row["First"];
@@ -444,7 +444,7 @@ function getDataForEMP($empID,$empName,$first,$last,$P10to4,$hr9,$hr45) {
 	}
 	$wkst = getMonday($first);
 	while ($w1 < date('Y-m-d',strtotime(getFriday($last)))) {
-		$subempinfo= '<td><table id="table-2">';
+		$subempinfo= '<td><table class="table">';
 		$subempinfo=$subempinfo. '<tr>
 				<th class="both" >Day</th>
 				<th class="both">In</th>
@@ -830,7 +830,7 @@ function getDataForEMP1($empID,$empName,$first,$last,$P10to4,$hr9,$hr45) {
 	}
 	$wkst = getMonday($first);
 	while ($w1 < date('Y-m-d',strtotime($last))) {
-		$subempinfo= '<table id="table-2">';
+		$subempinfo= '<table class="table">';
 		$subempinfo=$subempinfo. '<tr>
 				<th class="both" >Day</th>
 				<th class="both">In</th>
@@ -1187,7 +1187,7 @@ function getSunday($givenDate) {
 
 function createTableHeader($P10to4, $hr9, $hr45) {
 	echo '
-				<table id="table-2">
+				<table class="table">
 					<tr>
 						<th  class="both">Name</th>
 						<th  class="both">No of days';
@@ -1212,7 +1212,7 @@ function createTableHeader($P10to4, $hr9, $hr45) {
 function getTeamUntrackedPercentage() {
 	global $untrackedLeaves;
 	If($untrackedLeaves!=0) {
-		echo "<table id='table-2'><tr>
+		echo "<table class='table'><tr>
 				<td><b>Total Untracked Leaves</b>
 				<td class='teamUntrackedLeaves'><b>".$untrackedLeaves."</b></td>
 			</tr></table>";
@@ -1463,29 +1463,29 @@ function weeklyTrackAttendence($result,$fromDate, $toDate, $db) {
 function trackAttendence($result,$fromDate, $toDate, $db) {
 	global $untrackedLeaves;
 	### get the information	
-	echo "<table id='table-2' class='trackData'>
-                        <tr>
-                                <th  class=\"both\">Emp Id</th>
-                                <th  class=\"both\">Emp Name</th>
-                                <th  class=\"both\">Department</th>
-                                <th  class=\"both\">Manager</th>
-                                <th  class=\"both\">No of Days (Untracked)</th>
-                                <th  class=\"both\"></th>
+	echo "<table class='table table-bordered table-hover trackData'>
+                        <tr class='info'>
+                                <th>Emp Id</th>
+                                <th>Emp Name</th>
+                                <th>Department</th>
+                                <th>Manager</th>
+                                <th>No of Days (Untracked)</th>
+                                <th></th>
                         </tr>";
 	while ($row = mysql_fetch_assoc($result)) {
 		$count=0;
 		$empInnerTable="<tr>
-                                <td colspan='6'>
-                                       <table id='table-2'>
-                                               <thead>
-                                                       <tr>
-                                                         <th>Date</th>
-                                                          <th>In Time</th>
-                                                               <th>Out Time</th>
-                                                               <th>Time Difference</th>
-                                                               <th>Reason</th>
-                                                       </tr>
-                                               </thead><tbody>";
+        	<td colspan='6'>
+            	<table class='table table-hover table-bordered'>
+                	<thead>
+                    	<tr class='info'>
+                        	<th>Date</th>
+                          	<th>In Time</th>
+                         	<th>Out Time</th>
+                          	<th>Time Difference</th>
+                          	<th>Reason</th>
+                       	</tr>
+                    </thead><tbody>";
 	 	$empName=$row['empname'];
                 $empId=$row['empid'];
                 $empDept=$row['dept'];
@@ -1523,5 +1523,15 @@ function trackAttendence($result,$fromDate, $toDate, $db) {
         $untrackedLeaves=$untrackedLeaves+$count;
 	}
 	echo "<tr></tr></table>";
+			
+			/*echo "<script>
+				$(document).ready(function() {
+				    $('.arrow').click(function(){
+				    		$('.arrow-down').hide();
+				            $(this).find('.arrow-up, .arrow-down').toggle();
+				    });
+				});
+			
+			</script>";*/
 }
 ?>

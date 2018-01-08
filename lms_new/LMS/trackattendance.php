@@ -11,7 +11,7 @@ error_reporting("E_ALL");
 		$calImg = getCalImg($getCalIds);
 		echo $calImg;
 		?>
-		<SCRIPT TYPE="text/javascript">
+		<script type="text/javascript">
 		 	$("document").ready(function(){
 	        		$(".trackData tr:odd").addClass("odd");
 			        $(".trackData tr:not(.odd)").hide();
@@ -58,7 +58,10 @@ error_reporting("E_ALL");
 				});
 				return false;
 			});
-			 
+			$('.open-datetimepicker').click(function(event){
+			    event.preventDefault();
+			    $('#datetimepicker').click();
+			});
 			 $( "#accordion-new" ).accordion({
 				 heightStyle: "content",
 				 collapsible: true
@@ -72,20 +75,11 @@ error_reporting("E_ALL");
 						var firstString =$(val).next().find(".teamUntrackedLeaves").text();
 					}
 					
-					$(val).html("<table id='table-2'><tr><td width='30%'><b>"+$(val).text()+"</b></td><td width='70%'><table id='table-2'><tr><td>Total Untracked Leaves: "+
+					$(val).html("<table class='table'><tr><td width='30%'><b>"+$(val).text()+"</b></td><td width='70%'><table class='table'><tr><td>Total Untracked Leaves: "+
 					firstString+"</td></tr></table>");
 			});
 			 
-		</SCRIPT>
-		<style>
-			.arrow {
-				background: transparent url(images/arrows.png) no-repeat scroll 0px
-					-16px;
-				width: 16px;
-				height: 16px;
-				display: block;
-			}
-		</style>
+		</script>
 		
 		<?php
 		echo '
@@ -105,10 +99,11 @@ error_reporting("E_ALL");
 		});
 		</script>';
 		?>
-		<link rel="stylesheet" type="text/css" media="screen" href="css/table.css" />
+		<!-- <link rel="stylesheet" type="text/css" media="screen" href="public/css/table.css" /> -->
 		<title>Attendence analyze</title>
 	</head>
 	<body>
+		
 		<?php
 		$untrackedLeaves=0;
 		$db = connectToDB();
@@ -180,77 +175,112 @@ error_reporting("E_ALL");
 		}
 		
 		?>
-		<table id='table-2'>
-			<tr>
-				<td>
 				<form id="TrackAttInd" name="TrackAttInd" method="post" action="trackattendance.php?TrackAttInd=1">
-					<fieldset>
-						<legend>
-							Untracked Leave Information
-						</legend>
-						<table id='table-2'>
+					
+				<div class="col-sm-5">
+				<div class="panel panel-primary">
+					<div class="panel-heading text-center">
+						<strong style="font-size:20px;">Untracked Leave Info</strong>
+					</div>
+					<div class="panel-body">
 							<?php
 							if (($_SESSION['u_managerlevel'] != 'level1') || ($_SESSION['user_dept'] == 'HR')) {
 								if (($_SESSION['user_dept'] == 'HR') || ($_SESSION['u_empid'] == "420064")) {
-									echo '<tr>
-											<td>Department:</td>
-											<td><select id="hideDept" size="0" name="UDept">
+									echo '<div class="form-group">
+										<div class="row">
+										<div class="col-sm-4"><label>Department:</label></div>
+										<div class="col-sm-8"><select class="form-control" id="hideDept" size="0" name="UDept">
 											' . $department . '
 											</select>
-											</td>
-											</tr>';
-									echo '<tr id="hideName" style="display:none">
-											<td>Name:</td>
-											<td>
-											<select id="getEmpName" size="0" name="getDeptemp"></select>
-											</td>
-											</tr>';
+											</div>
+											</div>
+											</div>';
+									echo '<div class="form-group" style="display:none">
+										<div class="row">
+										<div class="col-sm-4"><label>Name:</label></div>
+										<div class="col-sm-8">
+											<select class="form-control" id="getEmpName" size="0" name="getDeptemp"></select>
+											</div>
+		 									</div>
+											</div>';
 								} else {
-									echo '<tr>
-											<td>Department:</td>
-											<td><select id="hideDept" size="0" name="UDept">
-											' . $deps . '
+									echo '<div class="form-group">
+										<div class="row">
+										<div class="col-sm-4"><label>Department:</label></div>
+										<div class="col-sm-8">
+											<select class="form-control" id="hideDept" size="0" name="UDept">
+												' . $deps . '
 											</select>
-											</td>
-											</tr>';
-									echo '<tr id="hideName" style="display:none">
-											<td>Name:</td>
-											<td>
-											<select id="getEmpName" size="0" name="getDeptemp"></select>
-											</td>
-											</tr>';
+										</div>
+										</div>
+										</div>';
+									echo '<div class="form-group" style="display:none">
+										<div class="row">
+										<div class="col-sm-4"><label>Name:</label></div>
+										<div class="col-sm-8">
+											<select class="form-control" id="getEmpName" size="0" name="getDeptemp"></select>
+											</div>
+											</div>
+											</div>';
 								}
 							} else {
-								echo '<tr>
-									<td id="hideEmpName">Name:</td>
-									<td><select size="0" name="UGroup">
+								echo '<div class="form-group">
+										<div class="row">
+										<div class="col-sm-4"><label>Name:</label></div>
+									<div class="col-sm-8"><select class="form-control" size="0" name="UGroup">
 									'.$deps.'
 									</select>
-									</td>
-									</tr>';
+									</div>
+									</div>
+									</div>';
 							}
 							?>
-							<tr>
-							<td>From:</td>
-							<td><input type="text" readonly="true" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d'); ?>' id="fromdate" size="8" /></td>
-							</tr>
-							<tr>
-							<td>To:</td>
-							<td><input size="8" readonly="true" name="todate" id="todate" value = '<?php echo date('Y-m-d') ?>' type="text" /></td>
-							</tr>
-							<tr>
-							<td rowspan="3" align="center">
-							<input type="submit" class="submitBtn" value="Submit" name="TrackAttInd">
-							</td>
-							</tr>
-						</table>
-					</fieldset>
-				</form></td>
-			</tr>
-		</table>
+							<div class="form-group">
+							<div class="row">
+							<div class="col-sm-4"><label>From Date</label></div>
+							<div class="col-sm-8">
+							<!-- <input class="form-control" type="text" readonly="true" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d'); ?>' id="fromdate" size="8" /> -->
+							<div class="input-group">
+									    <input type="text" id="datetimepicker" class="form-control" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d'); ?>'>
+									    <label class="input-group-addon btn" for="date">
+									       <span class="fa fa-calendar open-datetimepicker"></span>
+									    </label>
+							</div>
+							</div>
+							</div>
+							</div>
+							<div class="form-group">
+							<div class="row">
+							<div class="col-sm-4"><label>To Date</label></div>
+							<div class="col-sm-8">
+							<!-- <input class="form-control" size="8" readonly="true" name="todate" id="todate" value = '<?php echo date('Y-m-d') ?>' type="text" /></td> -->
+							<div class="input-group">
+									    <input type="text" id="datetimepicker" class="form-control" name="fromdate" value='<?php echo add_day(-30, 'Y-m-d'); ?>'>
+									    <label class="input-group-addon btn" for="date">
+									       <span class="fa fa-calendar open-datetimepicker"></span>
+									    </label>
+							</div>
+                    		</div>
+                    		</div>
+                    		</div>
+							<div class="form-group">
+							<div class="row">
+							<div class="col-sm-12 text-center">
+							<input type="submit" class="btn btn-primary submitBtn" value="Submit" name="TrackAttInd">
+							</div>
+							</div>
+							</div>
+					
+						</div>
+						</div>
+						</div>
+					
+				</form>
 		<div id='loadingmessage' style='display:none'>
-			<img align="middle" src='images/loading.gif'/>
+			<img align="middle" src='public/images/loading.gif'/>
 		</div>
+		<div class="row">
+		<div class="col-sm-9">
 <?php
 if (isset($_REQUEST['TrackAttInd'])) {
 		// Gather information
@@ -275,15 +305,15 @@ if (isset($_REQUEST['TrackAttInd'])) {
                  $(".ui-dialog").remove();
               </script>';
         echo "<div id='untrackedLeaveData'>";
-        echo "<br><u><h2><center>Untracked Leave Information details from $fromDate to $toDate "; 
+        echo "<br><u><h4><center>Untracked Leave Information details from $fromDate to $toDate "; 
 
         if (isset($_REQUEST['getDeptemp'])) {
                 echo getempName($_REQUEST['getDeptemp']);
         }
         if (isset($_REQUEST['UDept'])) {
-                echo " (" . $_REQUEST['UDept'] . ")</center></h2></u><br>";
+                echo " (" . $_REQUEST['UDept'] . ")</center></h4></u><br>";
         } else {
-		echo "</center></h2></u><br>";
+		echo "</center></h4></u><br>";
 	}
         
         
@@ -372,6 +402,9 @@ if (isset($_REQUEST['TrackAttInd'])) {
        $db -> closeConnection();
 }
 ?>
+</div>
+</div>
+	
 	</body>
 	</head>
 </html>

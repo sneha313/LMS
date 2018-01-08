@@ -6,7 +6,6 @@ require_once 'generalFunctions.php';
 ?>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" media="screen" href="css/table.css" />
 <script>
 <?php 
 if(isset($_REQUEST['leaveform']))
@@ -26,11 +25,6 @@ if (isset($_REQUEST['getShift']))
  
 ?>
 </script>
-<?php
-$getCalIds = array("hrfromDate", "hrtoDate");
-$calImg=getCalImg($getCalIds);
-echo $calImg;
-?>
 <body id="applyleavebody">
 	<div id="wrapper">
 		<div id="form-div">
@@ -49,7 +43,7 @@ echo $calImg;
 				if(($_SESSION['user_dept']=="HR")) {
 					getLeaveForm("hrapplyleaveforall.php","hrleaveForm","hrApplyLeave","team_leave_type","hideteammemsplLeave","team_special_leave","hrfromDate","hrtoDate","hrsetOptions");
 				} else {
-					echo "<script>alert(\"You dont have permissions to apply leave for this employee '".$_REQUEST['empuser']."'\");
+					echo "<script>BootstrapDialog.alert(\"You dont have permissions to apply leave for this employee '".$_REQUEST['empuser']."'\");
 						$('#loadapplyteammemberleave').load('applyteammemberleave.php?getEmp=1');
 						</script>";
 				}

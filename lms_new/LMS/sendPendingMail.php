@@ -1,17 +1,6 @@
 <html>
-<head>
-<link rel="stylesheet" type="text/css" media="screen"
-        href="projectjs/table.css" />
-<style>
-#table-2 {
-	text-align:center;
-}
-</style>
-
-</head>
 <body>
 <?php
-
 require_once 'Library.php';
 $db=connectToDB();
 
@@ -24,11 +13,11 @@ function mailBody($query)
 	while ($res=$db->fetchAssoc($result))
 	{
 		$mailbody=$mailbody."<tr>
-			<td width=130>".getEmpName($res['empid'])."</td>
-			<td width=100>".$res['startdate']."</td>
-			<td width=100>".$res['enddate']."</td>
-			<td width=70>".$res['count']."</td>
-			<td width=400 align=left>".$res['reason']."</td>
+			<td>".getEmpName($res['empid'])."</td>
+			<td>".$res['startdate']."</td>
+			<td>".$res['enddate']."</td>
+			<td>".$res['count']."</td>
+			<td align=left>".$res['reason']."</td>
 			</tr>";
 	}
 	return $mailbody;
@@ -49,8 +38,8 @@ function printChildern($pendingChildern,$managerId)
 	$mailbody=$mailbody."<h3>Please Approve/Reject below pending Leaves for your team members</h3>";
 	$mailbody=$mailbody."<h5>You can perform respective action by logging into http://blrtools/lms</h5>";
 	if(count($pendingChildern)!=0) {
-	   $mailbody=$mailbody."<table id=table-2 border=2 width=800>";
-           $mailbody=$mailbody."<tr>
+	   $mailbody=$mailbody."<table class='table table-bordered table-hover'>";
+           $mailbody=$mailbody."<tr class='info'>
                                 <th width=130>EmpName</th>
                                 <th width=100>StartDate</th>
                                 <th width=100>EndDate</th>

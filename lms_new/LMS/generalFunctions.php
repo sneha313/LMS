@@ -1,6 +1,6 @@
 <?php
 require_once 'Library.php';
-function getApplyLeaveJs($id, $fromDateId, $toDateId, $section, $empId, $page,$employeeId) {
+function getApplyLeaveJs($id, $fromDateId, $toDateId, $section, $empId, $page,$employeeId="") {
 	if ($page == "applyteammemberleave.php" || $page == "hrapplyleaveforall.php") {
 		echo "$('#team_leave_type').change(function() {
 					$.post('getSplLeaveOptions.php?empid=".$employeeId."',function(data)
@@ -12,64 +12,62 @@ function getApplyLeaveJs($id, $fromDateId, $toDateId, $section, $empId, $page,$e
 	}
 	echo '$("#' . $id . '").submit(function() {';
 	echo 'a=$("#'.$fromDateId.'").val().split("-");
-		  fromDate=new Date(a[1]+"/"+a[2]+"/"+a[0]);
-          b=$("#'.$toDateId.'").val().split("-");
-          toDate=new Date(b[1]+"/"+b[2]+"/"+b[0]);
-          fromDateValue=$("#'.$fromDateId.'").val();
-          toDateValue=$("#'.$toDateId.'").val();
- 	var todaydate=new Date();todaydate.setDate(todaydate.getDate() - 30);
-        function countWeekendDays( d0, d1 )
-		{
-   			var start = new Date(d0),
-    		finish = new Date(d1),
-    		dayMilliseconds = 1000 * 60 * 60 * 24;
-			var weekendDays = 0;
-			while (start <= finish) {
-    			var day = start.getDay()
-    		    if (day == 0 || day == 6) {
-        			weekendDays++;
-    			}
-    			start = new Date(+start + dayMilliseconds);
-  			}
-  			return weekendDays;
-		}
+			fromDate=new Date(a[1]+"/"+a[2]+"/"+a[0]);
+			b=$("#'.$toDateId.'").val().split("-");
+			toDate=new Date(b[1]+"/"+b[2]+"/"+b[0]);
+			fromDateValue=$("#'.$fromDateId.'").val();
+			toDateValue=$("#'.$toDateId.'").val();
+			var todaydate=new Date();todaydate.setDate(todaydate.getDate() - 365);
+			function countWeekendDays( d0, d1 )
+			{
+				var start = new Date(d0),
+				finish = new Date(d1),
+				dayMilliseconds = 1000 * 60 * 60 * 24;
+				var weekendDays = 0;
+				while (start <= finish) {
+					var day = start.getDay()
+					if (day == 0 || day == 6) {
+						weekendDays++;
+					}
+					start = new Date(+start + dayMilliseconds);
+				}
+				return weekendDays;
+			}
         		
-		if(isNaN(fromDate)|| isNaN(toDate))
-		{
-			if(isNaN(fromDate)) {
-				alert("Select From Date");
+			if(isNaN(fromDate)|| isNaN(toDate))
+			{
+				if(isNaN(fromDate)) {
+					BootstrapDialog.alert("Select From Date");
+					$("#' . $fromDateId . '").focus();
+					return false;
+				}
+				if(isNaN(toDate)) {
+					BootstrapDialog.alert("Select To Date");
+					$("#' . $toDateId . '").focus();
+					return false;
+				}
+			}
+						
+			if(fromDate>toDate)
+			{
+				BootstrapDialog.alert("Starting Date must be older date than ending date..... :)");
 				$("#' . $fromDateId . '").focus();
 				return false;
 			}
-			if(isNaN(toDate)) {
-				alert("Select To Date");
-				$("#' . $toDateId . '").focus();
-				return false;
-			}
-		}
-						
-		if(fromDate>toDate)
-		{
-			alert("Starting Date must be older date than ending date..... :)");
-			$("#' . $fromDateId . '").focus();
-			return false;
-		}
 
 		if($("#reason").val()=="") {
-			alert("Reason for applying leave is compulsory. Please enter the reason");
+			BootstrapDialog.alert("Reason for applying leave is compulsory. Please enter the reason");
 			$("#reason").focus();
 			return false;	
 		}';
 		
 		if ($page != "hrapplyleaveforall.php" && $page != "applyteammemberleave.php") {
-			echo 'if (fromDate < todaydate)
-	        {
-           	   	   alert( $("#' . $fromDateId . '").val() +" is before than Today\'s Date. Leave Can\'t be applied for before week");
-                   $("#' . $fromDateId . '").focus();
-                   return false;
-            }';
+			echo 'if (fromDate < todaydate) {
+						BootstrapDialog.alert( $("#' . $fromDateId . '").val() +" is before than Today\'s Date. Leave Can\'t be applied for before week");
+						$("#' . $fromDateId . '").focus();
+						return false;
+            	  }';
 		}
-		
 		if ((getTotalLeaves($employeeId)) < -5) {
 			if ($page == "applyteammemberleave.php" || $page == "hrapplyleaveforall.php") {
 				$divId="team_special_leave";
@@ -91,9 +89,11 @@ function getApplyLeaveJs($id, $fromDateId, $toDateId, $section, $empId, $page,$e
 						});
 						jQuery.ajaxSetup({async:true});
 						if(diffDays > numOfDays) {
-							alert("Yo cant apply leave more than "+numOfDays+"");
+							BootstrapDialog.alert("You cant apply leave more than "+numOfDays+"");
 							return false;  
-						} else { 
+						}';
+			
+						 echo 'else {
 						    	$.ajax({ 
 						        data: $(this).serialize(), 
 						        type: $(this).attr(\'method\'), 
@@ -105,14 +105,16 @@ function getApplyLeaveJs($id, $fromDateId, $toDateId, $section, $empId, $page,$e
 						}
 				  }';
 		}
-		echo 'else { 
-			    	$.ajax({ 
-				        data: $(this).serialize(), 
-				        type: $(this).attr(\'method\'), 
-				        url: $(this).attr(\'action\'), 
-				        success: function(response) { 
-				            $("#' . $section . '").html(response); 
-				        }
+			
+		echo 'else { ';
+		
+					echo '$.ajax({ 
+						data: $(this).serialize(), 
+						type: $(this).attr(\'method\'), 
+						url: $(this).attr(\'action\'), 
+						success: function(response) { 
+							$("#' . $section . '").html(response); 
+						}
 					});
 				}
 				return false;
@@ -129,12 +131,13 @@ function getDisplayDatesJs($section) {
 		var dayValue=nextValue.split(",");
 		var newDayName="Day"+dayValue[1];
 		if(unescape($("#spl").val()).replace(/\+/g, \' \').replace(/\//g, \'\')=="") {
-        	$(this).parent().prev().html("<select class=\"optionSelection\" name="+newDayName+">"+
+        	$(this).parent().prev().html("<select class=\"form-control optionSelection\" name="+newDayName+">"+
 											 "<option value=\"1\">FullDay</option>"+
 											 "<option value=\"2\">HalfDay</option>"+
 											 "<option value=\"3\">WFH</option>"+
 											 "<option value=\"4\">First Half-HalfDay &amp; second Half-WFH</option>"+
 											 "<option value=\"5\">First Half-WFH &amp; Second Half-HalfDay</option>"+
+											 "<option value=\"7\">OnSite</option>"+
 									"</select>");
 		} else {
 			var splLeave=unescape($("#spl").val()).replace(/\+/g, \' \').replace(/\//g, \'\');
@@ -165,7 +168,7 @@ function getDisplayDatesJs($section) {
 		});
 		var totaloptionalleaves=parseInt(optionalLeaveRealCount)+parseInt(optcount);
 		if(totaloptionalleaves> 2) {
-			alert("You have applied 2 optional leaves already. Please don\'t apply optional leave again");
+			BootstrapDialog.alert("You have applied 2 optional leaves already/ Selected more than two optional holidays in the present transaction. Please Change leaves accordingly");
 			return false;
 		}
 			
@@ -184,7 +187,7 @@ function getDisplayDatesJs($section) {
 		//Check Whether special leave applied is more than permitted leaves.
 		if(count>permittedleaves && permittedleaves!=0)
 		{
-			alert(specialLeaveName+" can only be applied for "+permittedleaves+" days. Please modify days accordingly");
+			BootstrapDialog.alert(specialLeaveName+" can only be applied for "+permittedleaves+" days. Please modify days accordingly");
 			return false;
 		}
 		else
@@ -204,16 +207,17 @@ function getDisplayDatesJs($section) {
 
 function getSubmitJs($id, $section) {
 	echo '$("#' . $id . '").submit(function() {
-	    $.ajax({
-	        data: $(this).serialize(),
-	        type: $(this).attr(\'method\'), 
-	        url: $(this).attr(\'action\'), 
-	        success: function(response) { 
-	            $("#' . $section . '").html(response);
-	        }
+			 $(this).find(":input[type=submit]").replaceWith("<center><img src=\'public/img/loader.gif\' class=\'img-responsive\' alt=\'processing\'/></center>");
+		    $.ajax({
+		        data: $(this).serialize(),
+		        type: $(this).attr(\'method\'), 
+		        url: $(this).attr(\'action\'), 
+		        success: function(response) { 
+		            $("#' . $section . '").html(response);
+		        }
 			});
 			return false; 
-	});';
+		});';
 }
 
 function getSetOptionsJs($section, $formName, $functionName) {
@@ -229,13 +233,13 @@ function getSetOptionsJs($section, $formName, $functionName) {
 }
 
 function getEmpForm($page,$empid,$role) {
-		if(strtolower($role)=="manager") {$divid="loadapplyteammemberleave";echo "<script>var divid=\"loadapplyteammemberleave\";</script>"; }
+		if(strtolower($role)=="manager") {$divid="loadmanagersection";echo "<script>var divid=\"loadmanagersection\";</script>"; }
 		if(strtolower($role)=="hr") { $divid="loadhrsection";echo "<script>var divid=\"loadhrsection\";</script>";}
 		echo "<script>
 				$('#getemptrans').submit(function() {
 				if($('#empuser').val()==\"\")
 				{
-					alert('Please Enter Employee Name');
+					BoottsrapDialog.alert('Please Enter Employee Name');
 					return false;
 				}
 				$.ajax({ 
@@ -243,10 +247,10 @@ function getEmpForm($page,$empid,$role) {
 			        type: $(this).attr('method'), 
 			        url: $(this).attr('action'), 
 			        success: function(response) { 
-			        $('#'+divid).html(response); 
-	        	}
+			        	$('#'+divid).html(response); 
+	        		}
 				});
-					return false; 
+				return false; 
 			});
 			jQuery(function() {
 	        jQuery('#empuser').autocomplete({
@@ -267,13 +271,17 @@ function getEmpForm($page,$empid,$role) {
 	        });
 	    });</script>";
 		echo '<form action="'.$page.'?leaveform=1" method="POST" id="getemptrans">
-				<table id="table-2">
-					<tr>
-						<td><p><label>Enter Employee Name:</label></p></td>
-			         	<td><p><input id="empuser" type="text" name="empuser"/></p></td>
-						<td><input class="submit" type="submit" name="submit" value="SUBMIT"/></td>
-        			</tr> 	
- 				</table>
+				<div class="col-sm-1"></div>
+					<div class="col-sm-3">
+						<label style="font-size:16px;">Enter Employee Name:</label>
+					</div>
+				   	<div class="col-sm-4">
+						<input id="empuser" type="text" class="form-control" name="empuser"/>
+					</div>
+					<div class="col-sm-3">
+						<input class="btn btn-primary submit" type="submit" name="submit" value="SUBMIT"/>
+					</div>
+					<div class="col-sm-1"></div>
 			</form>';
 }
 
@@ -290,110 +298,142 @@ function getLeaveForm($page, $formName, $formId, $leaveTypeId, $hideSplLeaveId, 
 	}
 
 	echo "<form name='$formName' method='POST' accept-charset='UTF8' action='$page?getdates=1' id='$formId' method='POST'>
-	<table id='table-2'>";
+	<div class='panel panel-primary'>
+			<div class='panel-heading text-center'>
+				<strong style='font-size:20px;'>Apply Leave</strong>
+			</div>
+			<div class='panel-body'>";
 	if ($page == "applyteammemberleave.php" || $page == "hrapplyleaveforall.php") {
-			echo "<tr>
-				<td><p class='empName'><label for='empid'>Emp Name:</label></p></td>
-	         			<td><p class='empName'><input type='text' id='empName' readonly name='empName' value= '".$_REQUEST['empuser']."' /></p></td>
-	        	 </tr>";
-			echo "<tr>
-					<td><p class='empid'><label for='empid'>Emp Id:</label></p></td>
-		         			<td><p class='empid'><input type='text' id='employeeid' readonly name='employeeid' value= ".$empId." /></p></td>
-		        	 </tr>";
+		echo "<div class='form-group'>
+						<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3 empName'><label for='empid'>Employee Name:</label></div>
+		         		<div class='col-sm-5 empName'><input type='text' class='form-control' id='empName' readonly name='empName' value= '".$_REQUEST['empuser']."' /></div>
+		        	 	<div class='col-sm-2'></div>
+		         	</div></div>";
+		echo "<div class='form-group'>
+						<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3 empid'><label for='empid'>Employee Id:</label></div>
+			         	<div class='col-sm-5 empid'><input type='text' class='form-control' id='employeeid' readonly name='employeeid' value= ".$empId." /></div>
+			        	<div class='col-sm-2'></div>
+			         </div></div>";
 	} else {
-	echo "<tr>
-		<td><p class='empid'><label for='empid'>Emp Id:</label></p></td>
-         			<td><p class='empid'><input type='text' id='empid' readonly name='empid' value= " . $_SESSION['u_empid'] . " /></p></td>
-        		</tr>";
-	}
-	echo "<tr>
-	<td><p><label for='Leave_type'>Leave Type:</label></p></td>
-	<td><p><select id='$leaveTypeId'  name='leavetype' onchange='$functionName(document.$formName.leavetype.options[document.$formName.leavetype.selectedIndex].value);'>";
-	 
-				if ((getTotalLeaves($empId)) < -5) {
-					echo "<option value='SL'>Special Leave</option>";
-				} else {
-          			echo "<option value='RL'>Regular Leave</option>
-	          			<option value='SL'>Special Leave</option>";
-				}
-          		echo "</select></p></td>
-        	</tr>
-	        	<tr id='$hideSplLeaveId' style='display:none'>
-	        	<td><p><label for='Special_leave'>Select Special Leave:</label></p></td>
-	        	<td><p><SELECT id= '$specialLeaveId' name='specialLeaveType' disabled='disabled'>
-	        	$options
-	        	</SELECT></p></td>
-	        	</tr>
-	        	<tr>
-	        	<td><p><label for='fromDate'>From Date:</label></p></td>
-	        	<td><p><input type='text' name='$fromDateId' id='$fromDateId' size='20' class='required' readonly='true'/></p></td>
-	        	</tr>
-	        	<tr>
-	        	<td><p><label for='toDate'>To Date:	</label></p></td>
-	        	<td><p><input type='text' name='$toDateId' id='$toDateId' size='20' class='required' readonly='true'/></p></td>
-	        	</tr>
-	        	<tr>
-	        	<td><p><label for='reason'>Reason:</label></p></td>
-	        	<td><p><textarea id='reason' rows='7' cols='30'  class='required' name='reason'></textarea></p></td>
-	        	</tr>
-	        	<tr>
-	        	<td><p><input class='reset' type='reset' name='reset' value='Reset' /></p></td>
-	        	<td><p><input class='submit' type='submit' name='submit' value='Next' /></p></td>
-	        	</tr>
-	        	</table>
-		</form>";
-}
-
-function addExtrawfhForm($page, $formName, $formId, $leaveTypeId, $hideSplLeaveId, $specialLeaveId, $fromDateId, $toDateId, $functionName) {
-	global $db;
-	$options = "";
-	if(isset($_REQUEST['empuser'])) {
-		$empId=getValueFromQuery("select empid from emp where empname='".$_REQUEST['empuser']."' and state='Active'","empid");
-		if ((getTotalLeaves($empId)) < -5) {
-			echo "<font color='red'>".$_REQUEST['empuser']." can't apply regular leave as his total leaves are exhaushted. You can apply WFH, special leaves on behalf of him.</font>";
-		}
-	} else {
-		$empId=$_SESSION['u_empid'];
+			echo "<div class='form-group'>
+						<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3 empid'>
+							<label for='empid'>Employee Id:</label>
+						</div>
+			         	<div class='col-sm-5 empid'>
+							<input type='text' id='empid' class='form-control' readonly name='empid' value= " . $_SESSION['u_empid'] . " />
+						</div>
+						<div class='col-sm-2'></div>
+									</div>
+									</div>";
 	}
 
-	echo "<form name='$formName' method='POST' accept-charset='UTF8' action='$page?getdates=1' id='$formId' method='POST'>
-	<table id='table-2'>";
-	if ($page == "applyteammemberleave.php" || $page == "hrapplyleaveforall.php") {
-		echo "<tr>
-				<td><p class='empName'><label for='empid'>Emp Name:</label></p></td>
-	         			<td><p class='empName'><input type='text' id='empName' readonly name='empName' value= '".$_REQUEST['empuser']."' /></p></td>
-	        	 </tr>";
-		echo "<tr>
-					<td><p class='empid'><label for='empid'>Emp Id:</label></p></td>
-		         			<td><p class='empid'><input type='text' id='employeeid' readonly name='employeeid' value= ".$empId." /></p></td>
-		        	 </tr>";
+	if ($page == "applyOnSite.php") {
+		echo "<div class='form-group'>
+						<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='Leave_type'>Leave Type:</label>
+						</div>
+						<div class='col-sm-5'>
+							<input type='text' class='form-control' id='$leaveTypeId' readonly name='leavetype' value='On Site'/>
+						</div>
+						<div class='col-sm-2'></div>
+		</div>
+		</div>";
 	} else {
-		echo "<tr>
-		<td><p class='empid'><label for='empid'>Emp Id:</label></p></td>
-         			<td><p class='empid'><input type='text' id='empid' readonly name='empid' value= " . $_SESSION['u_empid'] . " /></p></td>
-        		</tr>";
+		echo "<div class='form-group'>
+						<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='Leave_type'>Leave Type:</label>
+						</div>
+						<div class='col-sm-5'>
+							<select class='form-control' id='$leaveTypeId'  name='leavetype' onchange='$functionName(document.$formName.leavetype.options[document.$formName.leavetype.selectedIndex].value);'>";
+							if ((getTotalLeaves($empId)) < -5) {
+								echo "<option value='SL'>Special Leave</option>";
+							} else {
+									echo "<option value='RL'>Regular Leave</option>
+										<option value='SL'>Special Leave</option>";
+							}
+							echo "</select></div>
+							<div class='col-sm-2'></div>
+						</div>
+					</div>";
 	}
-	
-	echo "</select></p></td>
-	</tr>
-	<tr>
-	<td><p><label for='fromDate'>Date:</label></p></td>
-	<td><p><input type='text' name='$date' id='$date' size='20' class='required' readonly='true'/></p></td>
-	</tr>
-	<tr>
-	<td><p><label for='fromDate'>Hours:</label></p></td>
-	<td><p><input type='text' name='$wfhHrs' id='$wfhHrs' size='20' class='required' readonly='true'/></p></td>
-	</tr>
-	<tr>
-	<td><p><label for='reason'>Reason:</label></p></td>
-	<td><p><textarea id='reason' rows='7' cols='30'  class='required' name='reason'></textarea></p></td>
-	</tr>
-	<tr>
-	<td><input class='reset' type='submit' name='reset' value='submit' />
-	<input class='submit' type='submit' name='close' value='close' /></td>
-	</tr>
-	</table>
-	</form>";
+	echo "<div class='form-group'>
+						<div class='row' id='$hideSplLeaveId' style='display:none'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+	        				<label for='Special_leave'>Select Special Leave:</label>
+	        			</div>
+						<div class='col-sm-5'>
+							<SELECT class='form-control' id= '$specialLeaveId' name='specialLeaveType' disabled='disabled'>
+								$options
+							</SELECT>
+						</div>
+						<div class='col-sm-2'></div>
+	    </div>
+	</div>";
+	echo "<div class='form-group'>
+						<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='fromDate'>From Date:</label>
+						</div>
+						<div class='col-sm-5'>
+							<div class='input-group'>
+								<input type='text' name='$fromDateId' id='$fromDateId' size='20' class='required open-datetimepicker form-control' readonly='true'/>
+	   							<label class='input-group-addon btn' for='date'>
+									<span class='fa fa-calendar'></span>
+								</label>
+							</div>
+						</div>
+	   					<div class='col-sm-2'></div>
+	   				</div>
+	   			</div>";
+	echo "<div class='form-group'>
+						<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='toDate'>To Date</label>
+						</div>
+						<div class='col-sm-5'>
+							<div class='input-group'>
+								<input type='text' name='$toDateId' id='$toDateId' size='20' class='form-control open-datetimepicker1 required' readonly='true'/>
+								<label class='input-group-addon btn' for='date'>
+									<span class='fa fa-calendar'></span>
+								</label>
+							</div>
+						</div>
+						<div class='col-sm-2'></div>
+	   				</div>
+	   			</div>";
+	echo "<div class='form-group'>
+						<div class='row'>
+						<div class='col-sm-2'></div>
+						<div class='col-sm-3'>
+							<label for='reason'>Reason:</label>
+						</div>
+						<div class='col-sm-5'>
+							<textarea id='reason' class='form-control required' name='reason'></textarea>
+						</div>
+						<div class='col-sm-2'></div>
+					</div>
+				</div>";
+	echo "<div class='form-group'>
+						<div class='row'>
+						<div class='col-sm-12 text-center'>
+	       					<input class='btn btn-info reset' type='reset' name='reset' value='Reset' />
+	       					<input class='btn btn-success submit' id='next' type='submit' name='submit' value='Next' />
+	      </div>";
+	echo "</div></div>
+		</div></div></form>";
 }
 
 function getDatesSection($fromDateId, $toDateId, $empId, $emp, $page) {
@@ -401,27 +441,19 @@ function getDatesSection($fromDateId, $toDateId, $empId, $emp, $page) {
 	$splLeaveDays = 0;
 	if (isset($_REQUEST[$fromDateId]) && isset($_REQUEST[$toDateId])) {
 		$_SESSION['teammem'] = $emp;
-		$sql = $db -> query("SELECT empname,manager_emailid from emp where state='Active' and empid =".$empId);
-		$mangeremailId = "";
-		$empName = "";
-		while ($row1 = $db -> fetchArray($sql)) {
-			$mangeremailId = $row1['manager_emailid'];
-			$empName = $row1['empname'];
-		}
-		if ($_POST['leavetype'] == "RL") {
+		if (($_POST['leavetype'] == "RL") || ($_POST['leavetype'] == "On Site")) {
 			$numOfDays = RegleavesCal($_POST[$fromDateId], $_POST[$toDateId], $emp);
 			displayDates($numOfDays, $splLeaveDays, " ", $_REQUEST[$fromDateId], $_REQUEST[$toDateId], $_REQUEST['reason'], "", "$page","$empId");
-		} else if ($_POST['leavetype'] == "SL") {
+		} elseif ($_POST['leavetype'] == "SL") {
 			if (isset($_POST['specialLeaveType'])) {
 				$splLeaveDays = getSpecialLeavesForType($_POST['specialLeaveType'], "dayspermitted");
 			} else {
 				$splLeaveDays = "";
 				$_POST['specialLeaveType'] = "";
 			}
-
 			$numOfDays = RegleavesCal($_POST[$fromDateId], $_POST[$toDateId], $emp);
 			displayDates($numOfDays, $splLeaveDays, $_POST['specialLeaveType'], $_REQUEST[$fromDateId], $_REQUEST[$toDateId], $_REQUEST['reason'], $_POST['specialLeaveType'], "$page","$empId");
-		}
+		} 
 	}
 
 }
@@ -431,7 +463,11 @@ function getShiftSection() {
 	$totalLeaves = 0;
 	$leaveTypeSelected = "";
 	$mailBody = '<form name="getShiftDays" id="getShift" method="POST" action="' . $_SERVER['PHP_SELF'] . '?confirmleave=1">';
-	$mailBody .= "<table cellspacing='2' cellpadding='2' border='3' id='table-3'>";
+	$mailBody .= "<div class='panel panel-primary'>
+						<div class='panel-heading text-center'>
+							<strong style='font-size:20px;'>Shift Types</strong>
+						</div>
+						<div class='panel-body'>";
 	$Day = explode(":", urldecode($_POST['days']));
 	for ($i = 0; $i < $_POST['noOfdays']; $i++) {
 		if (!empty($_POST['Day' . $i])) {
@@ -439,62 +475,151 @@ function getShiftSection() {
 			if ($_POST['Day' . $i] == 1) {
 				$totalLeaves++;
 				$leaveTypeSelected = "FullDay";
-				$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . "></td></tr> ";
-			} else if ($_POST['Day' . $i] == 2) {
+				$mailBody = $mailBody . "<div class='form-group' style=\"display:none\">
+												<div class='row'>
+												<div class='col-sm-2'></div>
+												<div class='col-sm-8'>
+													<input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . " class='form-control'>
+												</div>
+												<div class='col-sm-2'></div>
+											</div></div>";
+				} else if ($_POST['Day' . $i] == 2) {
 				$totalLeaves = $totalLeaves + 0.5;
 				$leaveTypeSelected = "HalfDay";
-				$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . "></td></tr> ";
+				$mailBody = $mailBody . "<div class='form-group' style=\"display:none\">
+												<div class='row'>
+												<div class='col-sm-2'></div>
+												<div class='col-sm-8'>
+													<input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . " class='form-control'>
+												</div>
+												<div class='col-sm-2'></div>
+											</div></div>";
 			} else if ($_POST['Day' . $i] == 3) {
 				$leaveTypeSelected = "WFH";
-				$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . "></td></tr> ";
+				$mailBody = $mailBody . "<div class='form-group' style=\"display:none\">
+												<div class='row'>
+												<div class='col-sm-2'></div>
+												<div class='col-sm-8'>
+													<input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . " class='form-control'>
+												</div>
+												<div class='col-sm-2'></div>
+											</div></div>";
 			} else if ($_POST['Day' . $i] == 4) {
 				$totalLeaves = $totalLeaves + 0.5;
 				$leaveTypeSelected = "First Half-HalfDay & second Half-WFH";
-				$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . "></td></tr> ";
+				$mailBody = $mailBody . "<div class='form-group' style=\"display:none\">
+												<div class='row'>
+												<div class='col-sm-2'></div>
+												<div class='col-sm-8'>
+													<input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . " class='form-control'>
+												</div>
+												<div class='col-sm-2'></div>
+											</div></div>";
 			} else if ($_POST['Day' . $i] == 5) {
 				$totalLeaves = $totalLeaves + 0.5;
 				$leaveTypeSelected = "First Half-WFH & Second Half-HalfDay";
-				$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . "></td></tr> ";
+				$mailBody = $mailBody . "<div class='form-group' style=\"display:none\">
+												<div class='row'>
+												<div class='col-sm-2'></div>
+												<div class='col-sm-8'>
+													<input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . " class='form-control'>
+												</div>
+												<div class='col-sm-2'></div>
+											</div></div>";
 			} else if ($_POST['Day' . $i] == 6) {
 				$splLeaves++;
 				$leaveTypeSelected = urldecode($_POST['splType']);
-				$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . "></td></tr> ";
+				$mailBody = $mailBody . "<div class='form-group' style=\"display:none\">
+												<div class='row'>
+												<div class='col-sm-2'></div>
+												<div class='col-sm-8'>
+													<input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . " class='form-control'>
+												</div>
+												<div class='col-sm-2'></div>
+											</div></div>";
+			} else if ($_POST['Day' . $i] == 7) {
+				$totalLeaves = $totalLeaves + 0;
+				$leaveTypeSelected = "OnSite";
+				$mailBody = $mailBody . "<div class='form-group' style=\"display:none\">
+												<div class='row'>
+												<div class='col-sm-2'></div>
+												<div class='col-sm-8'>
+													<input type = hidden name ='Day" . $i . "Date' value =" . $Day[$i] . " class='form-control'>
+												</div>
+												<div class='col-sm-2'></div>
+											</div></div>";
 			}
+
 			if (preg_match('/optional/i', $Day[$i],$match)) {
 				if(preg_match('/(.*)(\[.*)/', $Day[$i],$splMatch)) {
 					$Day[$i]= $splMatch[1];
 				}
 			}
 			if ($leaveTypeSelected == "HalfDay") {
-				$mailBody = $mailBody . "<tr><td>" . $Day[$i] . "</td><td><p><input type='text' name='Day$i' size='50' value=\"" . $leaveTypeSelected . "\" readonly='true'></p></td>
-				 		<td style = 'padding: 4px 0 2px 0;'><input type='radio' name='Day" . $i . "halfDayChoice' value='firstHalf' checked>First Half</td>
-				 		<td style = 'padding: 4px 0 2px 0;'><input type='radio' name='Day" . $i . "halfDayChoice' value='secondHalf'>Second Half</td>
-				 		</tr>";
+				$mailBody = $mailBody ."<div class='form-group'>
+												<div class='row'>
+													<div class='col-sm-2'>" . $Day[$i] . "</div>
+													<div class='col-sm-4'>
+														<input type='text' class='form-control' name='Day$i' size='50' value=\"" . $leaveTypeSelected . "\" readonly='true'>
+													</div>
+											 		<div class='col-sm-6'>
+														<input type='radio' name='Day" . $i . "halfDayChoice' value='firstHalf' checked>First Half
+											 			<input type='radio' name='Day" . $i . "halfDayChoice' value='secondHalf'>Second Half
+											 		</div>
+										 		</div>
+											</div>";
 			} elseif ($leaveTypeSelected == "WFH") {
-				$mailBody = $mailBody . "<tr><td>" . $Day[$i] . "</td><td><p><input type='text' name='Day" . $i . "' size='50' value=\"" . $leaveTypeSelected . "\" readonly='true'></p></td>
-						<td style = 'padding: 4px 0 2px 0;'><input type='radio' name='Day" . $i . "WFHChoice' value='fullDay' checked>Full Day</td>
-				 		<td style = 'padding: 4px 0 2px 0;'><input type='radio' name='Day" . $i . "WFHChoice' value='firstHalf'>First Half</td>
-				 		<td style = 'padding: 4px 0 2px 0;'><input type='radio' name='Day" . $i . "WFHChoice' value='secondHalf'>Second Half</td>
-				 		</tr>";
+				$mailBody = $mailBody . "<div class='form-group'>
+												<div class='row'>
+													<div class='col-sm-2'></div>
+													<div class='col-sm-2'>" . $Day[$i] . "</div>
+													<div class='col-sm-3'>
+														<input type='text' class='form-control' name='Day" . $i . "' size='50' value=\"" . $leaveTypeSelected . "\" readonly='true'>
+													</div>
+													<div class='col-sm-5'>
+														<input type='radio' name='Day" . $i . "WFHChoice' value='fullDay' checked>Full Day
+												 		<input type='radio' name='Day" . $i . "WFHChoice' value='firstHalf'>First Half
+												 		<input type='radio' name='Day" . $i . "WFHChoice' value='secondHalf'>Second Half
+											 		</div>
+												 	<div class='col-sm-2'></div>
+											 	</div>
+											</div>";
 			} else {
-				$mailBody = $mailBody . "<tr><td>" . $Day[$i] . "</td><td><p><input type='text' name='Day" . $i . "' size='50' value=\"" . $leaveTypeSelected . "\" readonly='true'></p></td></tr>";
+				$mailBody = $mailBody . "<div class='form-group'>
+												<div class='row'>
+													<div class='col-sm-2'></div>
+													<div class='col-sm-2'>" . $Day[$i] . "</div>
+													<div class='col-sm-6'>
+														<input type='text' class='form-control' name='Day" . $i . "' size='50' value=\"" . $leaveTypeSelected . "\" readonly='true'>
+													</div>
+													<div class='col-sm-2'></div>
+												</div>
+											</div>";
 			}
 		} else {
 			if(preg_match('/(.*)(\[.*)/', $Day[$i],$splMatch)) {
-						$mailBody=$mailBody."<td>$splMatch[1]  </td>";
-						$mailBody=$mailBody."<td><input type='text' readonly='true' name='Day" . $i . "Date' size='50' value=\"" . str_replace('[special]','',$splMatch[2]) . "\"></p></td>";
-					}
-				$mailBody=$mailBody.'</tr>';
+						$mailBody=$mailBody."<div class='form-group'>
+													<div class='row'>
+														<div class='col-sm-2'></div>
+														<div class='col-sm-2'>$splMatch[1]  </div>";
+														$mailBody=$mailBody."<div class='col-sm-6'>
+																<input type='text' class='form-control' readonly='true' name='Day" . $i . "Date' size='50' value=\"" . str_replace('[special]','',$splMatch[2]) . "\">
+														</div>
+														<div class='col-sm-2'></div>
+													</div>
+												</div>";
+			}
 		}
 	}
-	$mailBody = $mailBody . "<tr><td>Total Number Of Leaves :</td><td  colspan='3'> " . $totalLeaves . "</td></tr>";
-	$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name ='totalDays' value =" . $_POST['noOfdays'] . "></td></tr> ";
-	$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name = 'reason' value =  " . urlencode(urldecode($_POST['reason'])) . "></td></tr> ";
-	$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name = fromDate value =  " . $_POST['fromDate'] . "></td></tr> ";
-	$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name = toDate value =  " . $_POST['toDate'] . "></td></tr> ";
-	$mailBody = $mailBody . "<tr style\"display:none\"><td><input type = hidden name = splType value =  " . urlencode(urldecode($_POST['splType'])) . "></td></tr>";
-	$mailBody .= '<tr><td colspan="4" align="center"><input type="submit" name="submit" value="Apply and Send Mail" /></form></td></tr></table>';
-	echo $mailBody;
+	$mailBody = $mailBody . "<div class='form-group'><div class='row'><div class='col-sm-2'></div><div class='col-sm-3'><label>Total Number Of Leaves :</label></div><div class='col-sm-5'> " . $totalLeaves . "</div><div class='col-sm-2'></div></div></div>";
+							$mailBody = $mailBody . "<div class='form-group' style\"display:none\"><div class='row'><div class='col-sm-2'></div><div class='col-sm-4'><input class='form-control' type = hidden name ='totalDays' value =" . $_POST['noOfdays'] . "></div></div></div> ";
+							$mailBody = $mailBody . "<div class='form-group' style\"display:none\"><div class='row'><div class='col-sm-2'></div><div class='col-sm-4'><input class='form-control' type = hidden name = 'reason' value =  " . urlencode(urldecode($_POST['reason'])) . "></div></div></div> ";
+							$mailBody = $mailBody . "<div class='form-group' style\"display:none\"><div class='row'><div class='col-sm-2'></div><div class='col-sm-4'><input class='form-control' type = hidden name = fromDate value =  " . $_POST['fromDate'] . "></div></div></div> ";
+							$mailBody = $mailBody . "<div class='form-group' style\"display:none\"><div class='row'><div class='col-sm-2'></div><div class='col-sm-4'><input class='form-control' type = hidden name = toDate value =  " . $_POST['toDate'] . "></div></div></div> ";
+							$mailBody = $mailBody . "<div class='form-group' style\"display:none\"><div class='row'><div class='col-sm-2'></div><div class='col-sm-4'><input class='form-control' type = hidden name = splType value =  " . urlencode(urldecode($_POST['splType'])) . "></div></div></div>";
+							$mailBody .= '<div class="form-group"><div class="row"><div class="col-sm-12 text-center"><input class="btn btn-primary" type="submit" name="submit" value="Apply and Send Mail" /></div></div></div></div></div>';
+							$mailBody=$mailBody.'</div></div>';
+							echo $mailBody;
 }
 
 function getConfirmLeaveSection($page, $empid, $fromDateId, $toDateId) {
@@ -503,11 +628,16 @@ function getConfirmLeaveSection($page, $empid, $fromDateId, $toDateId) {
 	$totalLeaves = 0;
 	$leaveTypeSelected = "";
 	$executeQueries = array();
-	$mailBody = "<table cellspacing='2' cellpadding='2' border='3' id='table-2'>";
-	
-	# set the status messages based on the action taken
+	$mailBody = "<div class='panel panel-primary'>
+				<div class='panel-heading text-center'>
+				<strong style='font-size:20px;'>Confirm Leave Section</strong>
+				</div>
+				<div class='panel-body'>
+				<table class='table table-bordered table-striped'>";
+		
+		# set the status messages based on the action taken
 	if ($page == "applyteammemberleave.php" || $page == "hrapplyleaveforall.php") {
-		$mailBody = $mailBody . "<caption>You have applied leave on behalf of " . $empid . " for the following Dates</caption>";
+		$mailBody = $mailBody . "<strong>You have applied leave on behalf of " . $empid . " for the following Dates</strong>";
 		$approvalStatus = "Approved";
 		$approvalSplLeaveStatus = "A";
 		$approvalMail = "ApproveLeave";
@@ -516,8 +646,14 @@ function getConfirmLeaveSection($page, $empid, $fromDateId, $toDateId) {
 		if ($page == "hrapplyleaveforall.php") {$approvalcomments = "Approved By HR (".$_SESSION['u_fullname'].")";
 		}
 	}
-	if ($page == "applyleave.php") {
-		$mailBody = $mailBody . "<caption>" . $_SESSION['u_fullname'] . " has Applied leave for the following Dates</caption>";
+	if ($page == "applyleave.php" || $page == "applyOnSite.php") {
+		if($page == "applyleave.php") {
+			$leaveName = "leave";
+		} 
+		if($page == "applyOnSite.php") {
+			$leaveName = "On Site";
+		}
+		$mailBody = $mailBody . "<caption><center><strong>" . $_SESSION['u_fullname'] . " has Applied leave for the following Dates</strong></center></caption>";
 		$approvalStatus = "Pending";
 		$approvalSplLeaveStatus = "P";
 		$approvalMail = "PendingLeave";
@@ -577,19 +713,27 @@ function getConfirmLeaveSection($page, $empid, $fromDateId, $toDateId) {
 				$leaveTypeSelected = urldecode($_POST['splType']);
 				$dateIndex = "Day" . $i . "Date";
 				$perdayquery = $perdayquery . "'" . $_POST[$dateIndex] . "','" . $leaveTypeSelected . "','','".$approvalStatus."','".$perDayTransactionCount."')";
+			} if ($_POST['Day' . $i] == "OnSite") {
+				$totalLeaves = $totalLeaves+0;;
+				$perDayTransactionCount=0;
+				$leaveTypeSelected = "OnSite";
+				$dateIndex = "Day" . $i . "Date";
+				$OnSite = 1;
+				$perdayquery = $perdayquery . "'" . $_POST[$dateIndex] . "','" . $leaveTypeSelected . "','','".$approvalStatus."','".$perDayTransactionCount."')";
 			}
 			# Prepare the perdaytransactions table quiries -- END
 			
 			if ($leaveTypeSelected == "HalfDay" || $leaveTypeSelected == "WFH") {
 				$mailBody = $mailBody . "<tr><td>" . $_POST[$dateIndex] . "</td><td>" . $leaveTypeSelected . " (" . $_POST[$index] . ")</td></tr>";
-			} else {
-				$mailBody = $mailBody . "<tr><td>" . $_POST[$dateIndex] . "</td><td>" . $leaveTypeSelected . "</td></tr>";
-			}
+				} else {
+					$mailBody = $mailBody . "<tr><td>" . $_POST[$dateIndex] . "</td><td>" . $leaveTypeSelected . "</td></tr>";
+				}
 			array_push($executeQueries, $perdayquery);
 		} else {
 			
 			# If the employee selected optional leave, then update the database accordingly -- START
 			$dateIndex = "Day" . $i . "Date";
+			//$mailBody = $mailBody . "<tr><td></td><td align='center'>" . $_POST[$dateIndex] . "</td><td></td></tr>";
 			$mailBody = $mailBody . "<tr><td colspan='2' align='center'>" . $_POST[$dateIndex] . "</td></tr>";
 			if (preg_match('/optional/i', $_POST['Day' . $i.'Date'],$match)) {
 				if(preg_match('/(.*)(\(Optional\))/', $_POST['Day' . $i.'Date'],$splMatch)) {
@@ -602,7 +746,7 @@ function getConfirmLeaveSection($page, $empid, $fromDateId, $toDateId) {
 						array_push($optionalLeavenames, $optionalleaverow1['leave']);
 					}
 					if(!in_array($splMatch[1],$optionalLeavenames)) {
-						$optionalLeaveDate=getValueFromQuery("SELECT * FROM `holidaylist` WHERE `holidayname` LIKE '".mysql_real_escape_string($splMatch[1])."'  order by date desc","date");
+						$optionalLeaveDate=getValueFromQuery("SELECT * FROM holidaylist WHERE `holidayname` LIKE '".mysql_real_escape_string($splMatch[1])."'  order by date desc","date");
 						$insertOptionalLeave="insert into empoptionalleavetaken (`empid`,`date`,`leave`,`state`) values('".$empid."','".$optionalLeaveDate."','".mysql_real_escape_string($splMatch[1])."','".$approvalStatus."')";
 						$optionalLeaveName="$splMatch[1] (Optional)";
 						$perDayTransactionCount=0;
@@ -619,17 +763,15 @@ function getConfirmLeaveSection($page, $empid, $fromDateId, $toDateId) {
 		# If the employee selected optional leave, then update the database accordingly -- END
 	}
 	
-	$mailBody = $mailBody . "<tr><td>Total Number Of Leaves :</td><td> " . $totalLeaves . "</td></tr></table>";
-	
-	
+	$mailBody = $mailBody . "<tr><td colspan='3' align='right'><strong>Total Number Of Leaves :</strong> " . $totalLeaves . "</td></tr></table>";
 	//Check if balance leaves is exceeding permitted leaves per year
 	if ((getTotalLeaves($empid) - $totalLeaves) < -6) {
-		echo "<script>alert('Selected number of leaves + your present total balance leaves is exceeding permitted leaves per year. So Leaves are not applied. Please reduce number of leaves.')</script>";
+		echo "<script>BootstrapDialog.alert('Selected number of leaves + your present total balance leaves is exceeding permitted leaves per year. So Leaves are not applied. Please reduce number of leaves.')</script>";
 	} else {
 		echo $mailBody;
 		
 		# Dont insert into database if the total leaves is zero.
-		if ($totalLeaves != 0 || ($totalLeaves == 0 && $_POST['splType'] != "%2F") || ($totalLeaves == 0 && isset($WFH))  || $totalLeaves == 0 && isset($optionalLeaveapplied) && $optionalLeaveapplied==1) {
+		if ($totalLeaves != 0 || ($totalLeaves == 0 && $_POST['splType'] != "%2F") || ($totalLeaves == 0 && isset($WFH)) || ($totalLeaves == 0 && isset($OnSite)) || $totalLeaves == 0 && isset($optionalLeaveapplied) && $optionalLeaveapplied==1) {
 			$reason = mysql_real_escape_string(urldecode($_POST['reason']));
 			$query = "INSERT INTO`empleavetransactions` (`transactionid` ,`empid` ,`startdate` ,`enddate` ,`count`,`reason`,`approvalstatus`,`approvalcomments`)VALUES ('" . $transaction_id . "','" . $empid . "', '" . $_POST[$fromDateId] . "', '" . $_POST[$toDateId] . "','" . $totalLeaves . "', '" . $reason . "','$approvalStatus','$approvalcomments')";
 			$result = $db -> query($query);
@@ -660,7 +802,7 @@ function getConfirmLeaveSection($page, $empid, $fromDateId, $toDateId) {
 		}
 		
 		
-		if ($totalLeaves != 0 || ($totalLeaves == 0 && isset($_POST['splType']) && $_POST['splType'] != "%2F") || ($totalLeaves == 0 && isset($WFH)) || $totalLeaves == 0 && isset($optionalLeaveapplied) && $optionalLeaveapplied==1) {
+		if ($totalLeaves != 0 || ($totalLeaves == 0 && isset($_POST['splType']) && $_POST['splType'] != "%2F") || ($totalLeaves == 0 && isset($WFH)) || ($totalLeaves == 0 && isset($OnSite)) || $totalLeaves == 0 && isset($optionalLeaveapplied) && $optionalLeaveapplied==1) {
 			//send mail with pending status to emp and manager who applied leave
 			if ($page == "applyteammemberleave.php") {
 				$getleavesquery = $db -> query("SELECT  `empid` , `count` FROM empleavetransactions WHERE transactionid ='" . $transaction_id . "'");
@@ -671,7 +813,7 @@ function getConfirmLeaveSection($page, $empid, $fromDateId, $toDateId) {
 				$reduceleavesquery = $db -> query("UPDATE  `emptotalleaves` SET  `balanceleaves` =  '" . $reducedleaves . "' WHERE  `empid` ='" . $empid . "'");
 				$cmd = '/usr/bin/php -f sendmail.php ' . $transaction_id . ' ' . $empid . ' ApproveLeave >> /dev/null &';
 				exec($cmd);
-				echo '<script>alert("Leave is Approved by manager.")</script>';
+				echo '<script>BootstrapDialog.alert("Leave is Approved by manager.")</script>';
 			}
 			if ($page == "hrapplyleaveforall.php") {
 				$getleavesquery = $db -> query("SELECT  `empid` , `count` FROM empleavetransactions WHERE transactionid ='" . $transaction_id . "'");
@@ -683,19 +825,24 @@ function getConfirmLeaveSection($page, $empid, $fromDateId, $toDateId) {
 
 				$cmd = '/usr/bin/php -f sendmail.php ' . $transaction_id . ' ' . $empid . ' ApproveLeave >> /dev/null &';
 				exec($cmd);
-				echo '<script>alert("Leave is Approved by HR.")</script>';
+				echo '<script>BootstrapDialog.alert("Leave is Approved by HR.")</script>';
 			}
 			if ($page == "applyleave.php") {
 				$cmd = '/usr/bin/php -f sendmail.php ' . $transaction_id . ' ' . $empid . ' PendingLeave >> /dev/null &';
 				exec($cmd);
-				echo '<script>alert("Application Submitted. Waiting for approval")</script>';
+				echo '<script>BootstrapDialog.alert("Application Submitted. Waiting for approval")</script>';
+			}
+			if ($page == "applyOnSite.php") {
+				$cmd = '/usr/bin/php -f sendmail.php ' . $transaction_id . ' ' . $empid . ' OnSite >> /dev/null &';
+				exec($cmd);
+				echo '<script>BootstrapDialog.alert("Application Submitted. Waiting for approval")</script>';
 			}
 		} else {
 			if ($page == "applyteammemberleave.php") {
-				echo '<script>alert("Total Leaves selected is zero. Approval mail is not sent.")</script>';
+				echo '<script>BootstrapDialog.alert("Total Leaves selected is zero. Approval mail is not sent.")</script>';
 			}
 			if ($page == "applyleave.php") {
-				echo '<script>alert("Total Leaves selected is zero. Approval mail is not sent to manager.")</script>';
+				echo '<script>BootstrapDialog.alert("Total Leaves selected is zero. Approval mail is not sent to manager.")</script>';
 			}
 		}
 	}
@@ -788,7 +935,7 @@ function getDelSection($page, $transactionid, $empid, $role) {
 		# Update the trasaction status as "Deleted
 		$txtMessage = mysql_real_escape_string($_REQUEST['txtMessage']);
 		if ($txtMessage == "") {
-			$txtMessage = "Deleted By $role";
+			$txtMessage = "Deleted By $role (".$_SESSION['u_fullname'].")";
 		}
 		
 		# Delete the compoff taken leave
@@ -806,7 +953,7 @@ function getDelSection($page, $transactionid, $empid, $role) {
 			$updatePerDayTransaction = $db -> query("update `perdaytransactions` set status='Deleted' WHERE transactionid ='" . $transactionid . "'");
 			
 			# Get the empid, fromDate and toDate from transaction id
-			$getTransactionIdInformationResult=$db->query("select * from  `empleavetransactions` where transactionid = ='".$transactionid."'");
+			$getTransactionIdInformationResult=$db->query("select * from  `empleavetransactions` where transactionid ='".$transactionid."'");
 			$getTransactionIdInformationRow=$db->fetchAssoc($getTransactionIdInformationResult);
 			
 			# Get the empid, fromdate and todate from the transactionid and execute the script which updates the inout table.
@@ -815,8 +962,8 @@ function getDelSection($page, $transactionid, $empid, $role) {
 			
 			
 			echo '<script>
-					alert("Leave deleted");
-  					$("#loadhrsection").load("modifyempapprovedleaves.php");
+					BootstrapDialog.alert("Leave deleted");
+  					$("#loadmanagersection").load("modifyempapprovedleaves.php");
 			  	</script>';
 		}
 		
@@ -828,20 +975,20 @@ function getDelSection($page, $transactionid, $empid, $role) {
 		# Update the compoff taken leave
 		if(isset($_REQUEST['compoffdate'])) {
 			$inouttable = $db -> query("update `inout` set `compofftakenday`='0000-00-00' where empid ='".$_SESSION['u_empid']."'and  compofftakenday='".$_REQUEST['compoffdate']."'");
-            $writeComments = $db -> query("update `empleavetransactions` set approvalstatus='Deleted',approvalcomments='Deleted By Employee' WHERE transactionid ='" .$transactionid. "'");
+            $writeComments = $db -> query("update `empleavetransactions` set approvalstatus='Deleted',approvalcomments='Deleted By Employee (".$_SESSION['u_fullname'].")' WHERE transactionid ='" .$transactionid. "'");
             $updatePerDayTransaction = $db -> query("update `perdaytransactions` set status='Deleted' WHERE transactionid ='" . $transactionid . "'");
 			if ($inouttable && $writeComments) {
 				$cmd = '/usr/bin/php -f sendmail.php '. $transactionid.' '.$_SESSION['u_empid'].' DeleteCompOff >> /dev/null &';
 				exec($cmd);
 			} else {
 				echo '<script>
-                     	alert("Compoff Leave not deleted successfully");
+                     	BootstrapDialog.alert("Compoff Leave not deleted successfully");
                       </script>';
 			}
 		} else {
 			$cmd = '/usr/bin/php -f sendmail.php ' . $transactionid . ' ' . $_SESSION['u_empid'] . ' DeletedByUser >> /dev/null &';
 			exec($cmd);
-			$writeComments = $db -> query("update `empleavetransactions` set approvalstatus='Deleted',approvalcomments='Deleted By Employee' WHERE transactionid ='" . $transactionid . "'");
+			$writeComments = $db -> query("update `empleavetransactions` set approvalstatus='Deleted',approvalcomments='Deleted By Employee (".$_SESSION['u_fullname'].")' WHERE transactionid ='" . $transactionid . "'");
 			if($writeComments) {
 				$updatePerDayTransaction = $db -> query("update `perdaytransactions` set status='Deleted' WHERE transactionid ='" . $transactionid . "'");
 			}
@@ -878,7 +1025,7 @@ function getModifySection($page, $role) {
 		}
 	}
 	for ($v = 0; $v < sizeof($values); $v++) {
-		if ($values[$v] == 6) {
+		if ($values[$v] == 7) {
 			$splLeaveCount++;
 		}
 	}
@@ -922,10 +1069,14 @@ function getModifySection($page, $role) {
 					$perDayTransactionCount=0.5;
 					$shift = "secondHalf";
 				} else if ($modifiedValue == 6) {
+					$leaveTypeSelected = "OnSite";
+					$leavecount += 0;
+					$perDayTransactionCount=0;
+				} else if ($modifiedValue == 7) {
 					$perDayTransactionCount=0;
 					$leaveTypeSelected = $_SESSION['splLeaveType'];
 				}
-				$query = "update perdaytransactions SET `count`='".$perDayTransactionCount.", leavetype='" . $leaveTypeSelected . "', shift='" . $shift . "' where transactionid='" . $trasactionId . "' AND date = '" . $daydate . "'";
+				$query = "update perdaytransactions SET `count`=".$perDayTransactionCount.", leavetype='" . $leaveTypeSelected . "', shift='" . $shift . "' where transactionid='" . $trasactionId . "' AND date = '" . $daydate . "'";
 				array_push($executeQueries, $query);
 				$count1 += 1;
 			}
@@ -942,20 +1093,20 @@ function getModifySection($page, $role) {
 			$newbalanceleaves = ($balanceleavesrow['balanceleaves'] + $countrow['count']) - $leavecount;
 			//Check if balance leaves is exceeding permitted leaves per year
 			if (($newbalanceleaves + (getCarryForwardedLeaves($countrow['empid']))) < -6) {
-				echo "<script>alert('After modification, emp leaves exceeded permitted leaves per year. So Leaves are not approved.')</script>";
+				echo "<script>BootstrapDialog.alert('After modification, emp leaves exceeded permitted leaves per year. So Leaves are not approved.')</script>";
 			} else {
 				//Execute perday transaction queries
 				foreach ($executeQueries as $query) {
 					$db -> query($query);
 				}
 				$txtMessage = $_REQUEST['txtMessage'];
-				if ($txtMessage == "") {$txtMessage = "Modified By $role";
+				if ($txtMessage == "") {$txtMessage = "Modified By $role (".$_SESSION['u_fullname'].")";
 				}
 				$query = "update empleavetransactions set count = '" . $leavecount . "',approvalcomments='" . $txtMessage . "' where transactionid = '" . $trasactionId . "'";
 				$sql = $db -> query($query);
 				
 				# Get the empid, fromDate and toDate from transaction id
-				$getTransactionIdInformationResult=$db->query("select * from  `empleavetransactions` where transactionid = ='".$trasactionId."'");
+				$getTransactionIdInformationResult=$db->query("select * from  `empleavetransactions` where transactionid ='".$trasactionId."'");
 				$getTransactionIdInformationRow=$db->fetchAssoc($getTransactionIdInformationResult);
 				
 				# Get the empid, fromdate and todate from the transactionid and execute the script which updates the inout table.
@@ -989,10 +1140,10 @@ function getModifySection($page, $role) {
 			$newbalanceleaves = ($balanceleavesrow['balanceleaves'] + $countrow['count']) - $leavecount;
 			//Check if balance leaves is exceeding permitted leaves per year
 			if (($newbalanceleaves + (getCarryForwardedLeaves($countrow['empid']))) < -6) {
-				echo "<script>alert('After modification, emp leaves exceeded permitted leaves per year. So Leaves can't be applied')</script>";
+				echo "<script>BootstrapDialog.alert('After modification, emp leaves exceeded permitted leaves per year. So Leaves can't be applied')</script>";
 			} else {
 				foreach ($executeQueries as $query) {
-					$db -> query($query);
+					$result = $db -> query($query);
 				}
 				$query = "update empleavetransactions set count = '" . $leavecount . "' where transactionid = '" . $trasactionId . "'";
 				$sql = $db -> query($query);
@@ -1008,7 +1159,7 @@ function getModifySection($page, $role) {
 
 function getSubmitSection($transactionid, $page, $id, $url, $i) {
 	global $db;
-	$LeavesTypes = array("HalfDay", "FullDay", "WFH", "First Half-HalfDay & second Half-WFH", "First Half-WFH & Second Half-HalfDay");
+	$LeavesTypes = array("HalfDay", "FullDay", "WFH", "First Half-HalfDay & second Half-WFH", "First Half-WFH & Second Half-HalfDay","OnSite");
 	$query = $db -> query("select * from perdaytransactions where transactionid='" . $transactionid . "'");
 	for ($j = 0; $j < $db -> countRows($query); $j++) {
 		$row = $db -> fetchAssoc($query);
@@ -1025,15 +1176,16 @@ function getSubmitSection($transactionid, $page, $id, $url, $i) {
 	if ($page == "modifyempapprovedleaves.php") {
 		echo '<form id=' . $id . ' method="POST" action=' . $url . '>';
 	}
-	echo '<table id="table-2">
-			  <thead>
-			  <tr colspan="6">
-			  <th>Date</th>
-			  <th>leavetype</th>
-			  <th>Shift</th>
-			  </tr>
-			  </thead>
-			  <tbody>';
+	echo '<table class="table table-hover">
+				  <thead>
+				  <tr class="info">
+				  <th>Date</th>
+				  <th>leavetype</th>
+				  <th>Shift</th>
+				  </tr>
+				  </thead>
+				  <tbody>';
+			  
 	$query = $db -> query("select * from perdaytransactions where transactionid='" . $transactionid . "'");
 	for ($i = 0; $i < $db -> countRows($query); $i++) {
 		$row = $db -> fetchAssoc($query);
@@ -1052,10 +1204,10 @@ function getSubmitSection($transactionid, $page, $id, $url, $i) {
 			}
 		}
 		echo '<tr></tr><tr><td>' . $row['date'] . '</td>';
-		echo '<td><SELECT class= "modifyspecial_leave" NAME= Day' . "/" . $Day . "/" . $transactionid . '> ' . $options . '</SELECT></td>';
+		echo '<td><SELECT class= "form-control modifyspecial_leave" NAME= Day' . "/" . $Day . "/" . $transactionid . '> ' . $options . '</SELECT></td>';
 		if ($leavetype == "WFH") {
 			$shiftOptions = '
-						<SELECT NAME= shift' . "/" . $Day . "/" . $transactionid . '>';
+						<SELECT class="form-control" NAME= shift' . "/" . $Day . "/" . $transactionid . '>';
 			if ($shift == "firstHalf") {
 				$shiftOptions .= '<OPTION VALUE="firstHalf" selected>First Half</OPTION>
 							<OPTION VALUE="secondHalf">Second Half</OPTION>
@@ -1074,11 +1226,11 @@ function getSubmitSection($transactionid, $page, $id, $url, $i) {
 							<OPTION VALUE="fullDay" selected>Full Day</OPTION>
 						</SELECT>';
 			}
-			echo "<td id='td/" . $Day . "/" . $transactionid . "'>" . $shiftOptions . "</td>";
+			echo "<td class='danger' id='td/" . $Day . "/" . $transactionid . "'>" . $shiftOptions . "</td>";
 		}
 		if ($leavetype == "HalfDay") {
 			$shiftOptions = '
-						<SELECT NAME= shift' . "/" . $Day . "/" . $transactionid . '>';
+						<SELECT class="form-control" NAME= shift' . "/" . $Day . "/" . $transactionid . '>';
 			if ($shift == "firstHalf") {
 				$shiftOptions .= '<OPTION VALUE="firstHalf" selected>First Half</OPTION>
 							<OPTION VALUE="secondHalf">Second Half</OPTION>
@@ -1089,9 +1241,9 @@ function getSubmitSection($transactionid, $page, $id, $url, $i) {
 							<OPTION VALUE="secondHalf" selected>Second Half</OPTION>
 										</SELECT>';
 			}
-			echo "<td id='td/" . $Day . "/" . $transactionid . "'>" . $shiftOptions . "</td>";
+			echo "<td class='danger' id='td/" . $Day . "/" . $transactionid . "'>" . $shiftOptions . "</td>";
 		} else {
-			echo "<td id='td/" . $Day . "/" . $transactionid . "'></td>";
+			echo "<td class='danger' id='td/" . $Day . "/" . $transactionid . "'></td>";
 		}
 		echo '</tr>';
 	}
@@ -1114,7 +1266,7 @@ function getDynamicSelectOptions() {
 						b.removeChild(b.children[0]);
 					}
 					a=a.replace(\"td\",\"shift\");
-					c=\"<select name='\";
+					c=\"<select class='form-control' name='\";
 					c=c.concat(a+\"'><option value='firstHalf'>First Half</option><option value='secondHalf'>Second Half</option></select>\"); 
 					b.innerHTML=c;
 					$(this)[0].parentNode.nextSibling.children[0].setAttribute('style','');

@@ -1,6 +1,6 @@
 <?php
 require_once ("db.class.php");
-/*function includeJQGrid()
+function includeJQGrid()
 {
 	echo '<link href="js/jqueryui/css/redmond/jquery-ui.css" rel="stylesheet">';
         echo '<script src="js/jquery/jquery.js" type="text/javascript"></script>';
@@ -11,14 +11,14 @@ require_once ("db.class.php");
         echo '<script src="js/jquery/jquery.searchFilter.js" type="text/javascript"></script>';
         echo '<link rel="stylesheet" type="text/css" media="screen" href="js/jqgrid/jqgridcss/ui.jqgrid.css" />';
         echo '<link rel="stylesheet" type="text/css" media="screen" href="css/table.css" />';
-}*/
-/*function connectToDB()
+}
+function connectToDB()
 {
-	$config = new config("localhost", "root", "Manor441", "lms", "", "mysql");
+	$config = new config("localhost", "lms", "eciTele!", "lmsng", "", "mysql");
 	$db = new db($config);
 	$db->openConnection();
 	return $db;
-}*/
+}
 
 function auth_by_ldap ($login,$password,$nis_domain='eci_domain'){
 	return 1;

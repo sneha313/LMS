@@ -11,7 +11,7 @@ if(empty($_SESSION['user_name']))
 if(isset($_GET['logout']))
 {
 	session_destroy();
-	header("Location:userlogin.php");
+	header("Location:login.php");
 }	
 
 ?>

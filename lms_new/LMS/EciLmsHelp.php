@@ -21,15 +21,22 @@ div .helpDiv{
 	font-family:Verdana, "Bitstream Vera Sans", Geneva, sans-serif;
 	font-size:11pt;
 }
+#id{
+	text-decoration: underline;
+}
+h3 b{
+	text-decoration: underline;
+}
+
 </style>
 </head>
 <body>
 
 <div class=helpDiv>
-	<center><h2 id="id"><u>ECI LEAVE MANAGEMENT SYSTEM - FAQ</u></h2></center><br>
+	<h2 id="id" style="text-align:center">ECI LEAVE MANAGEMENT SYSTEM - FAQ</h2><br>
 </div>
 	<div class=helpDiv>
-	<h3><b><u>Links:</u></b></h3>
+	<h3><b>Links:</b></h3>
 	<ol>
 		<li><a href="#faq1">How to login into ECI Leave management system?</a></li>
 		<li><a href="#faq2">What an employee can do with LMS?</a></li>
@@ -182,7 +189,7 @@ and click "next" button.
 <hr>
 <div class=helpDiv id="faq9">
 <br>
-	<center><h3><b><u>Manager Section</u></b></h3></center><br>
+	<h3 style="text-align:center"><b>Manager Section</b></h3><br>
 	A manager can perform the following additional tasks along with the tasks specified above, when he enters into LMS.
 	<ol>
 	<li>View his team member's leave history (By clicking on "Team Leave Report" on top plane).</li>
@@ -197,7 +204,7 @@ and click "next" button.
 <hr>
 <div class=helpDiv id="faq10">
 <br>
-	<center><h3><b><u>HR SECTION</u></b></h3></center><br>
+	<h3 style="text-align:center"><b>HR SECTION</b></h3><br>
 	HR will have access to the following tasks in HR section in left plane.
 	<ol>
 	<li>HR can add/modify/delete/view employee details.</li>

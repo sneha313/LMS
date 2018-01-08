@@ -6,7 +6,6 @@ require_once 'generalFunctions.php';
 ?>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" media="screen" href="css/table.css" />
 <script>
 <?php 
 	if(isset($_REQUEST['leaveform']))

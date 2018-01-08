@@ -9,7 +9,7 @@ $('#divbody').on('focus','#addrow',function()
 		  		if(months[i]+','+currentYear==$("#claim_period").val())
 				{
 				  $('#addrow').attr("disabled", true);
-				  alert("You can not add days for current month");
+				  BootstrapDialog.alert("You can not add days for current month");
 		  		}
 });	
 
@@ -26,23 +26,22 @@ $("#vehicle_type").change(function () {
 
 $( "#claim_period" ).datepicker({
 	changeMonth: true,
-        changeYear: true,
-        showButtonPanel: true,
-        dateFormat: 'MM,yy',
-        minDate:"-12M",
-        maxDate:"+0D",
-        buttonImage: 'js/datepicker/datepickerImages/calendar.gif',
-        showButtonPanel: true,
-		showOn: 'both',
-		buttonImageOnly: true,
-		
-        onClose: function(dateText, inst) { 
-            var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-            $(this).datepicker('setDate', new Date(year, month, 1));
-            change(); 
-        }
-   });
+	changeYear: true,
+	showButtonPanel: true,
+	dateFormat: 'MM,yy',
+	minDate:"-12M",
+	maxDate:"+0D",
+	showButtonPanel: true,
+	showOn: 'both',
+	buttonImageOnly: true,	
+    onClose: function(dateText, inst) { 
+    	var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+    	var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+    	$(this).datepicker('setDate', new Date(year, month, 1));
+        change(); 
+    }
+});
+
 $("#claim_period").focus(function () {
     $(".ui-datepicker-calendar").hide();
     $("#ui-datepicker-div").position({
@@ -51,82 +50,83 @@ $("#claim_period").focus(function () {
         of: $(this)
     });
 });
-	$("#formvoe").validate({
-		 errorClass: "errormsg",
-	    rules: {
-	    	distance_from_residenceto_office: "required",
-	    	vehicle_milage: "required",
-	    	fuelcost_perlitre:"required",
-	    	repairs_maintence_expenses:{
-                	required: true
-            	},
-	    	driver_salary: {
-	                required: true,
-        	        max:15000
-            	},
-	    	vehicle_regno:"required",
-	    	vehicle_model:"required",
+
+$("#formvoe").validate({
+	errorClass: "errormsg",
+	rules: {
+		distance_from_residenceto_office: "required",
+	    vehicle_milage: "required",
+	    fuelcost_perlitre:"required",
+	    repairs_maintence_expenses:{
+	    	required: true
+	    },
+	    driver_salary: {
+	    	required: true,
+	    	max:15000
+        },
+	    vehicle_regno:"required",
+	    vehicle_model:"required",
 		vehicle_type:"required",
-	    	fuel_nature:"required",
-	    	original_cost:"required"
+	    fuel_nature:"required",
+	    original_cost:"required"
+	},
+	messages: {
+		distance_from_residenceto_office: "Please specify distance",
+	    vehicle_milage: "Please specify milage of vehicle",
+	    fuelcost_perlitre:"Please specify fuel cost per litre",
+	    repairs_maintence_expenses:{
+	    	required: "Please specify repairs maintence expenses"
 	    },
-	    messages: {
-	    	distance_from_residenceto_office: "Please specify distance",
-	    	vehicle_milage: "Please specify milage of vehicle",
-	    	fuelcost_perlitre:"Please specify fuel cost per litre",
-	    	repairs_maintence_expenses:{
-               		required: "Please specify repairs maintence expenses"
-            	},
-	    	driver_salary: {
-                	required: "Please specify driver's salary",
-	                max: "value should not be greater than 15000"
-        	},
-	    	vehicle_regno:"Please specify registration number",
-	    	vehicle_model:"Please specify vechicle model",
-		vehicle_type:"Please specify vechicle type",
-	    	fuel_nature:"Please specify nature of fuel",
-	    	original_cost:"Please specify cost of vehicle"
-	    },
-	    submitHandler: function() {
-			$.ajax({ 
-		        data: $('#formvoe').serialize(), 
-		        type: $('#formvoe').attr('method'), 
-		        url:  $('#formvoe').attr('action'), 
-		        success: function(response) { 
-		        	var patt = new RegExp("dontSubmit","g");
-		 	        var match = response.match(patt);
-		                if(match && match[0]=="dontSubmit") {
-			  	   alert("You can not submit voe form before completion of month. Please select previous month.");
-		        	   $("#loadvoeform").load("voe.php");
-		        	} else {
-			            $("#formOf").show();
-			            $("#verification").show();
-			            $("#sig").show();
-			            $(".submit").hide();
-			            $("#addrow").remove();
-			            $("#print").show();
-			            $("#delete").show();
-			            alert("VOE form submitted successfully");
-		        	}
+	    driver_salary: {
+	    	required: "Please specify driver's salary",
+	    	max: "value should not be greater than 15000"
+       },
+	   vehicle_regno:"Please specify registration number",
+	   vehicle_model:"Please specify vechicle model",
+	   vehicle_type:"Please specify vechicle type",
+	   fuel_nature:"Please specify nature of fuel",
+	   original_cost:"Please specify cost of vehicle"
+	},
+	submitHandler: function() {
+		$.ajax({ 
+			data: $('#formvoe').serialize(), 
+		    type: $('#formvoe').attr('method'), 
+		    url:  $('#formvoe').attr('action'), 
+		    success: function(response) { 
+		    	var patt = new RegExp("dontSubmit","g");
+		 	   	var match = response.match(patt);
+		        if(match && match[0]=="dontSubmit") {
+		        	BootstrapDialog.alert("You can not submit voe form before completion of month. Please select previous month.");
+		        	$("#loadvoeform").load("voe.php");
+		        } else {
+		        	$("#formOf").show();
+		        	$("#verification").show();
+		        	$("#sig").show();
+		        	$(".submit").hide();
+			        $("#addrow").remove();
+			        $("#print").show();
+			        $("#delete").show();
+			        BootstrapDialog.alert("VOE form submitted successfully");
 		        }
-			});
-			return false;
-		  }
-	  });
-	$("#firstform").validate({
-		 errorClass: "errormsg",
-	    rules: {
-	    	residentialAddress: "required",
-	    	phoneNo: "required",
-	    	father_name: "required"
-	    },
-	    messages: {
-	    	residentialAddress: "Please specify residential Address",
-	    	phoneNo: "Please specify Phone Number",
-	    	father_name: "please specify father name"
-	    },
-	    submitHandler: function() {
-		   $.ajax({ 
+		    }
+		});
+		return false;
+	}
+});
+$("#firstform").validate({
+	errorClass: "errormsg",
+    rules: {
+    	residentialAddress: "required",
+	    phoneNo: "required",
+	    father_name: "required"
+    },
+    messages: {
+    	residentialAddress: "Please specify residential Address",
+	    phoneNo: "Please specify Phone Number",
+	    father_name: "please specify father name"
+    },
+	submitHandler: function() {
+		$.ajax({ 
 	       data: $('#firstform').serialize(), 
 	       type: $('#firstform').attr('method'), 
 	       url:  $('#firstform').attr('action'), 
@@ -164,24 +164,19 @@ $("#claim_period").focus(function () {
 		var dateVal=$("#claim_period").val(); 
 		var split= dateVal.split(",");
 	    var days=getDaysInMonth(getMonthNumber(split[0]), split[1]);
-	    
-	    
-	        $(this).find("input").datepicker ({
-	        	
-	        	
-	            showButtonPanel: true,
-	            buttonImage: 'js/datepicker/datepickerImages/calendar.gif',
-	            showButtonPanel: true,
-	    		showOn: 'both',
-	    		buttonImageOnly: true,
-	            dateFormat: 'd/MM/yy',
-	            minDate:'01/'+split[0]+'/'+split[1],
-	            maxDate:days+'/'+split[0]+'/'+split[1],
-	            onSelect: function(dateText, ect)
-	            {
-	            var date = $(this).val();
-	            var rows = $("#mytable tr td:nth-child(1)");
-		    	 
+	    $(this).find("input").datepicker ({    	
+	    	showButtonPanel: true,
+	    	buttonImage: 'public/js/datepicker/datepickerImages/calendar.gif',
+	    	showButtonPanel: true,
+	    	showOn: 'both',
+	    	buttonImageOnly: true,
+	    	dateFormat: 'd/MM/yy',
+	    	minDate:'01/'+split[0]+'/'+split[1],
+	    	maxDate:days+'/'+split[0]+'/'+split[1],
+	    	onSelect: function(dateText, ect)
+	    	{
+	    		var date = $(this).val();
+	    		var rows = $("#mytable tr td:nth-child(1)"); 
 	            var employee_numberVal=$("#employee_number").val();
 	    		$.ajax
 	    		({
@@ -190,8 +185,6 @@ $("#claim_period").focus(function () {
 	    	    	url: "system.php?table1=1&specific_date="+date+"&employee_number="+employee_numberVal,
 	    		    success: function(data)
 	    		    {
-	    		    	
-	    		    	
 	    		    	if ($.inArray('%', data)> 0)
 		    		     { 
 		    		    	//alert(data); 
@@ -204,7 +197,7 @@ $("#claim_period").focus(function () {
 		    	    		$(".calender").not(this).each(function() {
 		    	    			if($(this).val()==selectedElement.val())
 		    		    		{
-	                           		alert("Selected date is already present in table");
+	                           		BootstrapDialog.alert("Selected date is already present in table");
 	                           		
 	                           		selectedElement.val("");
 	                           		selectedElementparent.val("");
@@ -231,14 +224,13 @@ $("#claim_period").focus(function () {
 			    		      
 		    		     }
 	    		    	else {
-		    		        alert(data);
+		    		        BootstrapDialog.alert(data);
 			    		    $(this).val("");
 			    		    $(this).parent().next().find("input").val("");
     		        		$(this).parent().next().next().find("input").val("");
     		        		$(this).parent().next().next().next().find("input").val("");
     		        		$(this).parent().next().next().next().next().find("input").val("");
 		    		    }
-		    		     
 	    	         }
 	    		}); 
 	            }
@@ -395,7 +387,7 @@ function deletion() {
         url: "system.php?delete=1&date="+dateVal+"&employee_number="+employee_numberVal,
         success: function(data)
         {
-            alert("Deleted successfully");
+            BootstrapDialog.alert("Deleted successfully");
             $('#loadvoeform').load("voe.php"); 
         }
     });
@@ -441,7 +433,7 @@ function totalVoe()
 	 $("#overall_cost").val((rows*total_cost).toFixed(2));
 	 if($("#vehicle_type").find('option:selected').text()=="Four Wheeler") {
                 if($("#overall_cost").val()>15000) {
-			alert("After Calculation of fuel expenditure for whole month, your total fuel expenditure is: "+$("#overall_cost").val()+"\nYour vehicle type is "+$("#vehicle_type").find('option:selected').text()+"\nYour overall fuel expenditure can't exceed 15000");
+			BootstrapDialog.alert("After Calculation of fuel expenditure for whole month, your total fuel expenditure is: "+$("#overall_cost").val()+"\nYour vehicle type is "+$("#vehicle_type").find('option:selected').text()+"\nYour overall fuel expenditure can't exceed 15000");
 			$("#voeSubmit").hide()
 		} else {
 			$("#voeSubmit").show()
@@ -449,7 +441,7 @@ function totalVoe()
          }
 	 if($("#vehicle_type").find('option:selected').text()=="Two Wheeler") {
                 if($("#overall_cost").val()>10000) {
-                        alert("After Calculation of fuel expenditure for whole month, your total fuel expenditure is: "+$("#overall_cost").val()+"\nYour vehicle type is "+$("#vehicle_type").find('option:selected').text()+"\nYour overall fuel expenditure can't exceed 10000");
+                        BootstrapDialog.alert("After Calculation of fuel expenditure for whole month, your total fuel expenditure is: "+$("#overall_cost").val()+"\nYour vehicle type is "+$("#vehicle_type").find('option:selected').text()+"\nYour overall fuel expenditure can't exceed 10000");
 			$("#voeSubmit").hide()
                 } else {
 			$("#voeSubmit").show()

@@ -1,337 +1,277 @@
 <?php
-if (!isset($_SESSION)) {
-	session_start();
-}
-if (empty($_SESSION['user_name']))
-	header("Location:userlogin.php");
-require_once ("Library.php");
-if(browser_detection("browser")=="msie") {
-    echo '<!DOCTYPE html>';
-}
+	if (!isset($_SESSION)) {
+		session_start();
+	}
+	if (empty($_SESSION['user_name']))
+		header("Location:login.php");
+	require_once ("Library.php");
+	if(browser_detection("browser")=="msie") {
+		echo '<!DOCTYPE html>';
+	}
+	require_once 'Library.php';
+	error_reporting("E_ALL");
+	$db=connectToDB();
+	//Get current user ID from session
+	$userId = $_SESSION['u_empid'];
+	
+	//Get user data from database
+	$result = $db->query("SELECT * FROM profilepicture WHERE Empid = $userId");
+	$row = $db->fetchAssoc($result);
+	
+	//User profile picture
+	$userPicture = !empty($row['Image'])?$row['Image']:'no-image.png';
+	$userPictureURL = 'profilepicture/'.$userPicture;
 ?>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=9">
-		<title>ECI Leave Management System</title>
-		<link href="css/default.css" rel="stylesheet" type="text/css" />
+		<title>ECI Leave Management System...</title>
+		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.css">
+		<link rel="stylesheet" href="public/js/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="public/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel='stylesheet' type='text/css' href='public/js/DataTables/media/css/jquery.dataTables.min.css'>
+		<link rel='stylesheet' type='text/css' media='screen' href='public/js/jqgrid/jqgridcss/ui.jqgrid.css' />
+		<link rel='stylesheet' type='text/css' media='screen' href='public/js/bootstrap3-dialog/bootstrap-dialog.css' />
+		<link rel='stylesheet' href='public/js/jqueryui/css/redmond/jquery-ui.css'>
+		<link rel="stylesheet" type="text/css" media="screen" href="public/css/frontend.css" />
+	</head>
+	<body>
 		<?php
-		includeJQGrid();
+			$name = $_SESSION['u_fullname'];
+			$firstname = strtok($name, ' ');
+			$lastname = strstr($name, ' ');
 		?>
+		<!--navbar inverse start-->
+		<nav class="navbar navbar-inverse">
+			<div class="container">
+				<div class="navbar-header">
+					<div id="img">
+						<img id="image" class="img-responsive" src="public/img/3.jpg">
+					</div>
+					<label id="session">Session Expires in :</label>
+				</div>
+				<h4 id="counter" class="countdown"></h4>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#" id="welcome"><b>  Welcome, <?php echo $firstname; ?></b></a></li>
+					<li><a id="help" href="#"><i class="fa fa-question-circle" data-aria-hidden="true"></i><b> Need Help</b></a></li>
+					<li><a id="login" href="logout.php?logout=1" accesskey="5" title="<?php echo $_SESSION['user_name']; ?> logged in"><i class="fa fa-sign-out" data-aria-hidden="true"></i><b> Logout</b></a></li>
+				</ul>
+			</div>
+		</nav><!--navbar inverse close-->
+		<!--navbar default start-->
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class="container"><!--container div start-->
+				<div class="navbar-header"><!--navbar header start-->
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" data-aria-expanded="false" data-aria-hidden="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button><!--button close-->
+					<a class="navbar-brand" href="#">Leave Management System</a>
+					</div><!--navbar header close-->
+				<div id="navbar" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right" style="padding-right:10px;">
+						<li><a id="HomeButton" href="#">Home</a></li>
+						<li><a id="holidays" href="#">Holiday List</a></li>
+						<li><a id="attendance" href="#">Attendance</a></li>
+						<li><a id="trackattendance" href="#">Track Leaves</a></li>
+						<li><a id="calender" href="#">Leave Calender</a></li>
+						<li><a id="voe" href="#">Apply VOE</a></li>
+					</ul>
+				</div>
+			</div><!--container div close-->
+		</nav><!--navbar default close-->
+		
+		<!--container fluid div start-->
+		<div class="container-fluid well">
+			<!--row start-->
+			<div class="row">
+				<!--2 column start-->
+				<div class="col-sm-2">
+					<div class="rectangle"><!--rectangle div for employee profile picture and location start-->
+						<div class="img-relative">
+					            <!-- Loading image -->
+					            <div class="overlay uploadProcess" style="display: none;">
+					                <!--  <div class="overlay-content"><img src="images/orbit-400px.gif"/></div>-->
+					                <div class="overlay-content"></div>
+					            </div>
+					            <!-- Hidden upload form -->
+					            <form method="post" action="upload.php" enctype="multipart/form-data" id="picUploadForm" target="uploadTarget">
+					                <input type="file" name="picture" id="fileInput"  style="display:none"/>
+					            </form>
+					            <iframe id="uploadTarget" name="uploadTarget" src="#" style="width:0;height:0;border:0px solid #fff;"></iframe>
+					            <!-- Image update link -->
+					            <a class="editLink" href="javascript:void(0);"><i class="fa fa-camera fa-2x" data-aria-hidden="true"></i></a>
+					            <div class="middle">
+								    <div class="text">Upload Image</div>
+								  </div>
+					            <!-- Profile image -->
+					            <img src="<?php echo $userPictureURL; ?>" class="img-circle img-responsive" id="imagePreview">
+					        </div>
+						<h4><?php echo $_SESSION['u_fullname']; ?></h4>
+						<span class="text-size-small">
+						 <?php 
+							echo $_SESSION['u_emplocation'].", India";
+						?>
+						</span>
+					</div><!--rectangle div for employee profile picture and location close-->
+					<hr>
+					<ul class="list-group">
+						<li class="list-group-item active"><p style="color:white; font-size:18px;">My Account</p></li>
+						<li class="list-group-item"><a id="myprofile" href="#"><i class="fa fa-home" data-aria-hidden="true"></i>&nbsp;My Profile<i class="fa fa-angle-right" style="margin-left:62px;" data-aria-hidden="true"></i></a></li>
+						<li class="list-group-item"><a id="editprofileid"  href="#"><i class="fa fa-user-secret" data-aria-hidden="true"></i>&nbsp;Emp Info<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:66px;"></i></a></li>
+						<!-- <li class="list-group-item"><a id="officialinfo" href="#"><i class="fa fa-building" data-aria-hidden="true"></i>&nbsp;Official Info<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:52px;"></i></a></li> -->
+						<!--  <li class="list-group-item"><a id="applyleaveid" href="#"><i class="fa fa-info-circle" data-aria-hidden="true"></i>&nbsp;Leave Info<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:38px;"></i></a></li>-->
+						<li class="list-group-item"><a id="leaveinfo" href="#"><i class="fa fa-info-circle" data-aria-hidden="true"></i>&nbsp;Apply Leave<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:40px;"></i></a></li>
+						<li class="list-group-item"><a id="allleavehis" href="#"><i class="fa fa-info-circle" data-aria-hidden="true"></i>&nbsp;Leave History<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:30px;"></i></a></li>
+						<?php if(strtoupper($_SESSION['user_desgn'])=="MANAGER"){?>
+						<li class="list-group-item"><a id="leaveapprovalid" href="#"><i class="fa fa-tasks" data-aria-hidden="true"></i>&nbsp;Leave Approval<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:20px;"></i></a></li>
+						<?php
+						}
+						if(strtoupper($_SESSION['user_dept'])=="HR") {?>
+						<li class="list-group-item"><a id="hrsection" href="#"><i class="fa fa-user" data-aria-hidden="true"></i>&nbsp;HR Section<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:50px;"></i></a></li>
+						<li class="list-group-item"><a id="teamLeavereport" href="#"><i class="fa fa-users" data-aria-hidden="true"></i>&nbsp;Team Report<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:35px;"></i></a></li>
+						<?php }elseif(strtoupper($_SESSION['user_desgn'])=="MANAGER") {?>
+						<li class="list-group-item"><a id="managersection" href="#"><i class="fa fa-user" data-aria-hidden="true"></i>&nbsp;Manager Section<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:10px;"></i></a></li>
+						<li class="list-group-item"><a id="teamLeavereport" href="#"><i class="fa fa-user" data-aria-hidden="true"></i>&nbsp;Team Leave Report<i class="fa fa-angle-right" data-aria-hidden="true" style="margin-left:3px;"></i></a></li>
+						<?php }?>
+					</ul>
+				</div>	<!--2 column end-->
+				<!--10 column start-->
+				<div class="col-sm-10 box">
+					<div id="loadinout"></div>
+					<div id="loadpendingstatus"></div>
+					<div id="loadempapplyleave"></div>
+					<div id="loadempleavestatus"></div>
+					<div id="loadempleavehistory"></div>
+					<div id="loadempeditprofile"></div>
+					<div id="loadholidays"></div>
+					<div id="loadteamleaveapproval"></div>
+					<div id="loadempleavereport"></div>
+					<div id="loadteamleavereport"></div>
+					<div id="loadapplyteammemberleave"></div>
+					<div id="loadhrsection"></div>
+					<div id="loadmanagersection"></div>
+					<div id="loadattendance"></div>
+					<div id="loadtrackattendance"></div>
+					<div id="loadcalender"></div>
+					<div id="loadhelp"></div>
+					<div id="loadoptionalleave"></div>
+					<div id="loadvoeform"></div>
+					<div id="loadcompoffleave"></div>
+					<div id="loadwfhhr"></div>
+					<div id="loadextrawfhhr"></div>
+					<div id="loadmyprofile"></div>
+					<div id="loadpersonalinfo"></div>
+					<div id="loadofficialinfo"></div>
+					<div id="loadleaveinfo"></div>
+					<div id="loadDepartment"></div>
+					<div id="loadbalanceleavesid"></div>
+					<div id="loadallleavehis"></div>
+					<div id="loadingmessage"></div>
+				</div><!--10 column end-->
+			</div><!--row end-->
+		</div><!--container fluid div end-->
+		
+		<!--footer start-->
+		<div class="footer-bottom">
+			<!--footer container div start-->
+			<div class="container">
+				<div class="row">
+					<!-- <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+						<div class="copyright">
+							&copy;  <?php echo date("Y");?>, All rights reserved
+						</div>
+					</div> -->
+					<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 text-center">
+						<div class="design">
+							<a href="#"><b>ECI TELECOM</b> </a> |  <a href="#">LMS by ECI</a>
+						</div>
+					</div>
+				</div>
+			</div><!--footer container div close-->
+		</div><!--footer bottom section close-->
+		<script type='text/javascript' src="public/js/jquery/jquery.js"></script>
+		<script type='text/javascript' src="public/js/jquery/jquery-1.10.2.min.js"></script>
+		<script type='text/javascript' src="public/js/countdown/countdown.js"></script>
+		<script type='text/javascript' src='public/js/bootstrap/js/bootstrap.min.js'></script>
+		<script type="text/javascript" src="public/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+		<script type='text/javascript' src='public/js/DataTables/media/js/jquery.dataTables.min.js'></script>
+		<script type='text/javascript' src='public/js/jqueryui/js/jquery-ui.js'></script>
+		<script type='text/javascript' src='public/js/jqgrid/grid.locale-en.js'></script>
+		<script type='text/javascript' src='public/js/bootstrap3-dialog/bootstrap-dialog.js'></script>
+		<script type='text/javascript' src='public/js/jqgrid/jquery.jqGrid.min.js'></script>
+		<script type='text/javascript' src='public/js/jquery/jquery.validate.min.js'></script>
 		<script type="text/javascript" src="projectjs/index.js"></script>
+		<script type='text/javascript' src="projectjs/fullcalendar.js"></script>
 		<script type="text/javascript">
-			$(document).ready(function() {
+			$(document).ready(function () {
+			    //If image edit link is clicked
+			    $(".editLink").on('click', function(e){
+			        e.preventDefault();
+			        $("#fileInput:hidden").trigger('click');
+			    });
+			
+			    //On select file to upload
+			    $("#fileInput").on('change', function(){
+			        var image = $('#fileInput').val();
+			        var img_ex = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+			        
+			        //validate file type
+			        if(!img_ex.exec(image)){
+			            BootstrapDialog.alert('Please upload only .jpg/.jpeg/.png/.gif file.');
+			            $('#fileInput').val('');
+			            return false;
+			        }else{
+			            $('.uploadProcess').show();
+			            $('#uploadForm').hide();
+			            $( "#picUploadForm" ).submit();
+			        }
+			    });
+			});
+			//After completion of image upload process
+			function completeUpload(success, fileName) {
+			    if(success == 1){
+			        $('#imagePreview').attr("src", "");
+			        $('#imagePreview').attr("src", fileName);
+			        $('#fileInput').attr("value", fileName);
+			        $('.uploadProcess').hide();
+			    }else{
+			        $('.uploadProcess').hide();
+			        BootstrapDialog.alert('There was an error during file upload!');
+			    }
+			    return true;
+			}
+			$(document).ready(function () {
 				$('body').bind('mousedown keydown', function(event) {
 					$('#counter').countdown('option', {
 						until : +1200
 					});
 				});
-			});
-			function hidealldiv(div) {
-				var myCars = new Array("loadempapplyleave", "loadempleavestatus", "loadempleavehistory", "loadempleavereport", "loadempeditprofile", "loadholidays", "loadempleavereport", "loadteamleavereport", "loadteamleaveapproval", "loadattendance", "loadcalender", "loadpendingstatus", "loadhrsection", "loadmanagersection", "loadapplyteammemberleave", "loadtrackattendance", "loadextrawfhhr");
-				var hidedivarr = removeByValue(myCars, div);
-				hidediv(hidedivarr);
-				showdiv(div);
-			}
-
-			function hidediv(arr) {
-				$("#footer").show();
-				for (var i = 0; i < arr.length; i++) {
-					$("#" + arr[i]).hide();
-					$("#" + arr[i]).html("");
-				}
-			}
-
-			function showdiv(div) {
-				$("#" + div).show();
-			}
-
-			function removeByIndex(arr, index) {
-				arr.splice(index, 1);
-			}
-
-			function removeByValue(arr, val) {
-				for (var i = 0; i < arr.length; i++) {
-					if (arr[i] == val) {
-						arr.splice(i, 1);
-						break;
-					}
-				}
-				return arr;
-			}
-			$("#managermodifyempapprovedleaves").click(function() {
-				hidealldiv('loadmanagersection');
-				$("#loadmanagersection").load('modifyempapprovedleaves.php?role=manager');
-			});
-			$("#managerApproveEmpLeave").click(function() {
-			     hidealldiv('loadmanagersection');
-           		     $("#loadmanagersection").load('approveEmpLeave.php?role=manager');
-        		});
-		</script>
-		<style>
-			html {
-				font: 90% "Trebuchet MS", sans-serif;
-				margin: 20px;
-				padding: 0;
-				height: 85%;
-			}
-			body {
-				height: 100%;
-			}
-			#container {
-				min-height: 100%;
-				height: auto !important;
-				position: relative;
-			}
-			.demoHeaders {
-				margin-top: 2em;
-			}
-			#dialog-link {
-				padding: .4em 1em .4em 20px;
-				text-decoration: none;
-				position: relative;
-			}
-			#dialog-link span.ui-icon {
-				margin: 0 5px 0 0;
-				position: absolute;
-				left: .2em;
-				top: 50%;
-				margin-top: -8px;
-			}
-			#icons {
-				margin: 0;
-				padding: 0;
-			}
-			#icons li {
-				margin: 2px;
-				position: relative;
-				padding: 4px 0;
-				cursor: pointer;
-				float: left;
-				list-style: none;
-			}
-			#icons span.ui-icon {
-				float: left;
-				margin: 0 4px;
-			}
-			.fakewindowcontain .ui-widget-overlay {
-				position: absolute;
-			}
-		</style>
-
-	</head>
-	<body>
-		<div id="container">
-			<?php $db = connectToDB(); ?>
-			<div id="header">
-				<ul id="menu">
-					<li>
-						<a  id="HomeButton" accesskey="1" title="Home">Home</a>
-					</li>
-					<?php
-					if (strtoupper($_SESSION['user_desgn']) == "MANAGER" || strtoupper($_SESSION['user_dept'])=="HR") {
-						echo '<li><a accesskey="2" title="Team Leave Report" id="teamreport">Team Leave Report</a></li>';
-					}
-					?>
-					<li><a href="#" accesskey="4" title="Holiday List" 	id="holidays">Holiday List</a></li>
-					<?php 
-					$query = "select location from emp where empusername='".$_SESSION['user_name']."' and state='Active'";
-					$result = $db -> query($query);
-					$row = $db -> fetchAssoc($result);
-					/*if(strtoupper($row['location'])=="MUM") {
-						echo '';
-					}*/
-					?>
-					<li><a href="#" id="attendance">Attendance</a></li>
-					<li><a href="#" id="trackattendance">Track Leaves</a></li>
-					<li><a href="#" id="calender">Leave Calender</a></li>
-					<li><a href="#" id="voe">APPLY VOE</a></li>
-					<li><a href="#" id="help">HELP</a></li>
-					<li><a href="logout.php?logout=1" accesskey="5" title="<?php echo $_SESSION['user_name']; ?> logged in">LOGOUT</a></li>
-					<li><a href="#" accesskey="7" title="REMAINING LEAVES" id="balanceleavesid"></a></li>
-					<li><a href="#" accesskey="6" title="Click to view detailed Leaves" id="detailleaves">BALANCE LEAVES:</a></li>
-				</ul>
-				<div id="balanceDialog" title="Balance Leaves"></div>
-			</div>
-			<div id="content">
-				<div id="colOne">
-				<?php
-				$query = "select empname from emp where empusername='".$_SESSION['user_name']."' and state='Active'";
-				$result = $db -> query($query);
-				$row = $db -> fetchAssoc($result);
-				echo "<h3 id='eciempfullname'>" . $row['empname'] . "</h3><hr>";
-				?>
-				<div class="box mystyle">
-				<h3>LINKS</h3>
-				<ul>
-				<?php
-				$query = "select * from privileges where role='" . $_SESSION['user_desgn'] . "'";
-				$result = $db -> query($query);
-				$row = $db -> fetchAssoc($result);
-				$keys = array_keys($row);
-				//Don't allow user to apply leave when his total leaves crosses -5.
-				if ((getTotalLeaves($_SESSION['u_empid'])) < -5) {
-					$row['applyleave'] = 0;
-					echo '<script>
-			    	$("document").ready(function() {
-			    	$("#exceededLeaves").show();
-			    	});
-			    	</script>';
-				}
-				for ($i = 0; $i < sizeof($keys); $i++) {
-					switch ($keys[$i]) {
-						case "applyleave" :
-							if ($row['applyleave'] == 1) {
-								echo '<li class="first"><a href="#" id="applyleaveid">Apply Leave</a></li>';
-							}
-							break;
-						case "compoff" :
-							if ($row['compoff'] == 1) {
-								echo '<li><a href="#" id="compoffleaveid">Apply Comp Off Leave</a></li>';
-							}
-							break;
-						case "ExtraWFHHour" :
-							if (($row['ExtraWFHHour'] == 1)) {
-								echo '<li><a href="#" id="extrawfhhrid">Apply Extra WFH Hour</a></li>';
-							}
-							break;
-						case "selfleavestatus" :
-							if ($row['selfleavestatus'] == 1) {
-								echo '<li><a href="#" id="selfleavestatusid">Emp Leave Status</a></li>';
-							}
-							break;
-						case "selfleavehistory" :
-							if ($row['selfleavehistory'] == 1) {
-								echo '<li><a href="#" id="selfleavehistoryid">Emp Leave History</a></li>';
-							}
-							break;
-						case "editprofile" :
-							if ($row['editprofile'] == 1) {
-								echo '<li><a href="#" id="editprofileid">Edit Emp Profile</a></li>';
-							}
-							break;
-						case "leaveapproval" :
-							if ($row['leaveapproval'] == 1) {
-								echo '<li><a href="#" id="leaveapprovalid">Leave Approval</a></li>';
-							}
-							break;
-						case "managersection" :
-							if (($row['managersection'] == 1) && ($_SESSION['user_dept'] != "HR")) {
-								echo '<li><a href="#" id="managersectionid">Manager Section</a></li>';
-							}
-							break;
-						case "hrsection" :
-							if (($row['hrsection'] == 1) || ($_SESSION['user_dept'] == "HR")) {
-								echo '<li><a href="#" id="hrsectionid">HR Section</a></li>';
-							}
-							break;
-						case "applyteammemberleave" :
-							if ($row['applyteammemberleave'] == 1) {
-								echo '<li><a href="#" id="applyteammemberleaveid">Apply Leave for Team</a></li>';
-							}
-							break;
-						case "optionalleave" :
-							if ($row['optionalleave'] == 1) {
-								echo '<li><a href="#" id="optionalLeaveStatus">Optional Holidays Applied</a></li>';
-							}
-							break;
-							
-						/*case "addWFHhr" :
-							if ($row['addWFHhr'] == 1) {
-								echo '<li><a href="#" id="addWFHhrStatus">Add WFH Hour</a></li>';
-							}
-							break;
-						case "viewWFHhr" :
-							if ($row['viewWFHhr'] == 1) {
-								echo '<li><a href="#" id="viewWFHhrStatus">View WFH Hour</a></li>';
-							}
-								break;*/
-						
-							
-							default:
-							break;
-					}
-				}
-				?>
-				</ul>
-			</div>
-<div class="box mystyle">
-	<hr>
-		<h4>Your session will expire in </h4>
-		<p align="center"><span id="counter" class="countdown"></span></p>
-		<pre>
-			<script>
-				$('#counter').countdown({
-					until : +1200,
-					compact : true,
-					description : '',
-					onExpiry : liftOff,
-					format : 'HMS'
+				$('ul.nav li').click(function(){   
+					 $(this).addClass('active');
+					 $(this).siblings().removeClass('active');
 				});
-				function liftOff() {
-					var r = confirm("Your session is expired. Do you want to extend the session?");
-					if (r == true) {
+			});
+			$('#counter').countdown({
+				until : +1200,
+				compact : true,
+				description : '',
+				onExpiry : liftOff,
+				format : 'HMS'
+			});
+
+			function liftOff() {
+				BootstrapDialog.confirm("Your session is expired. Do you want to extend the session?", function(result){
+					if(result) {
 						window.location = "index.php";
 					} else {
-						alert("Your session is expired. Logging out");
-						window.location = "logout.php?logout=1";
+						BootstrapDialog.alert("Your session is expired. Logging out");
+						window.location = "login.php";
 					}
-				}
-			</script>
-		</pre>
-		</div>
-		</div>
-		<div id="colTwo">
-			<div class="box">
-			<div align="center" id="exceededLeaves" style="display: none;">
-					<h2><u><font color="red">Exceeded permitted Leaves. Can't apply Leave now.</font></u></h2>
-			</div>
-				<div id="loadpendingstatus"></div>
-				<div id="loadempapplyleave"></div>
-				<div id="loadempleavestatus"></div>
-				<div id="loadempleavehistory"></div>
-				<div id="loadempeditprofile"></div>
-				<div id="loadholidays"></div>
-				<div id="loadteamleaveapproval"></div>
-				<div id="loadempleavereport"></div>
-				<div id="loadteamleavereport"></div>
-				<div id="loadapplyteammemberleave"></div>
-				<div id="loadhrsection"></div>
-				<div id="loadmanagersection"></div>
-				<div id="loadattendance"></div>
-				<div id="loadtrackattendance"></div>
-				<div id="loadcalender"></div>
-				<div id="loadhelp"></div>
-				<div id="loadoptionalleave"></div>
-				<div id="loadvoeform"></div>
-				<div id="loadcompoffleave"></div>
-				<div id="loadwfhhr"></div>
-				<div id="loadextrawfhhr"></div>
-			</div>
-			<div class="box">
-			<?php // require_once 'pendingstatus.php'; ?>
-				</div>
-				</div>
-			</div>
-			<div id='loadingmessage' style='display:none'>
-				<img align="middle" src='images/loading.gif'/>
-			</div>
-
-		</div>
-		<?php
-		if (isset($_REQUEST['extrahour'])) {
-			echo "<u>Apply Extra WFH for Employee</u>";
-			echo "<ul>";
-			echo "<li><a href='#' id='addWFHhrStatus'>Add WFH Hour</a></li></br>";
-			echo "<li><a href='#' id='viewWFHhrStatus'>View WFH Hour</a></li><br>";
-			echo "</ul>";
-		}
-		?>
-		<div id="footer">
-			<p>
-				<font size="3"><b>ECI TELECOM INDIA PVT. LTD</b> </font>
-			</p>
-		</div>
-		
+				});
+			}
+		</script>
 	</body>
 </html>
-
