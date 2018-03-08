@@ -1,0 +1,46 @@
+2018-02-26 10:02:12 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '2') order by empname asc
+2018-02-26 10:02:41 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '2') order by empname asc
+2018-02-26 10:02:25 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '2') order by empname asc
+2018-02-26 10:02:10 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '2') order by empname asc
+2018-02-26 10:02:40 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '2') order by empname asc
+2018-02-26 10:02:16 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '2') order by empname asc
+2018-02-26 11:02:24 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '2') order by empname asc
+2018-02-26 11:02:55 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '3') order by empname asc
+2018-02-26 11:02:45 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 11:02:02 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 12:02:41 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 12:02:22 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 12:02:24 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 12:02:01 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 12:02:40 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 12:02:15 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 12:02:19 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 12:02:08 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 12:02:03 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 01:02:28 :: SELECT empname, emp.empid, carryforwarded, balanceleaves FROM emp,emptotalleaves where (emp.empid=emptotalleaves.empid and (balanceleaves+carryforwarded) <= '1') order by empname asc
+2018-02-26 02:02:21 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-26 02:02:47 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 12:02:15 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 12:02:25 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 12:02:48 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 12:02:08 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 12:02:13 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 12:02:22 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 12:02:06 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 12:02:32 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 12:02:41 :: select e.empid,d.mainDept from emp e join departments d where d.ID=''
+2018-02-28 12:02:47 :: select e.empid,d.mainDept from emp e join departments d where d.ID=''
+2018-02-28 12:02:15 :: select e.empid,d.mainDept from emp e join departments d where d.ID=''
+2018-02-28 12:02:27 :: select * from departments where ID=''
+2018-02-28 12:02:33 :: select * from departments where ID='3'
+2018-02-28 12:02:39 :: select * from departments where ID='3'
+2018-02-28 12:02:15 :: select * from departments where ID='3'
+2018-02-28 01:02:01 :: select * from departments where ID='3'
+2018-02-28 01:02:07 :: select * from departments where ID='32'
+2018-02-28 01:02:12 :: select * from departments where ID='32'
+2018-02-28 01:02:15 :: select * from departments where ID='34'
+2018-02-28 01:02:14 :: select e.empid,d.mainDept from emp e join departments d where e.dept=d.mainDept
+2018-02-28 01:02:09 :: select * from departments where ID='34'
+2018-02-28 01:02:05 :: select * from departments where ID='3'
+2018-02-28 01:02:43 :: select * from departments where ID='3'
+2018-02-28 01:02:05 :: select * from departments where ID='3'
